@@ -7,7 +7,7 @@ import androidx.viewbinding.ViewBinding
 import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentEnterBinding
 
-class EnterFragment: Fragment(R.layout.fragment_enter), View.OnClickListener {
+class EnterFragment: Fragment(R.layout.fragment_enter) {
     private lateinit var binding: FragmentEnterBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -19,18 +19,10 @@ class EnterFragment: Fragment(R.layout.fragment_enter), View.OnClickListener {
     }
 
     private fun configureActions() {
-        binding.buttonEnter.setOnClickListener(this)
-        binding.cardGoogle.setOnClickListener(this)
-        binding.buttonDontHaveAccount.setOnClickListener(this)
-    }
-
-    override fun onClick(view: View) {
-        when (view) {
-            binding.buttonEnter -> onEnterActionHandler()
-            binding.cardGoogle -> onGoogleActionHandler()
-            binding.buttonDontHaveAccount -> onCreateAccountActionHandler()
-
-            else -> return
+        with (binding) {
+            buttonEnter.setOnClickListener { onEnterActionHandler() }
+            cardGoogle.setOnClickListener { onGoogleActionHandler() }
+            buttonDontHaveAccount.setOnClickListener { onCreateAccountActionHandler() }
         }
     }
 
