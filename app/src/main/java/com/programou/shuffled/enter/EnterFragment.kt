@@ -1,6 +1,7 @@
 package com.programou.shuffled.enter
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
@@ -26,9 +27,9 @@ class EnterFragment: Fragment(R.layout.fragment_enter) {
         }
     }
 
-    private fun onEnterActionHandler() {}
+    private fun onEnterActionHandler() = Log.i("::DEBUG::", "enter was click")
 
-    private fun onGoogleActionHandler() {}
+    private fun onGoogleActionHandler() = Log.i("::DEBUG::", "enter with google")
 
-    private fun onCreateAccountActionHandler() {}
+    private fun onCreateAccountActionHandler() = Log.i("::DEBUG::", "register was clicked")
 }

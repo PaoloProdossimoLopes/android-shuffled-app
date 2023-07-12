@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Shuffled</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="email_placeholder">nome_usuario@email.com</string>
     <string name="password_placeholder">sua senha aqui</string>
@@ -8,4 +8,7 @@
     <string name="enter_with_google_card_title">Entrar com a conta google</string>
     <string name="enter_no_have_account_text">Ainda não possui uma conta ?</string>
     <string name="enter_register_text">Cadastre-se</string>
+    
+    <string name="text_enter_invalid_credentials_error_message">Dados inválidos. Email ou senha estao incorretos.</string>
+    <string name="text_enter_somthing_happens_try_again_later_massage">Ops, algo inesperado ocorreu, tente novamente mais tarde</string>
 </resources>
