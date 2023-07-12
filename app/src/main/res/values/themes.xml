@@ -2,7 +2,8 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Shuffled" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+         <item name="colorPrimary">@color/turquoise_500</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.Shuffled" parent="Base.Theme.Shuffled" />
