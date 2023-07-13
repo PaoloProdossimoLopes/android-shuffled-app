@@ -1,7 +1,7 @@
 package com.programou.shuffled.enter
 
-class EnterAccountUseCase(private val repository: EnterRepository) {
-    fun enter(model: Enter): Result<User> {
+class EnterAccountUseCase(private val repository: EnterRepository): EnterAccount {
+    override fun enter(model: Enter): Result<User> {
         val result = repository.enter(model)
 
         result.exceptionOrNull()?.let { _ ->
