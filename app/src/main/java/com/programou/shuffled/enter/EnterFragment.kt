@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentEnterBinding
@@ -36,5 +37,8 @@ class EnterFragment: Fragment(R.layout.fragment_enter) {
 
     private fun onGoogleActionHandler() = Log.i("::DEBUG::", "enter with google")
 
-    private fun onCreateAccountActionHandler() = Log.i("::DEBUG::", "register was clicked")
+    private fun onCreateAccountActionHandler() {
+        val action = EnterFragmentDirections.actionEnterFragmentToRegisterFragment()
+        findNavController().navigate(action)
+    }
 }
