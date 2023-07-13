@@ -1,11 +1,12 @@
 package com.programou.shuffled.register
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentRegisterBinding
+import com.programou.shuffled.utils.hideKeyboard
 
 class RegisterFragment: Fragment(R.layout.fragment_register) {
 
@@ -18,6 +19,8 @@ class RegisterFragment: Fragment(R.layout.fragment_register) {
 
         binding.imageBackArrow.setOnClickListener { popFragment() }
         binding.buttonAlreadyHaveAccount.setOnClickListener { popFragment() }
+        binding.root.setOnClickListener { hideKeyboard() }
+        binding.buttonEnter.setOnClickListener { hideKeyboard() }
     }
 
     private fun popFragment() {

@@ -4,11 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
-import androidx.viewbinding.ViewBinding
 import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentEnterBinding
+import com.programou.shuffled.utils.hideKeyboard
 
 class EnterFragment: Fragment(R.layout.fragment_enter) {
     private lateinit var binding: FragmentEnterBinding
@@ -27,13 +26,16 @@ class EnterFragment: Fragment(R.layout.fragment_enter) {
 
     private fun configureActions() {
         with (binding) {
-            buttonEnter.setOnClickListener { onEnterActionHandler() }
+            buttonEnter.setOnClickListener { onEnterActionHandler(it) }
             cardGoogle.setOnClickListener { onGoogleActionHandler() }
             buttonDontHaveAccount.setOnClickListener { onCreateAccountActionHandler() }
+            binding.root.setOnClickListener { hideKeyboard() }
         }
     }
 
-    private fun onEnterActionHandler() = Log.i("::DEBUG::", "enter was click")
+    private fun onEnterActionHandler(view: View) {
+        hideKeyboard()
+    }
 
     private fun onGoogleActionHandler() = Log.i("::DEBUG::", "enter with google")
 
