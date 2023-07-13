@@ -15,7 +15,7 @@ class RemoteEnterRepositoryTest {
         val password = makePassword()
         val enterRequest = makeRequest(email, password)
         val enter = Enter(email, password)
-        val client = stubClientToReturns(OK_STATUS_CODE)
+        val client = stubClientToReturns(StatusCode.OK.code)
         val sut = makeSUT(client)
 
         verify(client, times(0)).enter(enterRequest)
@@ -30,12 +30,12 @@ class RemoteEnterRepositoryTest {
         val email = makeEmail()
         val password = makePassword()
         val enter = Enter(email, password)
-        val client = stubClientToReturns(OK_STATUS_CODE)
+        val client = stubClientToReturns(StatusCode.OK.code)
         val sut = makeSUT(client)
 
         val result = sut.enter(enter)
 
-        assertTrue(result.exceptionOrNull() is NotFoundError)
+        assertTrue(result.exceptionOrNull() is HTTPError.NotFoundError)
     }
 
     @Test
@@ -43,7 +43,7 @@ class RemoteEnterRepositoryTest {
         val enter = Enter(makeEmail(), makePassword())
         val userResponse = UserResponse.User("name", "email")
         val userModel = User(userResponse.name, userResponse.email)
-        val client = stubClientToReturns(OK_STATUS_CODE, userResponse)
+        val client = stubClientToReturns(StatusCode.OK.code, userResponse)
         val sut = makeSUT(client)
 
         val result = sut.enter(enter)
@@ -55,45 +55,45 @@ class RemoteEnterRepositoryTest {
     @Test
     fun `test on enter with not found status code (404) returns NotFoundError failure`() {
         val enter = Enter(makeEmail(), makePassword())
-        val client = stubClientToReturns(NOT_FOUND_ERROR_STATUS_CODE)
+        val client = stubClientToReturns(StatusCode.NOT_FOUND_ERROR.code)
         val sut = makeSUT(client)
 
         val result = sut.enter(enter)
 
-        assertTrue(result.exceptionOrNull() is NotFoundError)
+        assertTrue(result.exceptionOrNull() is HTTPError.NotFoundError)
     }
 
     @Test
     fun `test on enter with unauthorized status code (401) returns UnauthorizedError failure`() {
         val enter = Enter(makeEmail(), makePassword())
-        val client = stubClientToReturns(UNAUTHORIZED_ERROR_STATUS_CODE)
+        val client = stubClientToReturns(StatusCode.UNAUTHORIZED_ERROR.code)
         val sut = makeSUT(client)
 
         val result = sut.enter(enter)
 
-        assertTrue(result.exceptionOrNull() is UnauthorizedError)
+        assertTrue(result.exceptionOrNull() is HTTPError.UnauthorizedError)
     }
 
     @Test
     fun `test on enter with bad request status code (400) returns BadRequestError failure`() {
         val enter = Enter(makeEmail(), makePassword())
-        val client = stubClientToReturns(BAD_REQUEST_ERROR_STATUS_CODE)
+        val client = stubClientToReturns(StatusCode.BAD_REQUEST_ERROR.code)
         val sut = makeSUT(client)
 
         val result = sut.enter(enter)
 
-        assertTrue(result.exceptionOrNull() is BadRequestError)
+        assertTrue(result.exceptionOrNull() is HTTPError.BadRequestError)
     }
 
     @Test
     fun `test on enter with internal server error status code (500) returns InternalServerError failure`() {
         val enter = Enter(makeEmail(), makePassword())
-        val client = stubClientToReturns(INTERNAL_SERVER_ERROR_STATUS_CODE)
+        val client = stubClientToReturns(StatusCode.INTERNAL_SERVER_ERROR.code)
         val sut = makeSUT(client)
 
         val result = sut.enter(enter)
 
-        assertTrue(result.exceptionOrNull() is InternalServerError)
+        assertTrue(result.exceptionOrNull() is HTTPError.InternalServerError)
     }
 
     @Test
@@ -104,15 +104,10 @@ class RemoteEnterRepositoryTest {
 
         val result = sut.enter(enter)
 
-        assertTrue(result.exceptionOrNull() is UnexpectedError)
+        assertTrue(result.exceptionOrNull() is HTTPError.UnexpectedError)
     }
 
-    private val OK_STATUS_CODE = 200
     private val UNEXPECTED_ERROR_STATUS_CODE = 300
-    private val INTERNAL_SERVER_ERROR_STATUS_CODE = 500
-    private val BAD_REQUEST_ERROR_STATUS_CODE = 400
-    private val UNAUTHORIZED_ERROR_STATUS_CODE = 401
-    private val NOT_FOUND_ERROR_STATUS_CODE = 404
 
     private fun stubClientToReturns(statusCode: Int, data: UserResponse.User? = null): EnterClientProvider = mock() {
         on { enter(any()) } doReturn (UserResponse(statusCode, data))

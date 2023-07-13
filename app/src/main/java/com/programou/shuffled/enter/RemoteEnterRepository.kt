@@ -14,41 +14,60 @@ data class UserResponse(
     )
 }
 
-class UnauthorizedError: Error()
-class BadRequestError: Error()
-class UnexpectedError: Error()
-class InternalServerError: Error()
-class NotFoundError: Error()
+class HTTPError {
+    class UnauthorizedError : Error()
+    class BadRequestError : Error()
+    class UnexpectedError : Error()
+    class InternalServerError : Error()
+    class NotFoundError : Error()
+}
 
 data class EnterRequest(
     val method: String,
     val body: Map<String, String>
 )
 
+enum class StatusCode(val code: Int) {
+    OK(200),
+    INTERNAL_SERVER_ERROR(500),
+    BAD_REQUEST_ERROR(400),
+    UNAUTHORIZED_ERROR(401),
+    NOT_FOUND_ERROR(404)
+}
+
 class RemoteEnterRepository(private val client: EnterClientProvider): EnterRepository {
     override fun enter(model: Enter): Result<User> {
-        val method = "POST"
         val body = mapOf(
-            Pair("email", model.email),
-            Pair("password", model.password),
+            Pair(Constant.EMAIL_KEY, model.email),
+            Pair(Constant.PASSWORD_KEY, model.password),
         )
-        val request = EnterRequest(method, body)
+        val request = EnterRequest(Constant.POST_METHOD, body)
         val response = client.enter(request)
 
         return when (response.statusCode) {
-            400 -> Result.failure(BadRequestError())
-            401 -> Result.failure(UnauthorizedError())
-            500 -> Result.failure(InternalServerError())
-            200 -> {
+            StatusCode.BAD_REQUEST_ERROR.code -> makeFailure(HTTPError.BadRequestError())
+            StatusCode.UNAUTHORIZED_ERROR.code -> makeFailure(HTTPError.UnauthorizedError())
+            StatusCode.INTERNAL_SERVER_ERROR.code -> makeFailure(HTTPError.InternalServerError())
+            StatusCode.OK.code -> {
                 response.data?.let {
-                    return Result.success(User(it. name, it.email))
+                    val user = User(it. name, it.email)
+                    return Result.success(user)
                 }
 
-                return Result.failure(NotFoundError())
+                return makeFailure(HTTPError.NotFoundError())
             }
-            404 -> Result.failure(NotFoundError())
+            StatusCode.NOT_FOUND_ERROR.code -> makeFailure(HTTPError.NotFoundError())
 
-            else -> Result.failure(UnexpectedError())
+            else -> makeFailure(HTTPError.UnexpectedError())
         }
+    }
+
+    private fun makeFailure(error: Error): Result<User> = Result.failure(error)
+
+    private object Constant {
+        const val POST_METHOD = "POST"
+
+        const val EMAIL_KEY = "email"
+        const val PASSWORD_KEY = "password"
     }
 }
