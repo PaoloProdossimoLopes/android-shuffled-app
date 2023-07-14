@@ -5,11 +5,14 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -48,6 +51,8 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
         binding = FragmentEnterBinding.bind(view)
 
         configureActions()
+        configureFieldsObserver()
+        disableEnterButton()
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -68,6 +73,42 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
             buttonDontHaveAccount.setOnClickListener { onCreateAccountActionHandler() }
             binding.root.setOnClickListener { hideKeyboard() }
         }
+    }
+
+    private fun configureFieldsObserver() {
+        binding.editEmail.addTextChangedListener(onTextChanged = { _, _, _, _ ->
+            onButtonStateChange()
+        })
+        binding.editPassword.addTextChangedListener(onTextChanged = { _, _, _, _ ->
+            onButtonStateChange()
+        })
+    }
+
+    private fun onButtonStateChange() {
+        val emailIsValid = binding.editEmail.text.isNotEmpty()
+        val passwordIsValid = binding.editPassword.text.isNotEmpty()
+
+        val isValid = emailIsValid && passwordIsValid
+
+        if (isValid) { enableEnterButton() } else { disableEnterButton() }
+    }
+
+    private fun enableEnterButton() {
+        binding.buttonEnter.isEnabled = true
+        binding.buttonEnter.isActivated = true
+        binding.buttonEnter.isClickable = true
+    }
+
+    private fun disableEnterButton() {
+        binding.buttonEnter.isEnabled = false
+        binding.buttonEnter.isActivated = false
+        binding.buttonEnter.isClickable = false
+    }
+
+
+    private fun configureStateButton() {
+        binding.buttonEnter.isClickable = false
+        binding.buttonEnter.setBackgroundColor(requireContext().getColor(R.color.turquoise_800))
     }
 
     private fun onEnterActionHandler(view: View) {

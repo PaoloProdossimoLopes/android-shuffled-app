@@ -27,6 +27,7 @@
         android:hint="@string/email_placeholder"
         android:inputType="textEmailAddress"
         tools:text="any@email.com"
+
         android:autofillHints="emailAddress" />
 
     <EditText
