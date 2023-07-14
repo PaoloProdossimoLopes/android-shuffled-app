@@ -11,4 +11,6 @@
 
     <string name="text_enter_invalid_credentials_error_message">Dados inválidos. Email ou senha estao incorretos.</string>
     <string name="text_enter_somthing_happens_try_again_later_massage">Ops, algo inesperado ocorreu, tente novamente mais tarde</string>
+
+    <string name="default_web_client_id">927359803389-qob8s57nd0ot2diffmlest4dl6thv5e9.apps.googleusercontent.com</string>
 </resources>

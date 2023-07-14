@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "927359803389",
+    "project_id": "shuffled-app",
+    "storage_bucket": "shuffled-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927359803389:android:f9c6434475d43d821f4394",
+        "android_client_info": {
+          "package_name": "com.programou.shuffled"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "927359803389-qob8s57nd0ot2diffmlest4dl6thv5e9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.programou.shuffled",
+            "certificate_hash": "83da3663664129e2c7225eb92cdec20f9f2b1080"
+          }
+        },
+        {
+          "client_id": "927359803389-1o8vhevn4cb7bgjm7ojhr630inigheqh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLNscgbjM4TdhpCX0xVtJi1alzP2bflt8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "927359803389-1o8vhevn4cb7bgjm7ojhr630inigheqh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
