@@ -6,6 +6,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="gray_100">#EBEBEB</color>
+    <color name="gray_300">#B9B9B9</color>
 
     <color name="turquoise_500">#2ABD96</color>
     <color name="turquoise_800">#1B896C</color>
