@@ -40,11 +40,32 @@
         tools:text="any password here"
         android:autofillHints="password" />
 
-    <Button
-        android:id="@+id/button_enter"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/enter_button_title" />
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/button_enter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_button_title"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ProgressBar
+            android:id="@+id/progress_enter_button_loader"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            android:indeterminateTint="@color/white"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_google"
@@ -54,26 +75,48 @@
         android:background="@color/white"
         app:cardCornerRadius="40dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginVertical="8dp">
+            android:layout_height="50dp">
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center"
-                android:src="@drawable/google_logo"
-                android:contentDescription="@null" />
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/linear_google_button_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="@string/enter_with_google_card_title" />
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/google_logo"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/enter_with_google_card_title" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progress_google_button_loader"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:padding="8dp"
+                android:indeterminateTint="@color/turquoise_500"
+                android:visibility="gone"
+                tools:visibility="visible"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 

@@ -1,7 +1,10 @@
-package com.programou.shuffled.enter
+package com.programou.shuffled.register
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import com.programou.shuffled.enter.ErrorViewData
+import com.programou.shuffled.enter.User
+import com.programou.shuffled.enter.UserViewData
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -12,7 +15,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
-class EnterViewModelTest {
+class RegisterViewModelTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -25,7 +28,7 @@ class EnterViewModelTest {
         val sut = makeSUT(mock())
         sut.errorMessage.observeForever(errorMessageObserver)
 
-        sut.enter(makeViewData())
+        sut.register(makeViewData())
 
         verify(errorMessageObserver, times(0)).onChanged(any())
     }
@@ -38,7 +41,7 @@ class EnterViewModelTest {
         val sut = makeSUT(useCase)
         sut.errorMessage.observeForever(errorMessageObserver)
 
-        sut.enter(viewData)
+        sut.register(viewData)
 
         verify(errorMessageObserver, times(1)).onChanged(ErrorViewData(errorMessage))
     }
@@ -48,35 +51,39 @@ class EnterViewModelTest {
         val sut = makeSUT(mock())
         sut.user.observeForever(userObserver)
 
-        sut.enter(makeViewData())
+        sut.register(makeViewData())
 
         verify(userObserver, times(0)).onChanged(any())
     }
 
     @Test
     fun `on enter with usecase completion succefully emit a user`() {
-            val viewData = makeViewData()
-            val result = Result.success(makeUser(viewData))
-            val useCase = stubUseCaseOnEnterWith(result, viewData)
-            val sut = makeSUT(useCase)
+        val viewData = makeViewData()
+        val result = Result.success(makeUser(viewData))
+        val useCase = stubUseCaseOnEnterWith(result, viewData)
+        val sut = makeSUT(useCase)
 
-            sut.user.observeForever(userObserver)
-            sut.errorMessage.observeForever(errorMessageObserver)
+        sut.user.observeForever(userObserver)
+        sut.errorMessage.observeForever(errorMessageObserver)
 
-            sut.enter(viewData)
+        sut.register(viewData)
 
-            verify(errorMessageObserver, times(0)).onChanged(any())
-            verify(userObserver, times(1)).onChanged(any())
+        verify(errorMessageObserver, times(0)).onChanged(any())
+        verify(userObserver, times(1)).onChanged(any())
     }
 
     private fun makeViewData() = UserViewData("any email", "any password")
 
-    private fun makeSUT(useCase: EnterAccount) = EnterViewModel(useCase)
+    private fun makeSUT(useCase: RegisterAccount) = RegisterViewModel(useCase)
 
-    private fun stubUseCaseOnEnterWith(result: Result<User>, viewData: UserViewData): EnterAccount {
+    private fun stubUseCaseOnEnterWith(result: Result<User>, viewData: UserViewData): RegisterAccount {
         val callbackCapture = argumentCaptor<(Result<User>) -> Unit>()
         return mock {
-            on { enter(eq(Enter(viewData.email, viewData.password)), callbackCapture.capture()) } doAnswer { callbackCapture.firstValue(result) }
+            on {
+                register(eq(Register(viewData.email, viewData.password)), callbackCapture.capture())
+            } doAnswer {
+                callbackCapture.firstValue(result)
+            }
         }
     }
 

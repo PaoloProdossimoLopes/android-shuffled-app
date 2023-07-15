@@ -4,27 +4,23 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 
 class EnterAccountUseCaseTest {
 
     @Test
     fun `on enter with any data but receive a null retuns an failure`() {
-        val sut = makeSUT(mock())
+        val result = Result.failure<User>(Error())
+        val repository = makeRepositoryMock(result)
+        val sut = makeSUT(repository)
 
-        val enterResult = sut.enter(makeEnterModel())
+        val results: MutableList<Result<User>> = mutableListOf()
+        sut.enter(makeEnterModel()) { result ->  results.add(result) }
 
-        assertTrue(enterResult.isFailure)
-    }
-
-    @Test
-    fun `on enter with any data but receive a null returns unexpeceted error message`() {
-        val sut = makeSUT(mock())
-
-        val enterResult = sut.enter(makeEnterModel())
-
-        assertEquals(enterResult.exceptionOrNull()?.message, "Ops, algo inesperado ocorreu, tente novamente mais tarde")
+        assertEquals(results.count(), 1)
+        assertTrue(results.firstOrNull()?.isFailure == true)
     }
 
     @Test
@@ -32,9 +28,11 @@ class EnterAccountUseCaseTest {
         val enterModel = makeEnterModel(email = "invalid email")
         val env = makeEnviroment(repositoryShouldReturns = Result.failure(makeError()))
 
-        val enterResult = env.sut.enter(enterModel)
+        val results: MutableList<Result<User>> = mutableListOf()
+        env.sut.enter(enterModel) { result -> results.add(result) }
 
-        assertTrue(enterResult.isFailure)
+        assertEquals(results.count(), 1)
+        assertTrue(results.firstOrNull()?.isFailure == true)
     }
 
     @Test
@@ -42,9 +40,11 @@ class EnterAccountUseCaseTest {
         val enterModel = makeEnterModel(password = "invalid password")
         val env = makeEnviroment(repositoryShouldReturns = Result.failure(makeError()))
 
-        val enterResult = env.sut.enter(enterModel)
+        val results: MutableList<Result<User>> = mutableListOf()
+        env.sut.enter(enterModel) { result -> results.add(result) }
 
-        assertTrue(enterResult.isFailure)
+        assertEquals(results.count(), 1)
+        assertTrue(results.firstOrNull()?.isFailure == true)
     }
 
     @Test
@@ -52,9 +52,11 @@ class EnterAccountUseCaseTest {
         val enterModel = makeEnterModel(password = "invalid password")
         val env = makeEnviroment(repositoryShouldReturns = Result.failure(makeError()))
 
-        val enterResult = env.sut.enter(enterModel)
+        val results: MutableList<Result<User>> = mutableListOf()
+        env.sut.enter(enterModel) { result -> results.add(result) }
 
-        assertEquals(enterResult.exceptionOrNull()?.message, "Dados inválidos. Email ou senha estao incorretos.")
+        assertEquals(results.count(), 1)
+        assertEquals(results.firstOrNull()?.exceptionOrNull()?.message, "Dados inválidos. Email ou senha estao incorretos.")
     }
 
     @Test
@@ -62,9 +64,11 @@ class EnterAccountUseCaseTest {
         val enterModel = makeEnterModel(email = "invalid email")
         val env = makeEnviroment(repositoryShouldReturns = Result.failure(makeError()))
 
-        val enterResult = env.sut.enter(enterModel)
+        val results: MutableList<Result<User>> = mutableListOf()
+        env.sut.enter(enterModel) { result -> results.add(result) }
 
-        assertEquals(enterResult.exceptionOrNull()?.message, "Dados inválidos. Email ou senha estao incorretos.")
+        assertEquals(results.count(), 1)
+        assertEquals(results.firstOrNull()?.exceptionOrNull()?.message, "Dados inválidos. Email ou senha estao incorretos.")
     }
 
     private fun makeError() = Error("deleivers an error")
@@ -75,9 +79,11 @@ class EnterAccountUseCaseTest {
         val repositoryReturns = Result.success(enterModel.toUser())
         val env = makeEnviroment(repositoryReturns)
 
-        val enterResult = env.sut.enter(enterModel)
+        val results: MutableList<Result<User>> = mutableListOf()
+        env.sut.enter(enterModel) { result -> results.add(result) }
 
-        assertTrue(enterResult.isSuccess)
+        assertEquals(results.count(), 1)
+        assertTrue(results.firstOrNull()?.isSuccess == true)
     }
 
     @Test
@@ -87,9 +93,11 @@ class EnterAccountUseCaseTest {
         val repositoryReturns = Result.success(userModel)
         val env = makeEnviroment(repositoryReturns)
 
-        val enterResult = env.sut.enter(enterModel)
+        val results: MutableList<Result<User>> = mutableListOf()
+        env.sut.enter(enterModel) { result -> results.add(result) }
 
-        assertEquals(enterResult.getOrNull(), userModel)
+        assertEquals(results.count(), 1)
+        assertEquals(results.firstOrNull()?.getOrNull(), userModel)
     }
 
     private data class Environment(val sut: EnterAccountUseCase, val repository: EnterRepository)
@@ -102,9 +110,13 @@ class EnterAccountUseCaseTest {
 
     private fun makeSUT(repository: EnterRepository) = EnterAccountUseCase(repository)
 
-    private fun makeRepositoryMock(shouldReturn: Result<User>?): EnterRepository {
+    private fun makeRepositoryMock(shouldReturn: Result<User>? = null): EnterRepository {
+        val enterCallback = argumentCaptor<(Result<User>) -> Unit>()
+
         shouldReturn?.let {
-            return mock { on { enter(any()) } doReturn (shouldReturn) }
+            return mock() {
+                on { enter(any(), enterCallback.capture()) } doAnswer { enterCallback.firstValue(shouldReturn) }
+            }
         }
 
         return mock()

@@ -1,7 +1,7 @@
 package com.programou.shuffled.enter
 
 interface EnterClientProvider {
-    fun enter(request: EnterRequest): UserResponse
+    fun enter(request: EnterRequest, callback: (UserResponse) -> Unit)
 }
 
 data class UserResponse(
@@ -36,29 +36,32 @@ enum class StatusCode(val code: Int) {
 }
 
 class RemoteEnterRepository(private val client: EnterClientProvider): EnterRepository {
-    override fun enter(model: Enter): Result<User> {
+    override fun enter(model: Enter, callback: (Result<User>) -> Unit) {
         val body = mapOf(
             Pair(Constant.EMAIL_KEY, model.email),
             Pair(Constant.PASSWORD_KEY, model.password),
         )
         val request = EnterRequest(Constant.POST_METHOD, body)
-        val response = client.enter(request)
 
-        return when (response.statusCode) {
-            StatusCode.BAD_REQUEST_ERROR.code -> makeFailure(HTTPError.BadRequestError())
-            StatusCode.UNAUTHORIZED_ERROR.code -> makeFailure(HTTPError.UnauthorizedError())
-            StatusCode.INTERNAL_SERVER_ERROR.code -> makeFailure(HTTPError.InternalServerError())
-            StatusCode.OK.code -> {
-                response.data?.let {
-                    val user = User(it. name, it.email)
-                    return Result.success(user)
+        client.enter(request) { response ->
+            val result = when (response.statusCode) {
+                StatusCode.BAD_REQUEST_ERROR.code -> makeFailure(HTTPError.BadRequestError())
+                StatusCode.UNAUTHORIZED_ERROR.code -> makeFailure(HTTPError.UnauthorizedError())
+                StatusCode.INTERNAL_SERVER_ERROR.code -> makeFailure(HTTPError.InternalServerError())
+                StatusCode.OK.code -> {
+                    if (response.data != null) {
+                        Result.success(User(response.data.name, response.data.email))
+                    } else {
+                        makeFailure(HTTPError.NotFoundError())
+                    }
                 }
 
-                return makeFailure(HTTPError.NotFoundError())
-            }
-            StatusCode.NOT_FOUND_ERROR.code -> makeFailure(HTTPError.NotFoundError())
+                StatusCode.NOT_FOUND_ERROR.code -> makeFailure(HTTPError.NotFoundError())
 
-            else -> makeFailure(HTTPError.UnexpectedError())
+                else -> makeFailure(HTTPError.UnexpectedError())
+            }
+
+            callback(result)
         }
     }
 

@@ -1,48 +1,30 @@
 package com.programou.shuffled.enter
 
-import android.app.Activity
-import android.content.ContentValues.TAG
-import android.content.Intent
-import android.content.IntentSender
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.android.material.snackbar.Snackbar
+import com.programou.shuffled.FirebaseAuthClientProviderAdapter
+import com.programou.shuffled.GoogleAuthenticatorProvider
 import com.programou.shuffled.R
-import com.programou.shuffled.SplashScreen
 import com.programou.shuffled.databinding.FragmentEnterBinding
 import com.programou.shuffled.utils.hideKeyboard
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 
 class EnterFragment : Fragment(R.layout.fragment_enter) {
 
     private lateinit var binding: FragmentEnterBinding
-    private lateinit var signInRequest: GoogleSignInClient
-    private val auth: FirebaseAuth by lazy {
-        Firebase.auth
+
+    private val firebaseProvider = FirebaseAuthClientProviderAdapter.shared
+    private var googleAuthentication: GoogleAuthenticatorProvider? = null
+    private val viewModel: EnterViewModel by lazy {
+        val repository = RemoteEnterRepository(firebaseProvider)
+        val useCase = EnterAccountUseCase(repository)
+        EnterViewModel(useCase)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,38 +32,38 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
 
         binding = FragmentEnterBinding.bind(view)
 
+        googleAuthentication = GoogleAuthenticatorProvider(this)
+
         configureActions()
         configureFieldsObserver()
         disableEnterButton()
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
+        viewModel.errorMessage.observe(requireActivity()) { errorViewData ->
+            Snackbar.make(binding.root, errorViewData.message, Snackbar.LENGTH_LONG).show()
+            binding.progressEnterButtonLoader.isVisible = false
+            binding.buttonEnter.text = "Entrar"
+        }
 
-        signInRequest = GoogleSignIn.getClient(requireContext(), gso)
+        viewModel.user.observe(requireActivity()) { user ->
+            //TODO: Navigate to Home
+        }
+
+        firebaseProvider.logout()
+        googleAuthentication?.logout()
     }
 
     private fun configureActions() {
         with(binding) {
             buttonEnter.setOnClickListener { onEnterActionHandler(it) }
-            cardGoogle.setOnClickListener {
-                lifecycleScope.launch {
-                    onGoogleActionHandler()
-                }
-            }
+            cardGoogle.setOnClickListener { onGoogleActionHandler() }
             buttonDontHaveAccount.setOnClickListener { onCreateAccountActionHandler() }
             binding.root.setOnClickListener { hideKeyboard() }
         }
     }
 
     private fun configureFieldsObserver() {
-        binding.editEmail.addTextChangedListener(onTextChanged = { _, _, _, _ ->
-            onButtonStateChange()
-        })
-        binding.editPassword.addTextChangedListener(onTextChanged = { _, _, _, _ ->
-            onButtonStateChange()
-        })
+        binding.editEmail.addTextChangedListener(onTextChanged = { _, _, _, _ -> onButtonStateChange() })
+        binding.editPassword.addTextChangedListener(onTextChanged = { _, _, _, _ -> onButtonStateChange() })
     }
 
     private fun onButtonStateChange() {
@@ -105,51 +87,46 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
         binding.buttonEnter.isClickable = false
     }
 
-
-    private fun configureStateButton() {
-        binding.buttonEnter.isClickable = false
-        binding.buttonEnter.setBackgroundColor(requireContext().getColor(R.color.turquoise_800))
-    }
-
     private fun onEnterActionHandler(view: View) {
         hideKeyboard()
+        binding.progressEnterButtonLoader.isVisible = true
+        binding.buttonEnter.text = String()
+
+        val email = binding.editEmail.text.toString()
+        val password = binding.editPassword.toString()
+        val userViewData = UserViewData(email, password)
+        viewModel.enter(userViewData)
     }
 
     private fun onGoogleActionHandler() {
-        val intent = signInRequest.signInIntent
-        launcher.launch(intent)
-    }
+        binding.progressGoogleButtonLoader.isVisible = true
+        binding.linearGoogleButtonContainer.visibility = View.GONE
 
-    private var launcher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                handleResults(task)
+        googleAuthentication?.presentAuthentication { credentialResult ->
+            credentialResult.exceptionOrNull()?.let { e ->
+                val message = e.message ?: "Error"
+                val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+                return@presentAuthentication snackbar.show()
             }
-        }
 
-    private fun handleResults(task: Task<GoogleSignInAccount>) {
-        if (task.isSuccessful) {
-            val account = task.result
-            if (account != null) {
-                val credentials = GoogleAuthProvider.getCredential(account.idToken, null)
-                auth.signInWithCredential(credentials)
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            val intent = Intent(requireContext(), SplashScreen::class.java)
-                            startActivity(intent)
-                            requireActivity().finish()
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                task.exception.toString(),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+            credentialResult.getOrNull()?.let { credential ->
+                firebaseProvider.auth(credential) { authenticationResult ->
+                    authenticationResult.exceptionOrNull()?.let { e ->
+                        val message = e.message ?: "Error"
+                        Log.i("DEBUG ERROR:", e.message!!)
+                        val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+                        return@auth snackbar.show()
                     }
+
+                    authenticationResult.getOrNull()?.let { user ->
+                        val toast = Toast.makeText(requireContext(), "Autenticado", Toast.LENGTH_LONG)
+                        return@auth toast.show()
+                    }
+                }
             }
-        } else {
-            Toast.makeText(requireContext(), task.exception.toString(), Toast.LENGTH_SHORT).show()
+
+            binding.progressGoogleButtonLoader.isVisible = false
+            binding.linearGoogleButtonContainer.visibility = View.VISIBLE
         }
     }
 

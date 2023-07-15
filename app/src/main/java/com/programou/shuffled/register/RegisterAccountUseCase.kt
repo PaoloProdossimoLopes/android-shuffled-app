@@ -1,16 +1,18 @@
-package com.programou.shuffled.enter
+package com.programou.shuffled.register
 
-class EnterAccountUseCase(private val repository: EnterRepository): EnterAccount {
-    override fun enter(model: Enter, callback: (Result<User>) -> Unit) {
-        repository.enter(model) { result ->
+import com.programou.shuffled.enter.User
+
+class RegisterAccountUseCase(private val repository: RegisterRepository): RegisterAccount {
+    override fun register(model: Register, callback: (Result<User>) -> Unit) {
+        repository.register(model) { result ->
 
             result.exceptionOrNull()?.let { _ ->
                 val error = Error(CONSTANTS.INVALID_CREDENTIALS_MESSAGE)
-                return@enter callback(Result.failure(error))
+                return@register callback(Result.failure(error))
             }
 
             result.getOrNull()?.let { user ->
-                return@enter callback(Result.success(user))
+                return@register callback(Result.success(user))
             }
 
             val error = Error(CONSTANTS.UNEXPECETED_ERROR_MESSAGE)
