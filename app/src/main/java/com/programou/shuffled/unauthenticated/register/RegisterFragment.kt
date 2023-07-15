@@ -40,8 +40,8 @@ class RegisterFragment: Fragment(R.layout.fragment_register) {
             binding.editPassword.error = errorViewData.message
         }
 
-        viewModel.user.observe(requireActivity()) { user ->
-            //TODO: Navigate to Home
+        viewModel.user.observe(requireActivity()) {
+            popFragment()
         }
     }
 
@@ -77,7 +77,7 @@ class RegisterFragment: Fragment(R.layout.fragment_register) {
         binding.buttonRegister.text = String()
 
         val email = binding.editEmail.text.toString()
-        val password = binding.editPassword.toString()
+        val password = binding.editPassword.text.toString()
         val userViewData = UserViewData(email, password)
         viewModel.register(userViewData)
     }

@@ -26,6 +26,8 @@ class FirebaseAuthClientProviderAdapter : EnterClientProvider,
         auth.signOut()
     }
 
+    fun isAuthenticated() = auth.currentUser != null
+
     override fun enter(request: EnterRequest, callback: (UserResponse) -> Unit) {
         val email = request.body["email"] ?: String()
         val password = request.body["password"] ?: String()

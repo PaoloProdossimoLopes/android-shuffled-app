@@ -1,9 +1,9 @@
 package com.programou.shuffled.unauthenticated.enter
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -12,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.programou.shuffled.FirebaseAuthClientProviderAdapter
 import com.programou.shuffled.GoogleAuthenticatorProvider
 import com.programou.shuffled.R
+import com.programou.shuffled.authenticated.AuthenticatedActivity
 import com.programou.shuffled.databinding.FragmentEnterBinding
 import com.programou.shuffled.utils.hideKeyboard
 
@@ -45,7 +46,9 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
         }
 
         viewModel.user.observe(requireActivity()) { user ->
-            //TODO: Navigate to Home
+            val intent = Intent(requireContext(), AuthenticatedActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
         }
 
         firebaseProvider.logout()
@@ -93,7 +96,7 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
         binding.buttonEnter.text = String()
 
         val email = binding.editEmail.text.toString()
-        val password = binding.editPassword.toString()
+        val password = binding.editPassword.text.toString()
         val userViewData = UserViewData(email, password)
         viewModel.enter(userViewData)
     }
@@ -118,9 +121,10 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
                         return@auth snackbar.show()
                     }
 
-                    authenticationResult.getOrNull()?.let { user ->
-                        val toast = Toast.makeText(requireContext(), "Autenticado", Toast.LENGTH_LONG)
-                        return@auth toast.show()
+                    authenticationResult.getOrNull()?.let {
+                        val intent = Intent(requireContext(), AuthenticatedActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finish()
                     }
                 }
             }

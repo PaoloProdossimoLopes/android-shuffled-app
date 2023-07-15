@@ -6,28 +6,45 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import com.programou.shuffled.authenticated.AuthenticatedActivity
 import com.programou.shuffled.unauthenticated.UnauthenticatedActivity
 
 class SplashScreen : AppCompatActivity() {
+
+    private val authProvider: FirebaseAuthClientProviderAdapter by lazy {
+        FirebaseAuthClientProviderAdapter.shared
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
 
-        // This is used to hide the status bar and make
-        // the splash screen as a full screen activity.
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
 
-        // we used the postDelayed(Runnable, time) method
-        // to send a message with a delayed time.
-        //Normal Handler is deprecated , so we have to change the code little bit
         val threeSeconds = 3000L
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, UnauthenticatedActivity::class.java)
-            startActivity(intent)
-            finish()
-        }, threeSeconds) // 3000 is the delayed time in milliseconds.
+            navigateBasedOnAuthentication()
+        }, threeSeconds)
+    }
+
+    private fun navigateBasedOnAuthentication() {
+        if (authProvider.isAuthenticated()) return navigateToAuthenticated()
+
+        navigateToUnauthenticated()
+    }
+
+    private fun navigateToAuthenticated() {
+        val intent = Intent(this, AuthenticatedActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToUnauthenticated() {
+        val intent = Intent(this, UnauthenticatedActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
