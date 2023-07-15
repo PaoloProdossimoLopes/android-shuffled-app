@@ -1,4 +1,4 @@
-package com.programou.shuffled.enter
+package com.programou.shuffled.unauthenticated.enter
 
 interface EnterClientProvider {
     fun enter(request: EnterRequest, callback: (UserResponse) -> Unit)
@@ -36,7 +36,7 @@ enum class StatusCode(val code: Int) {
 }
 
 class RemoteEnterRepository(private val client: EnterClientProvider): EnterRepository {
-    override fun enter(model: Enter, callback: (Result<User>) -> Unit) {
+    override fun enter(model: com.programou.shuffled.unauthenticated.enter.Enter, callback: (Result<User>) -> Unit) {
         val body = mapOf(
             Pair(Constant.EMAIL_KEY, model.email),
             Pair(Constant.PASSWORD_KEY, model.password),

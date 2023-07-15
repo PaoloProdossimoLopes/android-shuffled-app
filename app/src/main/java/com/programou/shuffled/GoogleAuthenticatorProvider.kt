@@ -8,13 +8,12 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.programou.shuffled.enter.Credential
 
 
 class GoogleAuthenticatorProvider(private val fragment: Fragment) {
 
     private val launcher = configureLauncher(fragment)
-    private var onCredentialsResult: ((Result<Credential>) -> Unit)? = null
+    private var onCredentialsResult: ((Result<com.programou.shuffled.unauthenticated.enter.Credential>) -> Unit)? = null
     private var signInRequest: GoogleSignInClient = run {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(fragment.requireActivity().getString(R.string.default_web_client_id))
@@ -24,7 +23,7 @@ class GoogleAuthenticatorProvider(private val fragment: Fragment) {
         GoogleSignIn.getClient(fragment.requireActivity(), gso)
     }
 
-    fun presentAuthentication(callback: (Result<Credential>) -> Unit) {
+    fun presentAuthentication(callback: (Result<com.programou.shuffled.unauthenticated.enter.Credential>) -> Unit) {
         onCredentialsResult = callback
 
         val intent = signInRequest.signInIntent
@@ -43,7 +42,7 @@ class GoogleAuthenticatorProvider(private val fragment: Fragment) {
                     val account = task.result
                     val id = account.idToken
                     if (id != null) {
-                        val credential = Credential(id)
+                        val credential = com.programou.shuffled.unauthenticated.enter.Credential(id)
                         onCredentialsResult?.let { it(Result.success(credential)) }
                     } else {
                         onCredentialsResult?.let { it(Result.failure(Error())) }

@@ -1,4 +1,4 @@
-package com.programou.shuffled.enter
+package com.programou.shuffled.unauthenticated.enter
 
 data class UserViewData(
     val email: String,

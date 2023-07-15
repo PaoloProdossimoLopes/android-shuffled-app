@@ -1,5 +1,7 @@
 package com.programou.shuffled.enter
 
+import com.programou.shuffled.unauthenticated.enter.EnterRepository
+import com.programou.shuffled.unauthenticated.enter.User
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -100,7 +102,7 @@ class EnterAccountUseCaseTest {
         assertEquals(results.firstOrNull()?.getOrNull(), userModel)
     }
 
-    private data class Environment(val sut: EnterAccountUseCase, val repository: EnterRepository)
+    private data class Environment(val sut: com.programou.shuffled.unauthenticated.enter.EnterAccountUseCase, val repository: EnterRepository)
 
     private fun makeEnviroment(repositoryShouldReturns: Result<User>): Environment {
         val repository = makeRepositoryMock(repositoryShouldReturns)
@@ -108,7 +110,8 @@ class EnterAccountUseCaseTest {
         return Environment(sut, repository)
     }
 
-    private fun makeSUT(repository: EnterRepository) = EnterAccountUseCase(repository)
+    private fun makeSUT(repository: EnterRepository) =
+        com.programou.shuffled.unauthenticated.enter.EnterAccountUseCase(repository)
 
     private fun makeRepositoryMock(shouldReturn: Result<User>? = null): EnterRepository {
         val enterCallback = argumentCaptor<(Result<User>) -> Unit>()
@@ -125,9 +128,9 @@ class EnterAccountUseCaseTest {
     private fun makeEnterModel(
         email: String = "any valid email",
         password: String = "any valid password"
-    ) = Enter(email, password)
+    ) = com.programou.shuffled.unauthenticated.enter.Enter(email, password)
 
-    private fun Enter.toUser() = User(
+    private fun com.programou.shuffled.unauthenticated.enter.Enter.toUser() = User(
         "any name delievered by repository",
         "any email delievered by repository"
     )

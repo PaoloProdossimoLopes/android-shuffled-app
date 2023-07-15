@@ -1,19 +1,17 @@
 package com.programou.shuffled
 
-import android.util.Log
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.programou.shuffled.enter.Credential
-import com.programou.shuffled.enter.CredentialProvider
-import com.programou.shuffled.enter.EnterClientProvider
-import com.programou.shuffled.enter.EnterRequest
-import com.programou.shuffled.enter.User
-import com.programou.shuffled.enter.UserResponse
-import com.programou.shuffled.register.RegisterClientProvider
-import com.programou.shuffled.register.RegisterRequest
+import com.programou.shuffled.unauthenticated.enter.EnterClientProvider
+import com.programou.shuffled.unauthenticated.enter.EnterRequest
+import com.programou.shuffled.unauthenticated.enter.User
+import com.programou.shuffled.unauthenticated.enter.UserResponse
+import com.programou.shuffled.unauthenticated.register.RegisterClientProvider
+import com.programou.shuffled.unauthenticated.register.RegisterRequest
 
-class FirebaseAuthClientProviderAdapter : EnterClientProvider, CredentialProvider,
+class FirebaseAuthClientProviderAdapter : EnterClientProvider,
+    com.programou.shuffled.unauthenticated.enter.CredentialProvider,
     RegisterClientProvider {
 
     companion object {
@@ -44,7 +42,7 @@ class FirebaseAuthClientProviderAdapter : EnterClientProvider, CredentialProvide
             }
     }
 
-    fun auth(credential: Credential, callback: (Result<User>) -> Unit) {
+    fun auth(credential: com.programou.shuffled.unauthenticated.enter.Credential, callback: (Result<User>) -> Unit) {
         val credentials = GoogleAuthProvider.getCredential(credential.id, null)
         auth.signInWithCredential(credentials)
             .addOnSuccessListener { authResult ->

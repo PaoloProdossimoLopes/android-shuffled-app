@@ -1,4 +1,4 @@
-package com.programou.shuffled.enter
+package com.programou.shuffled.unauthenticated.enter
 
 import android.os.Bundle
 import android.util.Log

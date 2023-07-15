@@ -1,4 +1,4 @@
-package com.programou.shuffled.enter
+package com.programou.shuffled.unauthenticated.enter
 
 data class Credential(val id: String)
 interface CredentialProvider {

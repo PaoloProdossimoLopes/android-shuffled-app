@@ -1,4 +1,4 @@
-package com.programou.shuffled.register
+package com.programou.shuffled.unauthenticated.register
 
 import android.os.Bundle
 import android.view.View
@@ -6,11 +6,10 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.programou.shuffled.FirebaseAuthClientProviderAdapter
 import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentRegisterBinding
-import com.programou.shuffled.enter.UserViewData
+import com.programou.shuffled.unauthenticated.enter.UserViewData
 import com.programou.shuffled.utils.hideKeyboard
 
 class RegisterFragment: Fragment(R.layout.fragment_register) {

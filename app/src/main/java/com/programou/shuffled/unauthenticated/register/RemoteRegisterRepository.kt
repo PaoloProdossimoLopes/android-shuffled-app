@@ -1,8 +1,8 @@
-package com.programou.shuffled.register
+package com.programou.shuffled.unauthenticated.register
 
-import com.programou.shuffled.enter.HTTPError
-import com.programou.shuffled.enter.StatusCode
-import com.programou.shuffled.enter.User
+import com.programou.shuffled.unauthenticated.enter.HTTPError
+import com.programou.shuffled.unauthenticated.enter.StatusCode
+import com.programou.shuffled.unauthenticated.enter.User
 
 
 class RemoteRegisterRepository(private val client: RegisterClientProvider): RegisterRepository {

@@ -1,5 +1,12 @@
 package com.programou.shuffled.enter
 
+import com.programou.shuffled.unauthenticated.enter.EnterClientProvider
+import com.programou.shuffled.unauthenticated.enter.EnterRequest
+import com.programou.shuffled.unauthenticated.enter.HTTPError
+import com.programou.shuffled.unauthenticated.enter.RemoteEnterRepository
+import com.programou.shuffled.unauthenticated.enter.StatusCode
+import com.programou.shuffled.unauthenticated.enter.User
+import com.programou.shuffled.unauthenticated.enter.UserResponse
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -14,7 +21,7 @@ class RemoteEnterRepositoryTest {
     fun `test on enter with calls client once after requests`() {
         val email = makeEmail()
         val password = makePassword()
-        val enter = Enter(email, password)
+        val enter = com.programou.shuffled.unauthenticated.enter.Enter(email, password)
         val client = stubClientToReturns(StatusCode.OK.code)
         val sut = makeSUT(client)
 
@@ -28,7 +35,7 @@ class RemoteEnterRepositoryTest {
     fun `test on enter with OK status code (200) and no content in data returns NotFoundError failure`() {
         val email = makeEmail()
         val password = makePassword()
-        val enter = Enter(email, password)
+        val enter = com.programou.shuffled.unauthenticated.enter.Enter(email, password)
         val client = stubClientToReturns(StatusCode.OK.code)
         val sut = makeSUT(client)
 
@@ -41,7 +48,7 @@ class RemoteEnterRepositoryTest {
 
     @Test
     fun `test on enter with OK status code (200) and content in data returns User model successfully`() {
-        val enter = Enter(makeEmail(), makePassword())
+        val enter = com.programou.shuffled.unauthenticated.enter.Enter(makeEmail(), makePassword())
         val userResponse = UserResponse.User("name", "email")
         val userModel = User(userResponse.name, userResponse.email)
         val client = stubClientToReturns(StatusCode.OK.code, userResponse)
@@ -57,7 +64,7 @@ class RemoteEnterRepositoryTest {
 
     @Test
     fun `test on enter with not found status code (404) returns NotFoundError failure`() {
-        val enter = Enter(makeEmail(), makePassword())
+        val enter = com.programou.shuffled.unauthenticated.enter.Enter(makeEmail(), makePassword())
         val client = stubClientToReturns(StatusCode.NOT_FOUND_ERROR.code)
         val sut = makeSUT(client)
 
@@ -70,7 +77,7 @@ class RemoteEnterRepositoryTest {
 
     @Test
     fun `test on enter with unauthorized status code (401) returns UnauthorizedError failure`() {
-        val enter = Enter(makeEmail(), makePassword())
+        val enter = com.programou.shuffled.unauthenticated.enter.Enter(makeEmail(), makePassword())
         val client = stubClientToReturns(StatusCode.UNAUTHORIZED_ERROR.code)
         val sut = makeSUT(client)
 
@@ -83,7 +90,7 @@ class RemoteEnterRepositoryTest {
 
     @Test
     fun `test on enter with bad request status code (400) returns BadRequestError failure`() {
-        val enter = Enter(makeEmail(), makePassword())
+        val enter = com.programou.shuffled.unauthenticated.enter.Enter(makeEmail(), makePassword())
         val client = stubClientToReturns(StatusCode.BAD_REQUEST_ERROR.code)
         val sut = makeSUT(client)
 
@@ -96,7 +103,7 @@ class RemoteEnterRepositoryTest {
 
     @Test
     fun `test on enter with internal server error status code (500) returns InternalServerError failure`() {
-        val enter = Enter(makeEmail(), makePassword())
+        val enter = com.programou.shuffled.unauthenticated.enter.Enter(makeEmail(), makePassword())
         val client = stubClientToReturns(StatusCode.INTERNAL_SERVER_ERROR.code)
         val sut = makeSUT(client)
 
@@ -109,7 +116,7 @@ class RemoteEnterRepositoryTest {
 
     @Test
     fun `test on enter with unexpeceted error status code (500) returns UnexpectedError failure`() {
-        val enter = Enter(makeEmail(), makePassword())
+        val enter = com.programou.shuffled.unauthenticated.enter.Enter(makeEmail(), makePassword())
         val client = stubClientToReturns(UNEXPECTED_ERROR_STATUS_CODE)
         val sut = makeSUT(client)
 

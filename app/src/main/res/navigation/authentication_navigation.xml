@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/enterFragment"
-        android:name="com.programou.shuffled.enter.EnterFragment"
+        android:name="com.programou.shuffled.unauthenticated.enter.EnterFragment"
         android:label="fragment_enter"
         tools:layout="@layout/fragment_enter" >
         <action
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.programou.shuffled.register.RegisterFragment"
+        android:name="com.programou.shuffled.unauthenticated.register.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" />
 </navigation>

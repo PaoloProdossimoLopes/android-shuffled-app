@@ -1,6 +1,6 @@
-package com.programou.shuffled.register
+package com.programou.shuffled.unauthenticated.register
 
-import com.programou.shuffled.enter.User
+import com.programou.shuffled.unauthenticated.enter.User
 
 class RegisterAccountUseCase(private val repository: RegisterRepository): RegisterAccount {
     override fun register(model: Register, callback: (Result<User>) -> Unit) {

@@ -1,12 +1,9 @@
-package com.programou.shuffled.register
+package com.programou.shuffled.unauthenticated.enter
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.programou.shuffled.enter.ErrorViewData
-import com.programou.shuffled.enter.User
-import com.programou.shuffled.enter.UserViewData
 
-class RegisterViewModel(private val useCase: RegisterAccount) {
+class EnterViewModel(private val useCase: com.programou.shuffled.unauthenticated.enter.EnterAccount) {
 
     private val errorMessageMutableData = MutableLiveData<ErrorViewData>()
     val errorMessage: LiveData<ErrorViewData> = errorMessageMutableData
@@ -14,9 +11,10 @@ class RegisterViewModel(private val useCase: RegisterAccount) {
     private val userMutableData = MutableLiveData<User>()
     val user: LiveData<User> = userMutableData
 
-    fun register(viewData: UserViewData) {
-        val register = Register(viewData.email, viewData.password)
-        useCase.register(register) { result ->
+    fun enter(viewData: UserViewData) {
+        val enter =
+            com.programou.shuffled.unauthenticated.enter.Enter(viewData.email, viewData.password)
+        useCase.enter(enter) { result ->
 
             result.exceptionOrNull()?.let { receivedError ->
                 val errorViewData = ErrorViewData(receivedError.message!!)

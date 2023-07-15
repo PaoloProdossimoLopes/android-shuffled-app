@@ -2,6 +2,10 @@ package com.programou.shuffled.enter
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import com.programou.shuffled.unauthenticated.enter.EnterViewModel
+import com.programou.shuffled.unauthenticated.enter.ErrorViewData
+import com.programou.shuffled.unauthenticated.enter.User
+import com.programou.shuffled.unauthenticated.enter.UserViewData
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -71,12 +75,17 @@ class EnterViewModelTest {
 
     private fun makeViewData() = UserViewData("any email", "any password")
 
-    private fun makeSUT(useCase: EnterAccount) = EnterViewModel(useCase)
+    private fun makeSUT(useCase: com.programou.shuffled.unauthenticated.enter.EnterAccount) = EnterViewModel(useCase)
 
-    private fun stubUseCaseOnEnterWith(result: Result<User>, viewData: UserViewData): EnterAccount {
+    private fun stubUseCaseOnEnterWith(result: Result<User>, viewData: UserViewData): com.programou.shuffled.unauthenticated.enter.EnterAccount {
         val callbackCapture = argumentCaptor<(Result<User>) -> Unit>()
         return mock {
-            on { enter(eq(Enter(viewData.email, viewData.password)), callbackCapture.capture()) } doAnswer { callbackCapture.firstValue(result) }
+            on { enter(eq(
+                com.programou.shuffled.unauthenticated.enter.Enter(
+                    viewData.email,
+                    viewData.password
+                )
+            ), callbackCapture.capture()) } doAnswer { callbackCapture.firstValue(result) }
         }
     }
 

@@ -1,4 +1,4 @@
-package com.programou.shuffled.register
+package com.programou.shuffled.unauthenticated.register
 
 data class Register(
     val email: String,

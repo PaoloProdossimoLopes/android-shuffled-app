@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import com.programou.shuffled.unauthenticated.UnauthenticatedActivity
 
 class SplashScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +25,7 @@ class SplashScreen : AppCompatActivity() {
         //Normal Handler is deprecated , so we have to change the code little bit
         val threeSeconds = 3000L
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, UnauthenticatedActivity::class.java)
             startActivity(intent)
             finish()
         }, threeSeconds) // 3000 is the delayed time in milliseconds.
