@@ -1,7 +1,5 @@
-package com.programou.shuffled.enter
+package com.programou.shuffled.unauthenticated.enter
 
-import com.programou.shuffled.unauthenticated.enter.EnterRepository
-import com.programou.shuffled.unauthenticated.enter.User
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test

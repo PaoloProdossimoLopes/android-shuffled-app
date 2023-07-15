@@ -1,10 +1,7 @@
-package com.programou.shuffled.register
+package com.programou.shuffled.unauthenticated.register
 
 
 import com.programou.shuffled.unauthenticated.enter.User
-import com.programou.shuffled.unauthenticated.register.Register
-import com.programou.shuffled.unauthenticated.register.RegisterAccountUseCase
-import com.programou.shuffled.unauthenticated.register.RegisterRepository
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.kotlin.any

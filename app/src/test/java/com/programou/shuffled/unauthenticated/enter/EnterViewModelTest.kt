@@ -1,11 +1,7 @@
-package com.programou.shuffled.enter
+package com.programou.shuffled.unauthenticated.enter
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import com.programou.shuffled.unauthenticated.enter.EnterViewModel
-import com.programou.shuffled.unauthenticated.enter.ErrorViewData
-import com.programou.shuffled.unauthenticated.enter.User
-import com.programou.shuffled.unauthenticated.enter.UserViewData
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any

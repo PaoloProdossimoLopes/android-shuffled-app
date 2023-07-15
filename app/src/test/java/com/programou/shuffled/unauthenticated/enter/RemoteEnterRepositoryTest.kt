@@ -1,12 +1,5 @@
-package com.programou.shuffled.enter
+package com.programou.shuffled.unauthenticated.enter
 
-import com.programou.shuffled.unauthenticated.enter.EnterClientProvider
-import com.programou.shuffled.unauthenticated.enter.EnterRequest
-import com.programou.shuffled.unauthenticated.enter.HTTPError
-import com.programou.shuffled.unauthenticated.enter.RemoteEnterRepository
-import com.programou.shuffled.unauthenticated.enter.StatusCode
-import com.programou.shuffled.unauthenticated.enter.User
-import com.programou.shuffled.unauthenticated.enter.UserResponse
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue

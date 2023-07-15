@@ -1,9 +1,9 @@
-package com.programou.shuffled.register
+package com.programou.shuffled.unauthenticated.register
 
-import com.programou.shuffled.enter.HTTPError
-import com.programou.shuffled.enter.StatusCode
-import com.programou.shuffled.enter.User
-import com.programou.shuffled.enter.UserResponse
+import com.programou.shuffled.unauthenticated.enter.HTTPError
+import com.programou.shuffled.unauthenticated.enter.StatusCode
+import com.programou.shuffled.unauthenticated.enter.User
+import com.programou.shuffled.unauthenticated.enter.UserResponse
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.kotlin.any

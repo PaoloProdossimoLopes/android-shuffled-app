@@ -1,10 +1,10 @@
-package com.programou.shuffled.register
+package com.programou.shuffled.unauthenticated.register
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import com.programou.shuffled.enter.ErrorViewData
-import com.programou.shuffled.enter.User
-import com.programou.shuffled.enter.UserViewData
+import com.programou.shuffled.unauthenticated.enter.ErrorViewData
+import com.programou.shuffled.unauthenticated.enter.User
+import com.programou.shuffled.unauthenticated.enter.UserViewData
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
