@@ -58,6 +58,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
         binding.recyclerCardsCarrousel.adapter = cardPreviewAdapter
         binding.recyclerCardsCarrousel.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerCardsCarrousel.setNestedScrollingEnabled(false);
 
         binding.buttonStart.setOnClickListener {
             val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment()
