@@ -1,24 +1,24 @@
-package com.programou.shuffled
+package com.programou.shuffled.authenticated.flashcard
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.authenticated.ListAdapter
-import com.programou.shuffled.authenticated.deck.PreviewViewData
-import com.programou.shuffled.authenticated.deckList.Bind
 import com.programou.shuffled.databinding.FragmentFlashCardBinding
-import com.programou.shuffled.databinding.ViewDeckCardPreviewItemBinding
 import com.programou.shuffled.databinding.ViewFlashCardItemBinding
 
 class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
@@ -99,8 +99,10 @@ class FlashCardItemViewHolder private constructor(private val binding: ViewFlash
 
                     if (binding.tvCardContent.text == "Pergunta") {
                         binding.tvCardContent.text = "Resposta"
+                        binding.tvCardContent.typeface = Typeface.DEFAULT
                     } else {
                         binding.tvCardContent.text = "Pergunta"
+                        binding.tvCardContent.typeface = Typeface.DEFAULT_BOLD
                     }
 
                     oa2.start()
