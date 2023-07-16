@@ -59,6 +59,11 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         binding.recyclerCardsCarrousel.adapter = cardPreviewAdapter
         binding.recyclerCardsCarrousel.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
+        binding.buttonStart.setOnClickListener {
+            val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment()
+            findNavController().navigate(action)
+        }
+
         cardPreviewAdapter.update(listOf(
             ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, PreviewViewData()),
             ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, PreviewViewData()),
