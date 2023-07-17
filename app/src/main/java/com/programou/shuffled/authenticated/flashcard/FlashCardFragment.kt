@@ -41,19 +41,39 @@ class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
         }
 
         binding.mcvGood.setOnClickListener {
-            binding.recyclerFlahscards.post(object: Runnable {
-                override fun run() {
-                    binding.recyclerFlahscards.smoothScrollToPosition(flashcardListAdapter.itemCount - 1)
-                }
-            })
+            binding.imageGood.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_happy_emoji_active))
+            binding.imageBad.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_bad_emoji_deactive))
+            binding.imageSkip.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_normal_emoji_deactive))
+
+//            binding.recyclerFlahscards.post(object: Runnable {
+//                override fun run() {
+//                    binding.recyclerFlahscards.smoothScrollToPosition(flashcardListAdapter.itemCount - 1)
+//                }
+//            })
+        }
+
+        binding.mcvSkip.setOnClickListener {
+            binding.imageGood.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_happy_emoji_deactive))
+            binding.imageBad.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_bad_emoji_deactive))
+            binding.imageSkip.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_normal_emoji_active))
+
+//            binding.recyclerFlahscards.post(object: Runnable {
+//                override fun run() {
+//                    binding.recyclerFlahscards.smoothScrollToPosition(flashcardListAdapter.itemCount - 1)
+//                }
+//            })
         }
 
         binding.mcvBad.setOnClickListener {
-            binding.recyclerFlahscards.post(object: Runnable {
-                override fun run() {
-                    binding.recyclerFlahscards.smoothScrollToPosition(flashcardListAdapter.itemCount - 1)
-                }
-            })
+            binding.imageGood.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_happy_emoji_deactive))
+            binding.imageBad.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_bad_emoji_active))
+            binding.imageSkip.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_normal_emoji_deactive))
+
+//            binding.recyclerFlahscards.post(object: Runnable {
+//                override fun run() {
+//                    binding.recyclerFlahscards.smoothScrollToPosition(flashcardListAdapter.itemCount - 1)
+//                }
+//            })
         }
 
         binding.imageBackArrow.setOnClickListener {

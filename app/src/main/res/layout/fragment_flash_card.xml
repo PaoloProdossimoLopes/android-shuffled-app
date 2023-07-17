@@ -105,12 +105,12 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content">
         <ImageView
+            android:id="@+id/image_bad"
             android:layout_gravity="center"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:padding="10dp"
-            app:tint="@color/gray_300"
-            android:src="@drawable/ic_x" />
+            android:src="@drawable/ic_bad_emoji_deactive" />
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -124,12 +124,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageView
+            android:id="@+id/image_skip"
             android:layout_gravity="center"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:padding="10dp"
-            app:tint="@color/gray_300"
-            android:src="@drawable/ic_loop" />
+            android:src="@drawable/ic_normal_emoji_deactive" />
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -143,12 +143,13 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content">
         <ImageView
+            android:id="@+id/image_good"
             android:layout_gravity="center"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:padding="10dp"
-            app:tint="@color/gray_300"
-            android:src="@drawable/ic_play" />
+            android:src="@drawable/ic_happy_emoji_deactive"
+            tools:src="@drawable/ic_happy_emoji_active"/>
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
