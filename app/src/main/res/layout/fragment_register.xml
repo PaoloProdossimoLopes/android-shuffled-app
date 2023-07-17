@@ -13,7 +13,8 @@
         android:layout_width="32dp"
         android:layout_height="0dp"
         android:layout_weight="0.2"
-        android:src="@drawable/ic_arrow_back"/>
+        android:src="@drawable/ic_arrow_back"
+        app:tint="@color/black_800"/>
 
     <View
         android:layout_width="match_parent"
