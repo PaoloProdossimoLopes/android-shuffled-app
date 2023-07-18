@@ -4,13 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.databinding.ViewDeckListEmptyStateItemBinding
+import com.programou.shuffled.databinding.ViewDeckListErrorStateItemBinding
 
 
-class DeckListEmptyStateItemViewHolder private constructor(private val binding: ViewDeckListEmptyStateItemBinding, private val onClick: Bind<DeckListItemViewData>?): ItemViewHolder<DeckListItemViewData>(binding.root) {
+class DeckListEmptyStateItemViewHolder private constructor(private val binding: ViewDeckListEmptyStateItemBinding, private val onClick: Bind<DeckListFragment.AllDecksListState>?): ItemViewHolder<DeckListFragment.AllDecksListState>(binding.root) {
     companion object {
         val IDENTIFIER: Int by lazy { DeckListEmptyStateItemViewHolder.hashCode() }
 
-        fun instantiate(parent: ViewGroup, onClick: Bind<DeckListItemViewData>?): DeckListEmptyStateItemViewHolder {
+        fun instantiate(parent: ViewGroup, onClick: Bind<DeckListFragment.AllDecksListState>? = null): DeckListEmptyStateItemViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ViewDeckListEmptyStateItemBinding.inflate(inflater, parent, false)
 
@@ -18,10 +19,11 @@ class DeckListEmptyStateItemViewHolder private constructor(private val binding: 
         }
     }
 
-    override fun bind(viewData: DeckListItemViewData) {
+    override fun bind(viewData: DeckListFragment.AllDecksListState) {
         with(viewData.empty!!) {
             binding.tvTitle.text = title
             binding.tvDescription.text = message
         }
     }
 }
+

@@ -8,11 +8,11 @@ import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.databinding.ViewFavoriteDeckListItemBinding
 
-class FavoriteDeckItemViewHolder private constructor(private val binding: ViewFavoriteDeckListItemBinding, private val onClick: Bind<DeckListFavoriteItemViewData>?): ItemViewHolder<DeckListFavoriteItemViewData>(binding.root) {
+class FavoriteDeckItemViewHolder private constructor(private val binding: ViewFavoriteDeckListItemBinding, private val onClick: Bind<DeckListFragment.FavoriteDecksListState>?): ItemViewHolder<DeckListFragment.FavoriteDecksListState>(binding.root) {
     companion object {
         val IDENTIFIER: Int by lazy { DeckItemViewHolder.hashCode() }
 
-        fun instantiate(parent: ViewGroup, onClick: Bind<DeckListFavoriteItemViewData>?): FavoriteDeckItemViewHolder {
+        fun instantiate(parent: ViewGroup, onClick: Bind<DeckListFragment.FavoriteDecksListState>?): FavoriteDeckItemViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ViewFavoriteDeckListItemBinding.inflate(inflater, parent, false)
 
@@ -20,7 +20,7 @@ class FavoriteDeckItemViewHolder private constructor(private val binding: ViewFa
         }
     }
 
-    override fun bind(viewData: DeckListFavoriteItemViewData) {
+    override fun bind(viewData: DeckListFragment.FavoriteDecksListState) {
         with(viewData.deck!!) {
             binding.textDeckTitle.text = name
             binding.tvTotalCards.text = numberOfCards

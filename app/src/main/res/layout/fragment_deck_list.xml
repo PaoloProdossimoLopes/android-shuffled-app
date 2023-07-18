@@ -15,7 +15,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipChildren="false">
@@ -28,10 +29,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="18dp"
                 android:textSize="28sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textStyle="bold"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_decks_recents"
@@ -42,9 +40,6 @@
                 android:paddingHorizontal="16dp"
                 android:clipToPadding="false"
                 android:clipChildren="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_recents_decks"
                 tools:itemCount="3"
                 tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_favorite_deck_list_item"
@@ -57,21 +52,15 @@
                 android:text="Baralhos"
                 android:layout_marginHorizontal="16dp"
                 android:textSize="28sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/recycler_decks_recents" />
+                android:textStyle="bold"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_decks"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="8dp"
                 android:paddingHorizontal="16dp"
-                app:layout_constraintTop_toBottomOf="@id/text_decks_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 tools:itemCount="3"
                 tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 tools:listitem="@layout/view_deck_list_item"
@@ -80,13 +69,10 @@
             <Button
                 android:id="@+id/button_create_deck"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_marginHorizontal="16dp"
-                android:text="Criar baralho"
-                app:layout_constraintTop_toBottomOf="@id/recycler_decks"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:text="Criar baralho"/>
+        </LinearLayout>
     </ScrollView>
 
     <ProgressBar

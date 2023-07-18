@@ -1,26 +1,18 @@
 package com.programou.shuffled.authenticated.deckList
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewbinding.ViewBinding
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
-import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.databinding.FragmentDeckListBinding
-import com.programou.shuffled.databinding.ViewDeckListEmptyStateItemBinding
-import com.programou.shuffled.databinding.ViewDeckListItemBinding
-import com.programou.shuffled.databinding.ViewFavoriteDeckListItemBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,9 +20,20 @@ import kotlinx.coroutines.withContext
 
 class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
+    class AllDecksListState (
+        var deck: DeckListViewData.Deck? = null,
+        var empty: DeckListViewData.Empty? = null,
+        var error: DeckListViewData.Error? = null
+    )
+
+    class FavoriteDecksListState (
+        var deck: DeckListViewData.Deck? = null,
+    )
+
     private lateinit var binding: FragmentDeckListBinding
-    private val deckListAdapter = ListAdapter<DeckListItemViewData>()
-    private val recentDeckListAdapter = ListAdapter<DeckListFavoriteItemViewData>()
+
+    private val deckListAdapter = ListAdapter<AllDecksListState>()
+    private val recentDeckListAdapter = ListAdapter<FavoriteDecksListState>()
 
     private val viewModel: DeckListViewModel by lazy {
         val listAllDecksRepository = RemoteListAllDeckRepository(InmemoryDeckListClient.shared)
@@ -45,39 +48,49 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
         registerItemsInDeckList()
         registerItemsInFavoriteDeckList()
-        configureInitialLayoutState()
+
+        binding.recyclerDecks.adapter = deckListAdapter
+        binding.recyclerDecksRecents.adapter = recentDeckListAdapter
+        binding.recyclerDecksRecents.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
         configurebindWithViewModel()
 
+        load()
+    }
+
+    private fun load() {
         lifecycleScope.launch {
+            changeStateIsLoading(true)
             updateMock()
         }
+    }
 
-        viewModel.loadAllDecks()
+    private fun changeStateIsLoading(isLoading: Boolean) {
+        binding.progressDeckListLoader.isVisible = isLoading
+
+        binding.textDecksTitle.isVisible = !isLoading
+        binding.textRecentsDecks.isVisible = !isLoading
+
+        binding.buttonCreateDeck.isVisible = !isLoading
+
+        binding.recyclerDecks.isVisible = !isLoading
+        binding.recyclerDecksRecents.isVisible = !isLoading
     }
 
     private fun configurebindWithViewModel() {
         viewModel.decksViewData.observe(requireActivity()) { viewData ->
-            viewData.decks.value?.let { return@observe updateWithDeck(it) }
-            viewData.empty.value?.let { return@observe updateWithEmptyState(it) }
+            registerItemsInDeckList()
+
+            viewData.decks.value?.let {
+                return@observe updateWithDeck(it)
+            }
+            viewData.empty.value?.let {
+                return@observe updateWithEmptyState(it)
+            }
+            viewData.error.value?.let {
+                return@observe updateWithErrorState(it)
+            }
         }
-    }
-
-    private fun configureInitialLayoutState() {
-        binding.progressDeckListLoader.visibility = View.VISIBLE
-
-        binding.textDecksTitle.visibility = View.GONE
-        binding.textRecentsDecks.visibility = View.GONE
-
-        binding.buttonCreateDeck.visibility = View.GONE
-
-        binding.recyclerDecks.visibility = View.GONE
-        binding.recyclerDecks.adapter = deckListAdapter
-        binding.recyclerDecks.layoutManager = GridLayoutManager(requireContext(), 2)
-
-        binding.recyclerDecksRecents.visibility = View.GONE
-        binding.recyclerDecksRecents.adapter = recentDeckListAdapter
-        binding.recyclerDecksRecents.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
     private fun registerItemsInFavoriteDeckList() {
@@ -97,27 +110,17 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
             }
         }
         deckListAdapter.register(DeckListEmptyStateItemViewHolder.IDENTIFIER) { parent ->
-            DeckListEmptyStateItemViewHolder.instantiate(parent) {
-
-            }
+            DeckListEmptyStateItemViewHolder.instantiate(parent)
         }
-    }
-
-    private fun updateWithDeck(decks: List<DeckListViewData.Deck>) {
-        val vds = decks.map { deck ->
-            ItemViewData(DeckItemViewHolder.IDENTIFIER, DeckListItemViewData(deck = deck))
+        deckListAdapter.register(DeckListErrorStateItemViewHolder.IDENTIFIER) { parent ->
+            DeckListErrorStateItemViewHolder.instantiate(parent)
         }
-        deckListAdapter.update(vds)
-    }
-
-    private fun updateWithEmptyState(empty: DeckListViewData.Empty) {
-        this.binding.recyclerDecks.layoutManager = LinearLayoutManager(requireContext())
-        val emptyViewData = ItemViewData(DeckListEmptyStateItemViewHolder.IDENTIFIER, DeckListItemViewData(empty = empty))
-        deckListAdapter.update(listOf(emptyViewData))
     }
 
     private suspend fun updateMock() {
         withContext(Dispatchers.IO) {
+            viewModel.loadAllDecks()
+
             delay(3000)
 
             val elements = listOf(
@@ -126,32 +129,38 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
                 DeckListViewData.Deck(3, "Jappones", "1", "https://ichef.bbci.co.uk/news/1024/branded_portuguese/135A8/production/_110227297_gettyimages-512612394.jpg")
             )
             val viewDatas = elements.map { deck ->
-                ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, DeckListFavoriteItemViewData(deck = deck))
+                ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, FavoriteDecksListState(deck = deck))
             }
 
             withContext(Dispatchers.Main) {
                 recentDeckListAdapter.update(viewDatas)
-
-                binding.progressDeckListLoader.visibility = View.GONE
-
-                binding.buttonCreateDeck.visibility = View.VISIBLE
-
-                binding.textDecksTitle.visibility = View.VISIBLE
-                binding.textRecentsDecks.visibility = View.VISIBLE
-
-                binding.recyclerDecks.visibility = View.VISIBLE
-                binding.recyclerDecksRecents.visibility = View.VISIBLE
+                changeStateIsLoading(false)
             }
         }
     }
+
+    private fun updateWithDeck(decks: List<DeckListViewData.Deck>) {
+        binding.buttonCreateDeck.text = "criar baralho"
+        binding.recyclerDecks.layoutManager = GridLayoutManager(requireContext(), 2)
+        val vds = decks.map { deck ->
+            ItemViewData(DeckItemViewHolder.IDENTIFIER, AllDecksListState(deck = deck))
+        }
+        deckListAdapter.update(vds)
+    }
+
+    private fun updateWithEmptyState(empty: DeckListViewData.Empty) {
+        binding.buttonCreateDeck.text = "criar baralho"
+        binding.recyclerDecks.layoutManager = LinearLayoutManager(requireContext())
+        val emptyViewData = ItemViewData(DeckListEmptyStateItemViewHolder.IDENTIFIER, AllDecksListState(empty = empty))
+        deckListAdapter.update(listOf(emptyViewData))
+    }
+
+    private fun updateWithErrorState(error: DeckListViewData.Error) {
+        binding.recyclerDecks.layoutManager = LinearLayoutManager(requireContext())
+        binding.buttonCreateDeck.text = "tentar novamente"
+        binding.buttonCreateDeck.setOnClickListener { load() }
+        val emptyViewData = ItemViewData(DeckListErrorStateItemViewHolder.IDENTIFIER, AllDecksListState(error = error))
+        deckListAdapter.update(listOf(emptyViewData))
+    }
 }
-
-class DeckListItemViewData (
-    var deck: DeckListViewData.Deck? = null,
-    var empty: DeckListViewData.Empty? = null
-)
-
-class DeckListFavoriteItemViewData (
-    var deck: DeckListViewData.Deck? = null,
-)
 

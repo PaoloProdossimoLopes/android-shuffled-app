@@ -9,11 +9,11 @@ import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.databinding.ViewDeckListItemBinding
 
 
-class DeckItemViewHolder private constructor(private val binding: ViewDeckListItemBinding, private val onClick: Bind<DeckListItemViewData>?): ItemViewHolder<DeckListItemViewData>(binding.root) {
+class DeckItemViewHolder private constructor(private val binding: ViewDeckListItemBinding, private val onClick: Bind<DeckListFragment.AllDecksListState>?): ItemViewHolder<DeckListFragment.AllDecksListState>(binding.root) {
     companion object {
         val IDENTIFIER: Int by lazy { DeckItemViewHolder.hashCode() }
 
-        fun instantiate(parent: ViewGroup, onClick: Bind<DeckListItemViewData>?): DeckItemViewHolder {
+        fun instantiate(parent: ViewGroup, onClick: Bind<DeckListFragment.AllDecksListState>?): DeckItemViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ViewDeckListItemBinding.inflate(inflater, parent, false)
 
@@ -21,7 +21,7 @@ class DeckItemViewHolder private constructor(private val binding: ViewDeckListIt
         }
     }
 
-    override fun bind(viewData: DeckListItemViewData) {
+    override fun bind(viewData: DeckListFragment.AllDecksListState) {
         with(viewData.deck!!) {
             binding.textDeckTitle.text = name
             binding.tvTotalCards.text = numberOfCards
