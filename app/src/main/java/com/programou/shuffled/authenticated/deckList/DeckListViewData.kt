@@ -1,7 +1,5 @@
 package com.programou.shuffled.authenticated.deckList
 
-import java.io.Serializable
-
 data class DeckListViewData private constructor(
     val decks: ViewDataModel<List<Deck>> = ViewDataModel(),
     val empty: ViewDataModel<Empty> = ViewDataModel(),

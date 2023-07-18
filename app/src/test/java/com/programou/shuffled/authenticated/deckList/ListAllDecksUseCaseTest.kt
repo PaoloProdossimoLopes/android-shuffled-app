@@ -1,6 +1,6 @@
 package com.programou.shuffled.authenticated.deckList
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer

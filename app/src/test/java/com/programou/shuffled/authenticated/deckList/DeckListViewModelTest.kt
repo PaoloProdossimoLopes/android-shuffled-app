@@ -8,12 +8,9 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import kotlin.random.Random
 
 class DeckListViewModelTest {
     @get:Rule
@@ -21,9 +18,9 @@ class DeckListViewModelTest {
 
     @Test
     fun `on loadAllDecks without completion should not emit for decks observer`() {
-        val decksObserver: Observer<List<DeckListViewData.Deck>> = mock()
+        val decksObserver: Observer<DeckListViewData> = mock()
         val sut = DeckListViewModel(mock())
-        sut.decks.observeForever(decksObserver)
+        sut.decksViewData.observeForever(decksObserver)
 
         sut.loadAllDecks()
 
@@ -40,29 +37,9 @@ class DeckListViewModelTest {
         verify(allListerUseCase, times(1)).listAll(any())
     }
 
-//    @Test
-//    fun `on loadAllDecks when use case completes empty list`() {
-//        val listViewData = DeckListViewData.empty(DeckListViewData.Empty(0, "any title", "any message"))
-//        val decksObserver: Observer<List<DeckListViewData.Deck>> = mock()
-//        val listAllCallback = argumentCaptor<((DeckListViewData) -> Unit)>()
-//        val allListerUseCase: ListAllDecks = mock() {
-//            on {
-//                listAll(listAllCallback.capture())
-//            } doAnswer {
-//                listAllCallback.firstValue.invoke(listViewData)
-//            }
-//        }
-//        val sut = DeckListViewModel(allListerUseCase)
-//        sut.decks.observeForever(decksObserver)
-//
-//        sut.loadAllDecks()
-//
-//        verify(decksObserver, times(1)).onChanged(listOf())
-//    }
-
     @Test
     fun `on loadAllDecks when use case completes non empty decks emit once`() {
-        val decksObserver: Observer<List<DeckListViewData.Deck>> = mock()
+        val decksObserver: Observer<DeckListViewData> = mock()
         val listAllCallback = argumentCaptor<((DeckListViewData) -> Unit)>()
         val listViewData = DeckListViewData.decks(listOf(
             DeckListViewData.Deck(0, "name of deck 0", "number of cards in deck 0", "deck 0 thumbnail url"),
@@ -77,27 +54,24 @@ class DeckListViewModelTest {
             }
         }
         val sut = DeckListViewModel(allListerUseCase)
-        sut.decks.observeForever(decksObserver)
+        sut.decksViewData.observeForever(decksObserver)
 
         sut.loadAllDecks()
 
-        verify(decksObserver, times(1)).onChanged(listViewData.decks.value!!)
+        verify(decksObserver, times(1)).onChanged(listViewData)
     }
 
     @Test
     fun `on loadAllDecks throws an error occurs exception`() {
-        val deckListErrorObserver: Observer<DeckListViewData.Error> = mock()
-        val deckListViewDataObserver: Observer<List<DeckListViewData.Deck>> = mock()
+        val deckListViewData: Observer<DeckListViewData> = mock()
         val exception = Throwable("Any expcetion not handled by viewModel")
         val allListerUseCase: ListAllDecks = mock() {
             on { listAll(any()) } doAnswer { throw exception }
         }
         val sut = DeckListViewModel(allListerUseCase)
-        sut.error.observeForever(deckListErrorObserver)
-        sut.decks.observeForever(deckListViewDataObserver)
+        sut.decksViewData.observeForever(deckListViewData)
 
-        verify(deckListErrorObserver, times(0)).onChanged(any())
-        verify(deckListViewDataObserver, times(0)).onChanged(any())
+        verify(deckListViewData, times(0)).onChanged(any())
         Assert.assertThrows(Throwable::class.java) {
             sut.loadAllDecks()
         }
@@ -105,7 +79,7 @@ class DeckListViewModelTest {
 
     @Test
     fun `on loadAllDecks when use case completes with use cases deleivers same viewData`() {
-        val deckListErrorObserver: Observer<DeckListViewData.Error> = mock()
+        val deckListViewData: Observer<DeckListViewData> = mock()
         val listAllCallback = argumentCaptor<((DeckListViewData) -> Unit)>()
         val errorListViewData = DeckListViewData.error(DeckListViewData.Error(0, "any title", "any message"))
         val allListerUseCase: ListAllDecks = mock() {
@@ -116,10 +90,31 @@ class DeckListViewModelTest {
             }
         }
         val sut = DeckListViewModel(allListerUseCase)
-        sut.error.observeForever(deckListErrorObserver)
+        sut.decksViewData.observeForever(deckListViewData)
 
         sut.loadAllDecks()
 
-        verify(deckListErrorObserver, times(1)).onChanged(errorListViewData.error.value!!)
+        verify(deckListViewData, times(1)).onChanged(errorListViewData)
+    }
+
+
+    @Test
+    fun `on loadAllDecks when use case completes empty list`() {
+        val listViewData = DeckListViewData.empty(DeckListViewData.Empty(0, "any title", "any message"))
+        val decksObserver: Observer<DeckListViewData> = mock()
+        val listAllCallback = argumentCaptor<((DeckListViewData) -> Unit)>()
+        val allListerUseCase: ListAllDecks = mock() {
+            on {
+                listAll(listAllCallback.capture())
+            } doAnswer {
+                listAllCallback.firstValue.invoke(listViewData)
+            }
+        }
+        val sut = DeckListViewModel(allListerUseCase)
+        sut.decksViewData.observeForever(decksObserver)
+
+        sut.loadAllDecks()
+
+        verify(decksObserver, times(1)).onChanged(listViewData)
     }
 }

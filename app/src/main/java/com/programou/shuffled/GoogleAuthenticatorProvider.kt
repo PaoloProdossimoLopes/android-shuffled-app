@@ -16,7 +16,7 @@ class GoogleAuthenticatorProvider(private val fragment: Fragment) {
     private var onCredentialsResult: ((Result<com.programou.shuffled.unauthenticated.enter.Credential>) -> Unit)? = null
     private var signInRequest: GoogleSignInClient = run {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(fragment.requireActivity().getString(R.string.default_web_client_id))
+            .requestIdToken(BuildConfig.FIREBASE_CLIENT_ID)
             .requestEmail()
             .build()
 
