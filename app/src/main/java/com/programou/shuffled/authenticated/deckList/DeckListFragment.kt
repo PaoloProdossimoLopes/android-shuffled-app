@@ -43,25 +43,27 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
         binding = FragmentDeckListBinding.bind(view)
 
-        deckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
-            DeckItemViewHolder.instantiate(parent) {
-                val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment()
-                findNavController().navigate(action)
-            }
-        }
-        deckListAdapter.register(DeckListEmptyStateItemViewHolder.IDENTIFIER) { parent ->
-            DeckListEmptyStateItemViewHolder.instantiate(parent) {
+        registerItemsInDeckList()
+        registerItemsInFavoriteDeckList()
+        configureInitialLayoutState()
 
-            }
+        configurebindWithViewModel()
+
+        lifecycleScope.launch {
+            updateMock()
         }
 
-        recentDeckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
-            FavoriteDeckItemViewHolder.instantiate(parent) {
-                val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment()
-                findNavController().navigate(action)
-            }
-        }
+        viewModel.loadAllDecks()
+    }
 
+    private fun configurebindWithViewModel() {
+        viewModel.decksViewData.observe(requireActivity()) { viewData ->
+            viewData.decks.value?.let { return@observe updateWithDeck(it) }
+            viewData.empty.value?.let { return@observe updateWithEmptyState(it) }
+        }
+    }
+
+    private fun configureInitialLayoutState() {
         binding.progressDeckListLoader.visibility = View.VISIBLE
 
         binding.textDecksTitle.visibility = View.GONE
@@ -76,47 +78,42 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         binding.recyclerDecksRecents.visibility = View.GONE
         binding.recyclerDecksRecents.adapter = recentDeckListAdapter
         binding.recyclerDecksRecents.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+    }
 
-        lifecycleScope.launch {
-            updateMock()
-        }
-
-        viewModel.decksViewData.observe(requireActivity()) { viewData ->
-            var itens = mutableListOf<ItemViewData<DeckListItemViewData>>()
-
-            viewData.decks.on { decks ->
-                decks.forEach { deck ->
-                    val vd = ItemViewData(DeckItemViewHolder.IDENTIFIER, DeckListItemViewData(onDeck = { binding ->
-                        binding.textDeckTitle.text = deck.name
-                        binding.tvTotalCards.text = deck.numberOfCards
-
-                        val requestOptions = RequestOptions()
-                            .centerCrop()
-                            //.error(R.drawable.ic_no_image)
-                            .placeholder(R.color.gray_100)
-
-                        Glide.with(binding.root.context)
-                            .load(deck.thumbnailUrl)
-                            .apply(requestOptions)
-                            .into(binding.imageDeck)
-                    }))
-                    itens.add(vd)
-                }
+    private fun registerItemsInFavoriteDeckList() {
+        recentDeckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
+            FavoriteDeckItemViewHolder.instantiate(parent) {
+                val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment()
+                findNavController().navigate(action)
             }
-
-            viewData.empty.on { empty ->
-                this.binding.recyclerDecks.layoutManager = LinearLayoutManager(requireContext())
-                val vd = ItemViewData(DeckListEmptyStateItemViewHolder.IDENTIFIER, DeckListItemViewData(onEmpty = { binding ->
-                    binding.tvTitle.text = empty.title
-                    binding.tvDescription.text = empty.message
-                }))
-                itens.add(vd)
-            }
-
-            deckListAdapter.update(itens)
         }
+    }
 
-        viewModel.loadAllDecks()
+    private fun registerItemsInDeckList() {
+        deckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
+            DeckItemViewHolder.instantiate(parent) {
+                val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment()
+                findNavController().navigate(action)
+            }
+        }
+        deckListAdapter.register(DeckListEmptyStateItemViewHolder.IDENTIFIER) { parent ->
+            DeckListEmptyStateItemViewHolder.instantiate(parent) {
+
+            }
+        }
+    }
+
+    private fun updateWithDeck(decks: List<DeckListViewData.Deck>) {
+        val vds = decks.map { deck ->
+            ItemViewData(DeckItemViewHolder.IDENTIFIER, DeckListItemViewData(deck = deck))
+        }
+        deckListAdapter.update(vds)
+    }
+
+    private fun updateWithEmptyState(empty: DeckListViewData.Empty) {
+        this.binding.recyclerDecks.layoutManager = LinearLayoutManager(requireContext())
+        val emptyViewData = ItemViewData(DeckListEmptyStateItemViewHolder.IDENTIFIER, DeckListItemViewData(empty = empty))
+        deckListAdapter.update(listOf(emptyViewData))
     }
 
     private suspend fun updateMock() {
@@ -129,20 +126,7 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
                 DeckListViewData.Deck(3, "Jappones", "1", "https://ichef.bbci.co.uk/news/1024/branded_portuguese/135A8/production/_110227297_gettyimages-512612394.jpg")
             )
             val viewDatas = elements.map { deck ->
-                ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, DeckListFavoriteItemViewData { binding ->
-                    binding.textDeckTitle.text = deck.name
-                    binding.tvTotalCards.text = deck.numberOfCards
-
-                    val requestOptions = RequestOptions()
-                        .centerCrop()
-                        //.error(R.drawable.ic_no_image)
-                        .placeholder(R.color.gray_100)
-
-                    Glide.with(binding.root.context)
-                        .load(deck.thumbnailUrl)
-                        .apply(requestOptions)
-                        .into(binding.imageDeck)
-                })
+                ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, DeckListFavoriteItemViewData(deck = deck))
             }
 
             withContext(Dispatchers.Main) {
@@ -163,74 +147,11 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 }
 
 class DeckListItemViewData (
-    var onDeck: Bind<ViewDeckListItemBinding>? = null,
-    var onEmpty: Bind<ViewDeckListEmptyStateItemBinding>? = null
+    var deck: DeckListViewData.Deck? = null,
+    var empty: DeckListViewData.Empty? = null
 )
 
 class DeckListFavoriteItemViewData (
-    var onDeck: Bind<ViewFavoriteDeckListItemBinding>? = null,
+    var deck: DeckListViewData.Deck? = null,
 )
-
-
-typealias Bind<T> = (T) -> Unit
-
-class DeckItemViewHolder private constructor(private val binding: ViewDeckListItemBinding, private val onClick: Bind<DeckListItemViewData>?): ItemViewHolder<DeckListItemViewData>(binding.root) {
-    companion object {
-        val IDENTIFIER: Int by lazy { DeckItemViewHolder.hashCode() }
-
-        fun instantiate(parent: ViewGroup, onClick: Bind<DeckListItemViewData>?): DeckItemViewHolder {
-            val inflater = LayoutInflater.from(parent.context)
-            val binding = ViewDeckListItemBinding.inflate(inflater, parent, false)
-
-            return DeckItemViewHolder(binding, onClick)
-        }
-    }
-
-    override fun bind(viewData: DeckListItemViewData) {
-        viewData.onDeck?.let { it(binding) }
-
-        binding.cardContainer.setOnClickListener {
-            onClick?.let{ it(viewData) }
-        }
-    }
-
-}
-
-class DeckListEmptyStateItemViewHolder private constructor(private val binding: ViewDeckListEmptyStateItemBinding, private val onClick: Bind<DeckListItemViewData>?): ItemViewHolder<DeckListItemViewData>(binding.root) {
-    companion object {
-        val IDENTIFIER: Int by lazy { DeckListEmptyStateItemViewHolder.hashCode() }
-
-        fun instantiate(parent: ViewGroup, onClick: Bind<DeckListItemViewData>?): DeckListEmptyStateItemViewHolder {
-            val inflater = LayoutInflater.from(parent.context)
-            val binding = ViewDeckListEmptyStateItemBinding.inflate(inflater, parent, false)
-
-            return DeckListEmptyStateItemViewHolder(binding, onClick)
-        }
-    }
-
-    override fun bind(viewData: DeckListItemViewData) {
-        viewData.onEmpty?.let { it(binding) }
-    }
-}
-
-class FavoriteDeckItemViewHolder private constructor(private val binding: ViewFavoriteDeckListItemBinding, private val onClick: Bind<DeckListFavoriteItemViewData>?): ItemViewHolder<DeckListFavoriteItemViewData>(binding.root) {
-    companion object {
-        val IDENTIFIER: Int by lazy { DeckItemViewHolder.hashCode() }
-
-        fun instantiate(parent: ViewGroup, onClick: Bind<DeckListFavoriteItemViewData>?): FavoriteDeckItemViewHolder {
-            val inflater = LayoutInflater.from(parent.context)
-            val binding = ViewFavoriteDeckListItemBinding.inflate(inflater, parent, false)
-
-            return FavoriteDeckItemViewHolder(binding, onClick)
-        }
-    }
-
-    override fun bind(viewData: DeckListFavoriteItemViewData) {
-        viewData.onDeck?.let { it(binding) }
-
-        binding.cardContainer.setOnClickListener {
-            onClick?.let{ it(viewData) }
-        }
-    }
-}
 
