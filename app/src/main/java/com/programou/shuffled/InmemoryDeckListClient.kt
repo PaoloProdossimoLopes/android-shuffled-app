@@ -1,12 +1,8 @@
 package com.programou.shuffled
 
-import com.programou.shuffled.authenticated.deckList.Bind
-import com.programou.shuffled.authenticated.deckList.Deck
 import com.programou.shuffled.authenticated.deckList.DeckListResponse
-import com.programou.shuffled.authenticated.deckList.DeckListViewData
 import com.programou.shuffled.authenticated.deckList.GetAllDecksClient
 import com.programou.shuffled.authenticated.deckList.GetFavoritedDecksClient
-import com.programou.shuffled.authenticated.deckList.ListAllDecksRepository
 
 class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavoritedDecksClient {
 

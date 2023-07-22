@@ -1,8 +1,8 @@
 package com.programou.shuffled.authenticated.deckList
 
-class ListFavoritedDecksRepository(private val client: GetFavoritedDecksClient) {
+class RemoteListFavoritedDecksRepository(private val client: GetFavoritedDecksClient): ListFavoriteDecksRepository {
 
-    fun listFavoritedDecks(onComplete: Bind<List<Deck>>) = list(onComplete)
+    override fun listFavoritedDecks(onComplete: Bind<List<Deck>>) = list(onComplete)
 
     private fun list(onComplete: Bind<List<Deck>>) {
         client.getFavorited { response ->  onComplete(map(response)) }

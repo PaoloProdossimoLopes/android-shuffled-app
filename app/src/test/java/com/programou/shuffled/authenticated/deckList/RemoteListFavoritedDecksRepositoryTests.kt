@@ -9,11 +9,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
-class ListFavoritedDecksRepositoryTests {
+class RemoteListFavoritedDecksRepositoryTests {
     @Test
     fun `on listAllDecks call client's getAllDecks method once`() {
         val client = mock<GetFavoritedDecksClient>()
-        val sut = ListFavoritedDecksRepository(client)
+        val sut = RemoteListFavoritedDecksRepository(client)
 
         val decksReceived = mutableListOf<List<Deck>>()
         sut.listFavoritedDecks { decksReceived.add(it) }
@@ -29,7 +29,7 @@ class ListFavoritedDecksRepositoryTests {
         val client = mock<GetFavoritedDecksClient>() {
             on { getFavorited(clientCallback.capture()) } doAnswer { clientCallback.firstValue.invoke(decksResponse) }
         }
-        val sut = ListFavoritedDecksRepository(client)
+        val sut = RemoteListFavoritedDecksRepository(client)
 
         val decksReceived = mutableListOf<List<Deck>>()
         sut.listFavoritedDecks { decksReceived.add(it) }
@@ -47,7 +47,7 @@ class ListFavoritedDecksRepositoryTests {
         val client = mock<GetFavoritedDecksClient>() {
             on { getFavorited(clientCallback.capture()) } doAnswer { clientCallback.firstValue.invoke(decksResponse) }
         }
-        val sut = ListFavoritedDecksRepository(client)
+        val sut = RemoteListFavoritedDecksRepository(client)
 
         val decksReceived = mutableListOf<List<Deck>>()
         sut.listFavoritedDecks { decksReceived.add(it) }

@@ -35,7 +35,13 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     private val deckListAdapter = ListAdapter<AllDecksListState>()
     private val recentDeckListAdapter = ListAdapter<FavoriteDecksListState>()
 
-    private val viewModel: DeckListViewModel by lazy {
+    private val favoriteDecksListViewModel: FavoriteDecksListViewModel by lazy {
+        val repository = RemoteListFavoritedDecksRepository(InmemoryDeckListClient.shared)
+        val useCase = ListFavoriteDecksUseCase(repository)
+        FavoriteDecksListViewModel(useCase)
+    }
+
+    private val allDecksViewModel: DeckListViewModel by lazy {
         val listAllDecksRepository = RemoteListAllDeckRepository(InmemoryDeckListClient.shared)
         val listAllUseCase = ListAllDecksUseCase(listAllDecksRepository)
         DeckListViewModel(listAllUseCase)
@@ -78,9 +84,7 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     }
 
     private fun configurebindWithViewModel() {
-        viewModel.decksViewData.observe(requireActivity()) { viewData ->
-            registerItemsInDeckList()
-
+        allDecksViewModel.decksViewData.observe(requireActivity()) { viewData ->
             viewData.decks.value?.let {
                 return@observe updateWithDeck(it)
             }
@@ -89,6 +93,22 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
             }
             viewData.error.value?.let {
                 return@observe updateWithErrorState(it)
+            }
+        }
+
+        favoriteDecksListViewModel.favoriteDecksViewData.observe(requireActivity()) { viewData ->
+            viewData.decks.value?.let {
+                val viewDatas = it.map { ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, FavoriteDecksListState(it)) }
+                recentDeckListAdapter.update(viewDatas)
+                return@observe
+            }
+            viewData.empty.value?.let {
+                binding.recyclerDecksRecents.isVisible = false
+                return@observe
+            }
+            viewData.error.value?.let {
+                binding.recyclerDecksRecents.isVisible = false
+                return@observe
             }
         }
     }
@@ -119,21 +139,12 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
     private suspend fun updateMock() {
         withContext(Dispatchers.IO) {
-            viewModel.loadAllDecks()
+            allDecksViewModel.loadAllDecks()
+            favoriteDecksListViewModel.loadAllDecks()
 
-            delay(3000)
-
-            val elements = listOf(
-                DeckListViewData.Deck(1, "Ingles", "32", "https://s4.static.brasilescola.uol.com.br/be/2022/05/bandeira-dos-estados-unidos.jpg"),
-                DeckListViewData.Deck(2, "Frances", "100",  "https://www.eurodicas.com.br/wp-content/uploads/2018/10/bandeira-da-franca-1200x900.jpg"),
-                DeckListViewData.Deck(3, "Jappones", "1", "https://ichef.bbci.co.uk/news/1024/branded_portuguese/135A8/production/_110227297_gettyimages-512612394.jpg")
-            )
-            val viewDatas = elements.map { deck ->
-                ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, FavoriteDecksListState(deck = deck))
-            }
+            delay(2000)
 
             withContext(Dispatchers.Main) {
-                recentDeckListAdapter.update(viewDatas)
                 changeStateIsLoading(false)
             }
         }

@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.databinding.ViewDeckListEmptyStateItemBinding
-import com.programou.shuffled.databinding.ViewDeckListErrorStateItemBinding
 
 
 class DeckListEmptyStateItemViewHolder private constructor(private val binding: ViewDeckListEmptyStateItemBinding, private val onClick: Bind<DeckListFragment.AllDecksListState>?): ItemViewHolder<DeckListFragment.AllDecksListState>(binding.root) {
