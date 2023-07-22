@@ -42,8 +42,8 @@ class ListAllDeckRepositoryTest {
     fun `on listAllDecks when client complete with non empty list delievers an non empty too`() {
         val clientCallback = argumentCaptor<((DeckListResponse) -> Unit)>()
         val decksResponse = DeckListResponse(listOf(
-            DeckListResponse.Deck(0, "title 0", 0, "any url 0"),
-            DeckListResponse.Deck(1, "title other 1", 23, "any url other 1"),
+            DeckListResponse.Deck(0, "title 0", 0, "any url 0", true),
+            DeckListResponse.Deck(1, "title other 1", 23, "any url other 1", true),
         ))
         val client = mock<GetAllDecksClient>() {
             on { getAllDecks(clientCallback.capture()) } doAnswer { clientCallback.firstValue.invoke(decksResponse) }
