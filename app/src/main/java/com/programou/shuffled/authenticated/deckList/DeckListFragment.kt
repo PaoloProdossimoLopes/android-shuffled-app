@@ -12,6 +12,7 @@ import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
+import com.programou.shuffled.authenticated.createDeck.CreateDeckBottomSheetView
 import com.programou.shuffled.databinding.FragmentDeckListBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -58,6 +59,15 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         binding.recyclerDecks.adapter = deckListAdapter
         binding.recyclerDecksRecents.adapter = recentDeckListAdapter
         binding.recyclerDecksRecents.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        binding.buttonCreateDeck.setOnClickListener {
+            if (binding.buttonCreateDeck.text == "criar baralho") {
+                val dialog = CreateDeckBottomSheetView(requireContext())
+                dialog.show()
+            } else {
+                load()
+            }
+        }
 
         configurebindWithViewModel()
 
@@ -169,7 +179,6 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     private fun updateWithErrorState(error: DeckListViewData.Error) {
         binding.recyclerDecks.layoutManager = LinearLayoutManager(requireContext())
         binding.buttonCreateDeck.text = "tentar novamente"
-        binding.buttonCreateDeck.setOnClickListener { load() }
         val emptyViewData = ItemViewData(DeckListErrorStateItemViewHolder.IDENTIFIER, AllDecksListState(error = error))
         deckListAdapter.update(listOf(emptyViewData))
     }

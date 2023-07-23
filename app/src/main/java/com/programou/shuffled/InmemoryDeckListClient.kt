@@ -18,8 +18,8 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
 //    private val inmemoryDecks = mutableListOf<DeckListResponse.Deck>()
 
     override fun getAllDecks(callback: (DeckListResponse) -> Unit) {
-//        callback(DeckListResponse(inmemoryDecks))
-        throw Error()
+        callback(DeckListResponse(inmemoryDecks))
+//        throw Error()
     }
 
     override fun getFavorited(callback: (DeckListResponse) -> Unit) {
