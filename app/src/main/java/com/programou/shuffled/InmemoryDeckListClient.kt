@@ -1,10 +1,15 @@
 package com.programou.shuffled
 
+import com.programou.shuffled.authenticated.createDeck.CreateDeckClient
+import com.programou.shuffled.authenticated.createDeck.CreateDeckClientCompletionBlock
+import com.programou.shuffled.authenticated.createDeck.CreateDeckModel
+import com.programou.shuffled.authenticated.createDeck.CreateDeckResponse
 import com.programou.shuffled.authenticated.deckList.DeckListResponse
 import com.programou.shuffled.authenticated.deckList.GetAllDecksClient
 import com.programou.shuffled.authenticated.deckList.GetFavoritedDecksClient
 
-class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavoritedDecksClient {
+class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavoritedDecksClient,
+    CreateDeckClient {
 
     companion object {
         val shared = InmemoryDeckListClient()
@@ -18,12 +23,20 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
 //    private val inmemoryDecks = mutableListOf<DeckListResponse.Deck>()
 
     override fun getAllDecks(callback: (DeckListResponse) -> Unit) {
-//        callback(DeckListResponse(inmemoryDecks))
-        throw Error()
+        callback(DeckListResponse(inmemoryDecks))
+//        throw Error()
     }
 
     override fun getFavorited(callback: (DeckListResponse) -> Unit) {
         callback(DeckListResponse(inmemoryDecks.filter { it.isFavorited }))
 //        throw Error()
+    }
+
+    override fun postDeck(deck: CreateDeckModel, onComplete: CreateDeckClientCompletionBlock) {
+        val id = inmemoryDecks.lastOrNull()?.id ?: 0
+        inmemoryDecks.add(DeckListResponse.Deck(id, deck.title, deck.numberOfDecks, deck.imageUri.toString(), false))
+        onComplete(CreateDeckResponse())
+
+//                throw Error()
     }
 }

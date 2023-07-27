@@ -34,7 +34,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_decks_recents"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="180dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:paddingHorizontal="16dp"

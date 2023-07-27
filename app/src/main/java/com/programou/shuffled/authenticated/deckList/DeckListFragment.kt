@@ -1,17 +1,23 @@
 package com.programou.shuffled.authenticated.deckList
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
+import com.programou.shuffled.authenticated.createDeck.CreateDeckBottomSheetView
 import com.programou.shuffled.databinding.FragmentDeckListBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -32,6 +38,8 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
     private lateinit var binding: FragmentDeckListBinding
 
+    private var createDeckDialog: CreateDeckBottomSheetView? = null
+
     private val deckListAdapter = ListAdapter<AllDecksListState>()
     private val recentDeckListAdapter = ListAdapter<FavoriteDecksListState>()
 
@@ -46,7 +54,6 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         val listAllUseCase = ListAllDecksUseCase(listAllDecksRepository)
         DeckListViewModel(listAllUseCase)
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -59,9 +66,43 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         binding.recyclerDecksRecents.adapter = recentDeckListAdapter
         binding.recyclerDecksRecents.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
+        binding.buttonCreateDeck.setOnClickListener {
+            if (binding.buttonCreateDeck.text == "criar baralho") {
+                createDeckDialog = CreateDeckBottomSheetView(requireContext(), setGalleryImage = { deckImageView ->
+                    val pickImg = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+                    this.launcher.launch(pickImg)
+                }, onSucess = { sucessMesage ->
+                    Snackbar
+                        .make(binding.root, sucessMesage, Snackbar.LENGTH_LONG)
+                        .setBackgroundTint(requireContext().getColor(R.color.green_500))
+                        .show()
+
+                    load()
+                }, onFailure = { failureMesage ->
+                    Snackbar
+                        .make(binding.root, failureMesage, Snackbar.LENGTH_LONG)
+                        .setBackgroundTint(requireContext().getColor(R.color.red_500))
+                        .show()
+                    load()
+                })
+                createDeckDialog?.show()
+            } else {
+                load()
+            }
+        }
+
         configurebindWithViewModel()
 
         load()
+    }
+
+    private val launcher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            val imageURI = it.data?.data
+            this.createDeckDialog?.deckImageUri = imageURI
+        }
     }
 
     private fun load() {
@@ -169,7 +210,6 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     private fun updateWithErrorState(error: DeckListViewData.Error) {
         binding.recyclerDecks.layoutManager = LinearLayoutManager(requireContext())
         binding.buttonCreateDeck.text = "tentar novamente"
-        binding.buttonCreateDeck.setOnClickListener { load() }
         val emptyViewData = ItemViewData(DeckListErrorStateItemViewHolder.IDENTIFIER, AllDecksListState(error = error))
         deckListAdapter.update(listOf(emptyViewData))
     }
