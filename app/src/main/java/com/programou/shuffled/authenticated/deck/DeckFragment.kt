@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
@@ -103,6 +105,16 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         viewModel.deckLiveData.observe(requireActivity()) { deckViewData ->
             binding.editDeckTitle.setText(deckViewData.title)
             binding.editDeckDescription.setText(deckViewData.description)
+
+            val requestOptions = RequestOptions()
+                .centerCrop()
+                .placeholder(R.color.gray_100)
+
+            Glide.with(binding.root.context)
+                .load(deckViewData.image)
+                .apply(requestOptions)
+                .into(binding.deckImageView)
+
             cardPreviewAdapter.update(deckViewData.cards.map {
                 ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, PreviewViewData(it.question, it.answer))
             })

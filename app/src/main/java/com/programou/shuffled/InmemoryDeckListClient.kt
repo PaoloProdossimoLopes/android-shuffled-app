@@ -56,7 +56,7 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
 
     override fun postDeck(deck: CreateDeckModel, onComplete: CreateDeckClientCompletionBlock) {
         val id = inmemoryDecks.lastOrNull()?.id ?: 0
-        inmemoryDecks.add(DeckListResponse.Deck(id, deck.title, deck.imageUri.toString(), deck.description, false, deck.cards.map { DeckListResponse.Card(it.question, it.answer) }))
+        inmemoryDecks.add(DeckListResponse.Deck(id + 1, deck.title, deck.description, deck.imageUri.toString(), false, deck.cards.map { DeckListResponse.Card(it.question, it.answer) }))
         onComplete(CreateDeckResponse())
 
 //                throw Error()
