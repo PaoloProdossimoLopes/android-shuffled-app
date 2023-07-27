@@ -9,7 +9,7 @@ class CreateDeckViewModel(private val createUseCase: CreateDeck): ViewModel() {
     val onComplete: LiveData<Boolean> = onCompleteMutableLiveData
 
     fun create(deck: CreateDeckViewDataRequest) {
-        val deckModel = CreateDeckModel(deck.title, deck.description, deck.imageUri, deck.cards.map { CreateDeckModel.Card(it.question, it.awnser) })
+        val deckModel = CreateDeckModel(deck.title, deck.description, deck.imageUri, deck.isFavorited, deck.cards.map { CreateDeckModel.Card(it.id, it.question, it.awnser) })
         createUseCase.createDeck(deckModel) { onSuccess ->
             onCompleteMutableLiveData.postValue(onSuccess)
         }
