@@ -156,18 +156,22 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
     private fun registerItemsInFavoriteDeckList() {
         recentDeckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
-            FavoriteDeckItemViewHolder.instantiate(parent) {
-                val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment()
-                findNavController().navigate(action)
+            FavoriteDeckItemViewHolder.instantiate(parent) { deckViewData ->
+                deckViewData.deck?.id?.let { deckId ->
+                    val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment(deckId)
+                    findNavController().navigate(action)
+                }
             }
         }
     }
 
     private fun registerItemsInDeckList() {
         deckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
-            DeckItemViewHolder.instantiate(parent) {
-                val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment()
-                findNavController().navigate(action)
+            DeckItemViewHolder.instantiate(parent) { deckViewData ->
+                deckViewData.deck?.id?.let { deckId ->
+                    val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment(deckId)
+                    findNavController().navigate(action)
+                }
             }
         }
         deckListAdapter.register(DeckListEmptyStateItemViewHolder.IDENTIFIER) { parent ->

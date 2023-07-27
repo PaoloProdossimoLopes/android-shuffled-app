@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ItemViewHolder
@@ -18,11 +20,35 @@ import com.programou.shuffled.authenticated.deckList.Bind
 import com.programou.shuffled.databinding.FragmentDeckBinding
 import com.programou.shuffled.databinding.ViewAddCardBottomSheetDialogBinding
 import com.programou.shuffled.databinding.ViewDeckCardPreviewItemBinding
+import java.io.Serializable
+
+
+data class DeckModel(val deck: Deck): Serializable {
+
+    data class Deck(
+        val id: Int,
+        val name: String,
+        val numberOfCards: Int,
+        val thumbnailUrl: String,
+        val cards: List<Card>
+    ): Serializable
+
+    data class Card(
+        val question: String,
+        val awnser: String
+    ): Serializable
+}
 
 class DeckFragment : Fragment(R.layout.fragment_deck) {
     private lateinit var binding: FragmentDeckBinding
 
     private val cardPreviewAdapter = ListAdapter<PreviewViewData>()
+    private val deckArgs: DeckFragmentArgs by navArgs()
+    private val viewModel: DeckViewModel by lazy {
+        val repository = DeckRepository(InmemoryDeckListClient.shared)
+        val useCase = DeckFinderUseCase(repository)
+        DeckViewModel(useCase)
+    }
 
     private var isEditState = false
 
@@ -74,13 +100,15 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
             findNavController().navigate(action)
         }
 
-        cardPreviewAdapter.update(listOf(
-            ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, PreviewViewData("Hello", "Olá")),
-            ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, PreviewViewData("Whats up?", "e ai?")),
-            ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, PreviewViewData("How's going?", "Como voce esta?")),
-            ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, PreviewViewData("What you prefere", "Oque voce prefere")),
-            ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, PreviewViewData("What did you mean?", "oque isso significa?"))
-        ))
+        viewModel.deckLiveData.observe(requireActivity()) { deckViewData ->
+            binding.editDeckTitle.setText(deckViewData.title)
+            binding.editDeckDescription.setText(deckViewData.description)
+            cardPreviewAdapter.update(deckViewData.cards.map {
+                ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, PreviewViewData(it.question, it.answer))
+            })
+        }
+
+        viewModel.findDeckBy(deckArgs.deckId)
     }
 }
 
