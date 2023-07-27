@@ -11,28 +11,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="22dp">
+            android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/closeDeckCreationIndicatorImageView"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:src="@drawable/ic_x"/>
+                android:src="@drawable/ic_x"
+                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_gravity="center"
-                android:text="Crei seu baralho"/>
-        </LinearLayout>
+                android:textAlignment="center"
+                android:text="Crei seu baralho"
+                app:layout_constraintTop_toTopOf="@id/closeDeckCreationIndicatorImageView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/closeDeckCreationIndicatorImageView"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -55,6 +58,7 @@
                     android:id="@+id/deckImageView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
                     android:background="@color/gray_100" />
 
             </androidx.cardview.widget.CardView>
