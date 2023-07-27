@@ -26,7 +26,7 @@ class ListFavoriteDecksUseCase(private val repository: ListFavoriteDecksReposito
         }
 
         val decksViewDataModel = decks.map { deck ->
-            DeckListViewData.Deck(deck.id, deck.name, "${deck.numberOfCards}", deck.thumbnailUrl)
+            DeckListViewData.Deck(deck.id, deck.name, "${deck.cards.count()}", deck.thumbnailUrl)
         }
         val decksViewData = DeckListViewData.decks(decksViewDataModel)
         return decksViewData

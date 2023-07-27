@@ -1,5 +1,6 @@
 package com.programou.shuffled.authenticated.deckList
 
 class DeckListResponse(val decks: List<Deck>) {
-    class Deck(val id: Int, val title: String, val totalOfCards: Int, val thumbnailUrl: String, val isFavorited: Boolean)
+    class Deck(val id: Int, var title: String, var description: String, var thumbnailUrl: String, var isFavorited: Boolean, var cards: List<Card>)
+    class Card(val id: Int, var question: String, var answer: String)
 }

@@ -18,6 +18,8 @@ class ListAdapter<D>: RecyclerView.Adapter<ItemViewHolder<D>>() {
         notifyDataSetChanged()
     }
 
+    fun getViewData() = itens.map { it.viewData }
+
     override fun getItemCount() = itens.count()
 
     override fun getItemViewType(position: Int) = itens[position].identifier

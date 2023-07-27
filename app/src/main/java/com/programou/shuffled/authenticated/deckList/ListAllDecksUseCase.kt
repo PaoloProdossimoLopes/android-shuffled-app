@@ -7,8 +7,16 @@ interface ListAllDecksRepository {
 data class Deck(
     val id: Int,
     val name: String,
-    val numberOfCards: Int,
-    val thumbnailUrl: String
+    val description: String,
+    val thumbnailUrl: String,
+    val isFavorite: Boolean,
+    val cards: List<Card>
+)
+
+data class Card(
+    val id: Int?,
+    val question: String,
+    val awnser: String
 )
 
 
@@ -33,7 +41,7 @@ class ListAllDecksUseCase(private val listAllRepository: ListAllDecksRepository)
         }
 
         val decksViewDataModel = decks.map { deck ->
-            DeckListViewData.Deck(deck.id, deck.name, "${deck.numberOfCards}", deck.thumbnailUrl)
+            DeckListViewData.Deck(deck.id, deck.name, "${deck.cards.count()}", deck.thumbnailUrl)
         }
         val decksViewData = DeckListViewData.decks(decksViewDataModel)
         return decksViewData
