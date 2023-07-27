@@ -136,7 +136,6 @@ class CreateEditCardBottomSheet(context: Context, private val cardViewData: Card
         }
 
         setCancelable(false)
-
     }
 }
 

@@ -56,7 +56,7 @@ class CreateDeckBottomSheetView(
         binding.createDeckButton.setOnClickListener {
             val name = binding.deckNameEditText.text.toString()
             val description = binding.deckDescriptionEditText.text.toString()
-            val viewData = CreateDeckViewDataRequest(name, description, deckImageUri.toString())
+            val viewData = CreateDeckViewDataRequest(name, description, deckImageUri.toString(), listOf())
             viewModel.create(viewData)
 
             binding.deckNameEditText.setText(String())

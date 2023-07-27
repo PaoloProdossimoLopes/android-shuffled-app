@@ -8,7 +8,13 @@ data class Deck(
     val id: Int,
     val name: String,
     val numberOfCards: Int,
-    val thumbnailUrl: String
+    val thumbnailUrl: String,
+    val cards: List<Card>
+)
+
+data class Card(
+    val question: String,
+    val awnser: String
 )
 
 

@@ -9,4 +9,4 @@ class RemoteListAllDeckRepository(private val client: GetAllDecksClient): ListAl
     private fun map(response: DeckListResponse) = response.decks.map { deck -> deck.toModel() }
 }
 
-private fun DeckListResponse.Deck.toModel() = Deck(id, title, totalOfCards, thumbnailUrl)
+private fun DeckListResponse.Deck.toModel() = Deck(id, title, cards.count(), thumbnailUrl, cards.map { Card(it.question, it.answer) })
