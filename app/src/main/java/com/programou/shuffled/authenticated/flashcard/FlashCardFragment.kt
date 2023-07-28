@@ -6,7 +6,6 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.programou.shuffled.R
-import com.programou.shuffled.ResultViewData
+import com.programou.shuffled.authenticated.result.ResultViewData
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.authenticated.ListAdapter

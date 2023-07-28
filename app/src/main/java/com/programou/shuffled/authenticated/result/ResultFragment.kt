@@ -1,20 +1,16 @@
-package com.programou.shuffled
+package com.programou.shuffled.authenticated.result
 
 import android.os.Bundle
-import android.renderscript.ScriptGroup.Binding
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.programou.shuffled.databinding.FragmentDeckListBinding
+import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentResultBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.Serializable
-import java.text.DecimalFormat
 
 data class ResultViewData(val deckTitle: String, val totalOfCards: Int, val numberOfEasy: Int, val numberOfMid: Int, val numberOfHard: Int): Serializable
 
