@@ -1,5 +1,7 @@
 package com.programou.shuffled.authenticated.deckList
 
+import java.io.Serializable
+
 interface ListAllDecksRepository {
     fun listAllDecks(onComplete: Bind<List<Deck>>)
 }
@@ -11,13 +13,13 @@ data class Deck(
     val thumbnailUrl: String,
     val isFavorite: Boolean,
     val cards: List<Card>
-)
+): Serializable
 
 data class Card(
     val id: Int?,
     val question: String,
     val awnser: String
-)
+): Serializable
 
 
 class ListAllDecksUseCase(private val listAllRepository: ListAllDecksRepository): ListAllDecks {

@@ -97,19 +97,20 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         binding.recyclerCardsCarrousel.setNestedScrollingEnabled(false);
 
         binding.buttonStart.setOnClickListener {
+            val cards = cardPreviewAdapter.getViewData().map { Card(it.id, it.question, it.anwser) }
+            val title = binding.editDeckTitle.text.toString()
+            val description = binding.editDeckDescription.text.toString()
+
+            val deck = Deck(deckArgs.deckId, title, description, imageUri.toString(), isFavorited, cards)
             if (isEditState) {
                 changeEditStateHandler()
-                val cards = cardPreviewAdapter.getViewData().map { Card(it.id, it.question, it.anwser) }
-                val title = binding.editDeckTitle.text.toString()
-                val description = binding.editDeckDescription.text.toString()
-
-                val deck = Deck(deckArgs.deckId, title, description, imageUri.toString(), isFavorited, cards)
-
                 viewModel.updateDeck(deck)
                 viewModel.findDeckBy(deck.id)
             } else {
-                val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment()
-                findNavController().navigate(action)
+                viewModel.deckLiveData.value?.let {
+                    val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
+                    findNavController().navigate(action)
+                }
             }
         }
 
