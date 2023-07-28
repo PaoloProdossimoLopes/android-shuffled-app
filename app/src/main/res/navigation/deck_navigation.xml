@@ -42,10 +42,17 @@
         <action
             android:id="@+id/action_flashCardFragment_to_resultFragment"
             app:destination="@id/resultFragment" />
+        <argument
+            android:name="deck"
+            app:argType="com.programou.shuffled.authenticated.deckList.Deck" />
     </fragment>
     <fragment
         android:id="@+id/resultFragment"
         android:name="com.programou.shuffled.ResultFragment"
         android:label="fragment_result"
-        tools:layout="@layout/fragment_result" />
+        tools:layout="@layout/fragment_result" >
+        <argument
+            android:name="viewData"
+            app:argType="com.programou.shuffled.ResultViewData" />
+    </fragment>
 </navigation>
