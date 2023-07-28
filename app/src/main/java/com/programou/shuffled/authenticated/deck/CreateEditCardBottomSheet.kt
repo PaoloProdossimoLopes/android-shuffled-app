@@ -1,11 +1,9 @@
 package com.programou.shuffled.authenticated.deck
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.programou.shuffled.R
-import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.databinding.ViewAddCardBottomSheetDialogBinding
 
 

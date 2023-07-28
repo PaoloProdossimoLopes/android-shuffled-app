@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.programou.shuffled.R
-import com.programou.shuffled.authenticated.result.ResultViewData
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.authenticated.ListAdapter
+import com.programou.shuffled.authenticated.result.ResultViewData
 import com.programou.shuffled.databinding.FragmentFlashCardBinding
 import com.programou.shuffled.databinding.ViewFlashCardItemBinding
 import kotlinx.coroutines.delay
