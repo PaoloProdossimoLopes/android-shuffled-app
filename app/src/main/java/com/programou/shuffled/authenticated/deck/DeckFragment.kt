@@ -45,114 +45,23 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
         binding = FragmentDeckBinding.bind(view)
 
-        binding.imageBackArrow.setOnClickListener {
-            findNavController().popBackStack()
-        }
+        onViewCreated()
+    }
 
-        binding.removeIndicatorImageView.setOnClickListener {
-            val deckId = deckArgs.deckId
-            viewModel.deleteDeck(deckId)
-            findNavController().popBackStack()
-        }
+    private fun onViewCreated() {
+        setupLayout()
+        fetchDeckById()
+    }
 
-        binding.favoriteIndicatorImageView.setOnClickListener {
-            isFavorited = !isFavorited
-
-            if (isFavorited) {
-                binding.favoriteIndicatorImageView.setColorFilter(requireContext().getColor(R.color.yellow_500))
-            } else {
-                binding.favoriteIndicatorImageView.setColorFilter(requireContext().getColor(R.color.gray_300))
-            }
-
-            viewModel.updateFavorite(deckArgs.deckId, isFavorited)
-        }
-
-        binding.editDeckTitle.setText("Ingles")
-
+    private fun setupLayout() {
+        setupListeners()
         updateStartButtonState()
+        setupItemViewHoldersRegistration()
+        setupRecyclerView()
+        setupViewModelBinding()
+    }
 
-        binding.imageEditFields.setOnClickListener {
-            changeEditStateHandler()
-        }
-
-        binding.textAddNewCard.setOnClickListener {
-            CreateEditCardBottomSheet(requireContext(), null, onDone = { card ->
-                viewModel.createCard(deckArgs.deckId, Card(null, card.question, card.anwser))
-                viewModel.findDeckBy(deckArgs.deckId)
-                updateStartButtonState()
-            }).show()
-        }
-
-        cardPreviewAdapter.register(CardEmptyStateItemViewHolder.IDENTIFIER) { parent ->
-            CardEmptyStateItemViewHolder.instantiate(parent)
-        }
-
-        cardPreviewAdapter.register(CardPreviewItemViewHolder.IDENTIFIER) { parent ->
-            CardPreviewItemViewHolder.instantiate(parent) { previewViewData ->
-                if (isEditState) {
-                    CreateEditCardBottomSheet(requireContext(), previewViewData, onDone = { card ->
-                        val cards = cardPreviewAdapter.getViewData()
-                        val index = cards.indexOfFirst { it.id == card.id }
-                        cards[index].anwser = card.anwser
-                        cards[index].question = card.question
-                        cardPreviewAdapter.update(cards.map {
-                            ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, it)
-                        })
-                    }, onDelete = { cardViewData ->
-//                        viewModel.deleteCard(deckArgs.deckId, cardViewData.id!!)
-                        val cards = cardPreviewAdapter.getViewData().toMutableList()
-                        val index = cards.indexOfFirst { it.id == cardViewData.id }
-                        cards.removeAt(index)
-
-                        if (cards.isEmpty()) {
-                            val itemViewData = ItemViewData(CardEmptyStateItemViewHolder.IDENTIFIER, PreviewViewData(null, "", ""))
-                            cardPreviewAdapter.update(listOf(itemViewData))
-                        } else {
-                            cardPreviewAdapter.update(cards.map {
-                                ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, it)
-                            })
-                        }
-                    }).show()
-                }
-            }
-        }
-
-        binding.recyclerCardsCarrousel.adapter = cardPreviewAdapter
-        binding.recyclerCardsCarrousel.layoutManager =
-            GridLayoutManager(requireContext(), 1, GridLayoutManager.HORIZONTAL, false)
-        binding.recyclerCardsCarrousel.setNestedScrollingEnabled(false);
-
-        binding.buttonStart.setOnClickListener {
-
-            if (isEditState) {
-                val cards = cardPreviewAdapter
-                    .getViewData()
-                    .filter { it.id != null }
-                    .map { Card(it.id, it.question, it.anwser) }
-                val title = binding.editDeckTitle.text.toString()
-                val description = binding.editDeckDescription.text.toString()
-
-                val deck = Deck(deckArgs.deckId, title, description, imageUri.toString(), isFavorited, cards)
-                changeEditStateHandler()
-                viewModel.updateDeck(deck)
-                viewModel.findDeckBy(deck.id)
-                updateStartButtonState()
-            } else {
-                viewModel.deckLiveData.value?.let { deck ->
-                    val deck = Deck(deckArgs.deckId, deck.title, deck.description, deck.image.toString(), deck.isFavorite, deck.cards.map { card -> Card(card.id, card.question, card.answer) })
-                    val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
-                    findNavController().navigate(action)
-                }
-            }
-        }
-
-        binding.deckImageView.setOnClickListener {
-            if (isEditState) {
-                val galleryIntent =
-                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                this.launcher.launch(galleryIntent)
-            }
-        }
+    private fun setupViewModelBinding() {
 
         viewModel.deckLiveData.observe(requireActivity()) { deckViewData ->
             binding.editDeckTitle.setText(deckViewData.title)
@@ -177,7 +86,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
             if (deckViewData.cards.isEmpty()) {
                 val itemViewData = ItemViewData(CardEmptyStateItemViewHolder.IDENTIFIER, PreviewViewData(null, "", ""))
-                 cardPreviewAdapter.update(listOf(itemViewData))
+                cardPreviewAdapter.update(listOf(itemViewData))
             } else {
                 cardPreviewAdapter.update(deckViewData.cards.map {
                     ItemViewData(
@@ -190,7 +99,115 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
             updateStartButtonState()
         }
 
-        viewModel.findDeckBy(deckArgs.deckId)
+    }
+
+    private fun setupRecyclerView() {
+        binding.recyclerCardsCarrousel.adapter = cardPreviewAdapter
+        binding.recyclerCardsCarrousel.layoutManager =
+            GridLayoutManager(requireContext(), 1, GridLayoutManager.HORIZONTAL, false)
+        binding.recyclerCardsCarrousel.setNestedScrollingEnabled(false);
+    }
+
+    private fun setupListeners() {
+        binding.deckImageView.setOnClickListener {
+            if (isEditState) {
+                val galleryIntent =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+                this.launcher.launch(galleryIntent)
+            }
+        }
+        binding.imageBackArrow.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.removeIndicatorImageView.setOnClickListener {
+            val deckId = deckArgs.deckId
+            viewModel.deleteDeck(deckId)
+            findNavController().popBackStack()
+        }
+
+        binding.favoriteIndicatorImageView.setOnClickListener {
+            isFavorited = !isFavorited
+
+            if (isFavorited) {
+                binding.favoriteIndicatorImageView.setColorFilter(requireContext().getColor(R.color.yellow_500))
+            } else {
+                binding.favoriteIndicatorImageView.setColorFilter(requireContext().getColor(R.color.gray_300))
+            }
+
+            viewModel.updateFavorite(deckArgs.deckId, isFavorited)
+        }
+
+        binding.imageEditFields.setOnClickListener {
+            changeEditStateHandler()
+        }
+
+        binding.textAddNewCard.setOnClickListener {
+            CreateEditCardBottomSheet(requireContext(), null, onDone = { card ->
+                viewModel.createCard(deckArgs.deckId, Card(null, card.question, card.anwser))
+                fetchDeckById()
+                updateStartButtonState()
+            }).show()
+        }
+
+        binding.buttonStart.setOnClickListener {
+
+            if (isEditState) {
+                val cards = cardPreviewAdapter
+                    .getViewData()
+                    .filter { it.id != null }
+                    .map { Card(it.id, it.question, it.anwser) }
+                val title = binding.editDeckTitle.text.toString()
+                val description = binding.editDeckDescription.text.toString()
+
+                val deck = Deck(deckArgs.deckId, title, description, imageUri.toString(), isFavorited, cards)
+                changeEditStateHandler()
+                viewModel.updateDeck(deck)
+                viewModel.findDeckBy(deck.id)
+                updateStartButtonState()
+            } else {
+                viewModel.deckLiveData.value?.let { deck ->
+                    val deck = Deck(deckArgs.deckId, deck.title, deck.description, deck.image.toString(), deck.isFavorite, deck.cards.map { card -> Card(card.id, card.question, card.answer) })
+                    val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
+                    findNavController().navigate(action)
+                }
+            }
+        }
+    }
+
+    private fun setupItemViewHoldersRegistration() {
+        cardPreviewAdapter.register(CardEmptyStateItemViewHolder.IDENTIFIER) { parent ->
+            CardEmptyStateItemViewHolder.instantiate(parent)
+        }
+
+        cardPreviewAdapter.register(CardPreviewItemViewHolder.IDENTIFIER) { parent ->
+            CardPreviewItemViewHolder.instantiate(parent) { previewViewData ->
+                if (isEditState) {
+                    CreateEditCardBottomSheet(requireContext(), previewViewData, onDone = { card ->
+                        val cards = cardPreviewAdapter.getViewData()
+                        val index = cards.indexOfFirst { it.id == card.id }
+                        cards[index].anwser = card.anwser
+                        cards[index].question = card.question
+                        cardPreviewAdapter.update(cards.map {
+                            ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, it)
+                        })
+                    }, onDelete = { cardViewData ->
+                        val cards = cardPreviewAdapter.getViewData().toMutableList()
+                        val index = cards.indexOfFirst { it.id == cardViewData.id }
+                        cards.removeAt(index)
+
+                        if (cards.isEmpty()) {
+                            val itemViewData = ItemViewData(CardEmptyStateItemViewHolder.IDENTIFIER, PreviewViewData(null, "", ""))
+                            cardPreviewAdapter.update(listOf(itemViewData))
+                        } else {
+                            cardPreviewAdapter.update(cards.map {
+                                ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, it)
+                            })
+                        }
+                    }).show()
+                }
+            }
+        }
     }
 
     private fun changeEditStateHandler() {
@@ -205,7 +222,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         } else {
             binding.imageEditFields.setImageResource(R.drawable.ic_edit)
             binding.buttonStart.text = "Começar"
-            viewModel.findDeckBy(deckArgs.deckId)
+            fetchDeckById()
         }
 
         binding.imageBackArrow.isVisible = !isEditState
@@ -213,6 +230,10 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         binding.removeIndicatorImageView.isVisible = isEditState
 
         updateStartButtonState()
+    }
+
+    private fun fetchDeckById() {
+        viewModel.findDeckBy(deckArgs.deckId)
     }
 
     private val launcher = registerForActivityResult(
