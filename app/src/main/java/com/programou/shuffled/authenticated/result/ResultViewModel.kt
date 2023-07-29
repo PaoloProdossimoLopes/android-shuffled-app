@@ -11,30 +11,18 @@ class ResultViewModel: ViewModel() {
             deckStudiedTitle
         )
 
-        val hardUsage = makeHardUsage(request)
-        val intermediateUsage = makeIntermediateUsage(request)
-        val easyUsage = makeEasyUsage(request)
+        val hardUsage = makeUsage(request.viewData.numberOfHard, request.viewData.totalOfCards, Constant.MARK_AS_HARD)
+        val intermediateUsage = makeUsage(request.viewData.numberOfMid, request.viewData.totalOfCards, Constant.MARK_AS_INTERMEDIATE)
+        val easyUsage = makeUsage(request.viewData.numberOfEasy, request.viewData.totalOfCards, Constant.MARK_AS_EASY)
 
         val usage = Response.Usage(hardUsage, intermediateUsage, easyUsage)
         return Response(congratulation, usage, Constant.COMPLETED_STUDY_MESSAGE)
     }
 
-    private fun makeEasyUsage(request: Request): Response.Use {
-        val easyPercentageValue = getPercentageOfEasy(request)
-        val easyPercentage = formatPercentage(easyPercentageValue)
-        return Response.Use(easyPercentage, Constant.MARK_AS_EASY)
-    }
-
-    private fun makeIntermediateUsage(request: Request): Response.Use {
-        val intermediatePercentageValue = getPercentageOfIntermediate(request)
-        val intermediatePercentage = formatPercentage(intermediatePercentageValue)
-        return Response.Use(intermediatePercentage, Constant.MARK_AS_INTERMEDIATE)
-    }
-
-    private fun makeHardUsage(request: Request): Response.Use {
-        val hardPercentageValue = getPercentageOfHard(request)
-        val hardPercentage = formatPercentage(hardPercentageValue)
-        return Response.Use(hardPercentage, Constant.MARK_AS_HARD)
+    private fun makeUsage(cards: Int, totalOfCards: Int, usageDescription: String): Response.Use {
+        val percentage = calculatePercentageOf(cards, totalOfCards)
+        val percentageFormatted = formatPercentage(percentage)
+        return Response.Use(percentageFormatted, usageDescription)
     }
 
     private fun formatPercentage(value: Double): String {
@@ -43,25 +31,7 @@ class ResultViewModel: ViewModel() {
         return numberFormatted + Constant.PERCENTAGE_INDICATOR
     }
 
-    fun getPercentageOfHard(request: Request): Double {
-        val numberOfCardsSelectedAsHard = request.viewData.numberOfHard
-        val totalOfCardsInDeck = request.viewData.totalOfCards
-        return calculatePercentageOf(numberOfCardsSelectedAsHard, totalOfCardsInDeck)
-    }
-
-    fun getPercentageOfIntermediate(request: Request): Double {
-        val numberOfCardsSelectedAsIntermediate = request.viewData.numberOfMid
-        val totalOfCardsInDeck = request.viewData.totalOfCards
-        return calculatePercentageOf(numberOfCardsSelectedAsIntermediate, totalOfCardsInDeck)
-    }
-
-    fun getPercentageOfEasy(request: Request): Double {
-        val numberOfCardsSelectedAsEasy = request.viewData.numberOfEasy
-        val totalOfCardsInDeck = request.viewData.totalOfCards
-        return calculatePercentageOf(numberOfCardsSelectedAsEasy, totalOfCardsInDeck)
-    }
-
-    private fun calculatePercentageOf(cards: Int, forTotal: Int) = (cards * 100.0 / forTotal)
+    fun calculatePercentageOf(cards: Int, forTotal: Int) = (cards * 100.0 / forTotal)
 
     private object Constant {
         const val PERCENTAGE_FORMAT = "%.2f"

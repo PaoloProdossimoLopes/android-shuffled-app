@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentResultBinding
 import kotlinx.coroutines.delay
@@ -49,18 +50,14 @@ class ResultFragment: Fragment(R.layout.fragment_result) {
     }
 
     private fun configureUsageFor(textViewPercentage: TextView, textViewDescription: TextView, usage: ResultViewModel.Response.Use) {
-        with (usage) {
-            textViewPercentage.text = percentage
-            textViewDescription.text = description
-        }
+        textViewPercentage.text = usage.percentage
+        textViewDescription.text = usage.description
     }
 
     private fun configureCongratulationSectionFrom(congratulation: ResultViewModel.Response.Congratulation) {
-        with (congratulation) {
-            binding.congratulationTitleTextView.text = title
-            binding.congratulationDescriptionTextView.text = description
-            binding.congratulationDeckNameTextView.text = name
-        }
+        binding.congratulationTitleTextView.text = congratulation.title
+        binding.congratulationDescriptionTextView.text = congratulation.description
+        binding.congratulationDeckNameTextView.text = congratulation.name
     }
 
     override fun onResume() {
@@ -70,29 +67,18 @@ class ResultFragment: Fragment(R.layout.fragment_result) {
             delay(300) //0.3s
 
             val request = ResultViewModel.Request(arguments.viewData)
-
-            configureCircularProgress(request)
+            configureProgressForCircularProgressIndicators(request)
         }
     }
 
-    private fun configureCircularProgress(request: ResultViewModel.Request) {
-        configureHardCircularProgress(request)
-        configureEasyCircularProgress(request)
-        configrueIntermediateCircularProgress(request)
+    private fun configureProgressForCircularProgressIndicators(request: ResultViewModel.Request) {
+        configureProgressForCircularProgressView(binding.hardCircularProgressView, request.viewData.numberOfHard, request.viewData.totalOfCards)
+        configureProgressForCircularProgressView(binding.intermediateCircularProgressView, request.viewData.numberOfMid, request.viewData.totalOfCards)
+        configureProgressForCircularProgressView(binding.easyCircularProgressView, request.viewData.numberOfEasy, request.viewData.totalOfCards)
     }
 
-    private fun configrueIntermediateCircularProgress(request: ResultViewModel.Request) {
-        val intermediatePercentage = viewModel.getPercentageOfIntermediate(request)
-        binding.intermediateCircularProgressView.setProgress(intermediatePercentage.toInt(), true)
-    }
-
-    private fun configureEasyCircularProgress(request: ResultViewModel.Request) {
-        val easyPercentage = viewModel.getPercentageOfEasy(request)
-        binding.easyCircularProgressView.setProgress(easyPercentage.toInt(), true)
-    }
-
-    private fun configureHardCircularProgress(request: ResultViewModel.Request) {
-        val badPercentage = viewModel.getPercentageOfHard(request)
-        binding.hardCircularProgressView.setProgress(badPercentage.toInt(), true)
+    private fun configureProgressForCircularProgressView(progress: CircularProgressIndicator, cards: Int, totalOfCards: Int) {
+        val percentage = viewModel.calculatePercentageOf(cards, totalOfCards)
+        progress.setProgress(percentage.toInt(), true)
     }
 }
