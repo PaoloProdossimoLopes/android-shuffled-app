@@ -13,17 +13,18 @@ data class DeckViewData(val title: String, val description: String, val image: U
     data class Card(val id: Int, val question: String, val answer: String)
 }
 
-class DeckViewModel(private val findClient: DeckClienting, private val updateClient: DeckUpdateClienting): ViewModel() {
+class DeckViewModel(private val deckId: Int, private val findClient: DeckClienting, private val updateClient: DeckUpdateClienting): ViewModel() {
     private val deckMutableLiveData = MutableLiveData<DeckViewData>()
     val deckLiveData: LiveData<DeckViewData> = deckMutableLiveData
 
-    fun findDeckBy(id: Int) {
-        viewModelScope.launch {
-            val deck = findClient.findBy(id)
-            deck?.let {
-                val deckViewData = DeckViewData(it.deck.title, it.deck.description, Uri.parse(it.deck.thumbnailUrl)!!, it.deck.isFavorited, it.deck.cards.map { card -> DeckViewData.Card(card.id, card.question, card.answer) })
-                deckMutableLiveData.postValue(deckViewData)
-            }
+    private val deckIsFavoriteMutableLiveData = MutableLiveData<Boolean>()
+    val deckIsFavorite: LiveData<Boolean> = deckIsFavoriteMutableLiveData
+
+    fun findDeckBy(id: Int) = viewModelScope.launch {
+        val deck = findClient.findBy(id)
+        deck?.let {
+            val deckViewData = it.toViewData()
+            deckMutableLiveData.postValue(deckViewData)
         }
     }
 
@@ -37,9 +38,25 @@ class DeckViewModel(private val findClient: DeckClienting, private val updateCli
     fun createCard(deckId: Int, newCard: Card) = viewModelScope.launch {
         updateClient.createCard(deckId, newCard)
     }
-    fun updateFavorite(deckId: Int, isFavorited: Boolean) = viewModelScope.launch {
-        updateClient.updateFavorited(deckId, isFavorited)
+
+    fun toggleFavorite() = viewModelScope.launch {
+        val deck = findClient.findBy(deckId)
+        deck?.deck?.isFavorited?.let { currentFavoritedState ->
+            val newFavoritedState = currentFavoritedState.not()
+            updateClient.updateFavorited(deckId, newFavoritedState)
+            deckIsFavoriteMutableLiveData.postValue(newFavoritedState)
+        }
     }
+}
+
+fun DeckResponse.toViewData(): DeckViewData {
+    val cards = deck.cards.map { card -> DeckViewData.Card(card.id, card.question, card.answer) }
+    return DeckViewData(
+        deck.title,
+        deck.description,
+        Uri.parse(deck.thumbnailUrl)!!,
+        deck.isFavorited, cards
+    )
 }
 
 interface DeckClienting {

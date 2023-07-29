@@ -32,10 +32,9 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
     private val cardPreviewAdapter = ListAdapter<PreviewViewData>()
     private val deckArgs: DeckFragmentArgs by navArgs()
     private var imageUri: Uri? = null
-    private var isFavorited = true
     private val viewModel: DeckViewModel by lazy {
         val client = InmemoryDeckListClient.shared
-        DeckViewModel(client, client)
+        DeckViewModel(deckArgs.deckId, client, client)
     }
 
     private var isEditState = false
@@ -62,22 +61,20 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
     }
 
     private fun setupViewModelBinding() {
+        viewModel.deckIsFavorite.observe(requireActivity()) { isFavorite ->
+            favoriteStateIndicatorHandler(isFavorite)
+        }
 
         viewModel.deckLiveData.observe(requireActivity()) { deckViewData ->
             binding.deckTitleEditTextInDeckFragment.setText(deckViewData.title)
             binding.deckDescriptionEditTextInDeckFragment.setText(deckViewData.description)
             this.imageUri = deckViewData.image
-            this.isFavorited = deckViewData.isFavorite
 
             val requestOptions = RequestOptions()
                 .centerCrop()
                 .placeholder(R.color.gray_100)
 
-            if (isFavorited) {
-                binding.favoriteIndicatorImageViewInDeckFragment.setColorFilter(requireContext().getColor(R.color.yellow_500))
-            } else {
-                binding.favoriteIndicatorImageViewInDeckFragment.setColorFilter(requireContext().getColor(R.color.gray_300))
-            }
+            favoriteStateIndicatorHandler(deckViewData.isFavorite)
 
             Glide.with(binding.root.context)
                 .load(deckViewData.image)
@@ -99,6 +96,16 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
             updateStartButtonState()
         }
 
+    }
+
+    private fun favoriteStateIndicatorHandler(isFavorite: Boolean) {
+        val color = requireContext().getColor(if (isFavorite) {
+            R.color.yellow_500
+        } else {
+            R.color.gray_300
+        })
+
+        binding.favoriteIndicatorImageViewInDeckFragment.setColorFilter(color)
     }
 
     private fun setupRecyclerView() {
@@ -127,15 +134,8 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         }
 
         binding.favoriteIndicatorImageViewInDeckFragment.setOnClickListener {
-            isFavorited = !isFavorited
-
-            if (isFavorited) {
-                binding.favoriteIndicatorImageViewInDeckFragment.setColorFilter(requireContext().getColor(R.color.yellow_500))
-            } else {
-                binding.favoriteIndicatorImageViewInDeckFragment.setColorFilter(requireContext().getColor(R.color.gray_300))
-            }
-
-            viewModel.updateFavorite(deckArgs.deckId, isFavorited)
+            //toggleFavoritedState()
+            viewModel.toggleFavorite()
         }
 
         binding.editPencilIndicatorImageViewInDeckFragment.setOnClickListener {
@@ -159,6 +159,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
                     .map { Card(it.id, it.question, it.anwser) }
                 val title = binding.deckTitleEditTextInDeckFragment.text.toString()
                 val description = binding.deckDescriptionEditTextInDeckFragment.text.toString()
+                val isFavorited = viewModel.deckIsFavorite.value ?: false
 
                 val deck = Deck(deckArgs.deckId, title, description, imageUri.toString(), isFavorited, cards)
                 changeEditStateHandler()
@@ -231,6 +232,19 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
         updateStartButtonState()
     }
+
+//    private fun toggleFavoritedState() {
+//        viewModel.toggleFavorite()
+//        isFavorited = isFavorited.not()
+//
+//        if (isFavorited) {
+//            binding.favoriteIndicatorImageViewInDeckFragment.setColorFilter(requireContext().getColor(R.color.yellow_500))
+//        } else {
+//            binding.favoriteIndicatorImageViewInDeckFragment.setColorFilter(requireContext().getColor(R.color.gray_300))
+//        }
+//
+//        viewModel.updateFavorite(deckArgs.deckId, isFavorited)
+//    }
 
     private fun fetchDeckById() {
         viewModel.findDeckBy(deckArgs.deckId)
