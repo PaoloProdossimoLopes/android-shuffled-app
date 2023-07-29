@@ -5,7 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -17,10 +19,12 @@ import com.bumptech.glide.request.RequestOptions
 import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
+import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
 import com.programou.shuffled.databinding.FragmentDeckBinding
+import com.programou.shuffled.databinding.ViewEmptyCardStateItemBinding
 
 class DeckFragment : Fragment(R.layout.fragment_deck) {
     private lateinit var binding: FragmentDeckBinding
@@ -71,15 +75,14 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
         binding.textAddNewCard.setOnClickListener {
             CreateEditCardBottomSheet(requireContext(), null, onDone = { card ->
-//                val cards = cardPreviewAdapter.getViewData().toMutableList()
-//                cards.add(card)
-//                cardPreviewAdapter.update(cards.map {
-//                    ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, it)
-//                })
                 viewModel.createCard(deckArgs.deckId, Card(null, card.question, card.anwser))
                 viewModel.findDeckBy(deckArgs.deckId)
                 updateStartButtonState()
             }).show()
+        }
+
+        cardPreviewAdapter.register(CardEmptyStateItemViewHolder.IDENTIFIER) { parent ->
+            CardEmptyStateItemViewHolder.instantiate(parent)
         }
 
         cardPreviewAdapter.register(CardPreviewItemViewHolder.IDENTIFIER) { parent ->
@@ -153,12 +156,17 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
                 .apply(requestOptions)
                 .into(binding.deckImageView)
 
-            cardPreviewAdapter.update(deckViewData.cards.map {
-                ItemViewData(
-                    CardPreviewItemViewHolder.IDENTIFIER,
-                    PreviewViewData(it.id, it.question, it.answer)
-                )
-            })
+            if (deckViewData.cards.isEmpty()) {
+                val itemViewData = ItemViewData(CardEmptyStateItemViewHolder.IDENTIFIER, PreviewViewData(null, "", ""))
+                 cardPreviewAdapter.update(listOf(itemViewData))
+            } else {
+                cardPreviewAdapter.update(deckViewData.cards.map {
+                    ItemViewData(
+                        CardPreviewItemViewHolder.IDENTIFIER,
+                        PreviewViewData(it.id, it.question, it.answer)
+                    )
+                })
+            }
 
             updateStartButtonState()
         }
@@ -200,4 +208,18 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         binding.buttonStart.isActivated = isNotEmpty
         binding.buttonStart.isClickable = isNotEmpty
     }
+}
+
+class CardEmptyStateItemViewHolder(binding: ViewEmptyCardStateItemBinding): ItemViewHolder<PreviewViewData>(binding.root) {
+
+    companion object {
+        val IDENTIFIER: Int by lazy { CardEmptyStateItemViewHolder.hashCode() }
+
+        fun instantiate(parent: ViewGroup): CardEmptyStateItemViewHolder {
+            val inflater = LayoutInflater.from(parent.context)
+            val binding = ViewEmptyCardStateItemBinding.inflate(inflater, parent, false)
+            return CardEmptyStateItemViewHolder(binding)
+        }
+    }
+    override fun bind(viewData: PreviewViewData) { }
 }
