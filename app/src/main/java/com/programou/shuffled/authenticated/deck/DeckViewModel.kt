@@ -31,6 +31,9 @@ class DeckViewModel(private val findUseCase: DeckFinding, private val updateUseC
     fun createCard(deckId: Int, newCard: Card) = viewModelScope.launch {
         updateUseCase.createCard(deckId, newCard)
     }
+    fun updateFavorite(deckId: Int, isFavorited: Boolean) = viewModelScope.launch {
+        updateUseCase.updateFavorited(deckId, isFavorited)
+    }
 }
 
 interface DeckFinding {
@@ -40,6 +43,7 @@ interface DeckFinding {
 interface DeckUpdating {
     suspend fun updateDeck(deck: Deck): Boolean
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
+    suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
 }
 
 class DeckFinderUseCase(private val repository: DeckRepositoring): DeckFinding {
@@ -49,11 +53,14 @@ class DeckFinderUseCase(private val repository: DeckRepositoring): DeckFinding {
 class DeckUpdate(private val repository: DeckUpdateRepositing): DeckUpdating {
     override suspend fun updateDeck(deck: Deck) = repository.updateDeck(deck)
     override suspend fun createCard(deckId: Int, newCard: Card) = repository.createCard(deckId, newCard)
+
+    override suspend fun updateFavorited(deckId: Int, isFavorited: Boolean) = repository.updateFavorited(deckId, isFavorited)
 }
 
 interface DeckUpdateRepositing {
     suspend fun updateDeck(deck: Deck): Boolean
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
+    suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
 }
 
 interface DeckRepositoring {
@@ -77,6 +84,8 @@ class DeckRepository(private val client: DeckClienting): DeckRepositoring {
 class DeckUpdateRepository(private val client: DeckUpdateClienting): DeckUpdateRepositing {
     override suspend fun updateDeck(deck: Deck) = client.updateDeck(deck)
     override suspend fun createCard(deckId: Int, newCard: Card) = client.createCard(deckId, newCard)
+
+    override suspend fun updateFavorited(deckId: Int, isFavorited: Boolean) = client.updateFavorited(deckId, isFavorited)
 }
 
 
@@ -87,6 +96,7 @@ interface DeckClienting {
 interface DeckUpdateClienting {
     suspend fun updateDeck(deck: Deck): Boolean
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
+    suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
 }
 
 

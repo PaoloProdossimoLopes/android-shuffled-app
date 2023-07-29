@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 
 class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
     private lateinit var binding: FragmentFlashCardBinding
-    private val flashcardArgs: FlashCardFragmentArgs by navArgs()
+    private val arguments: FlashCardFragmentArgs by navArgs()
     private val flashcardListAdapter = ListAdapter<FlashCardViewData>()
     private var isScrollEnabled = false
     private var currentItem = 0
@@ -44,7 +44,7 @@ class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
 
         binding = FragmentFlashCardBinding.bind(view)
 
-        binding.deckTitleTextView.text = flashcardArgs.deck.name
+        binding.deckTitleTextView.text = arguments.deck.name
 
         flashcardListAdapter.register(FlashCardItemViewHolder.IDENTIFIER) { parent ->
             FlashCardItemViewHolder.instantiate(parent)
@@ -58,9 +58,9 @@ class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
         binding.mcvGood.setOnClickListener {
             numberOfCardsEasy++
 
-            binding.imageGood.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_happy_emoji_active))
-            binding.imageBad.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_bad_emoji_deactive))
-            binding.imageSkip.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_normal_emoji_deactive))
+            binding.imageGood.setImageDrawable(getDrawableBy(R.drawable.ic_happy_emoji_active))
+            binding.imageBad.setImageDrawable(getDrawableBy(R.drawable.ic_bad_emoji_deactive))
+            binding.imageSkip.setImageDrawable(getDrawableBy(R.drawable.ic_normal_emoji_deactive))
 
             goToNextItem()
         }
@@ -68,21 +68,21 @@ class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
         binding.mcvSkip.setOnClickListener {
             numberOfCardsMid++
 
-            binding.imageGood.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_happy_emoji_deactive))
-            binding.imageBad.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_bad_emoji_deactive))
-            binding.imageSkip.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_normal_emoji_active))
+            binding.imageGood.setImageDrawable(getDrawableBy(R.drawable.ic_happy_emoji_deactive))
+            binding.imageBad.setImageDrawable(getDrawableBy(R.drawable.ic_bad_emoji_deactive))
+            binding.imageSkip.setImageDrawable(getDrawableBy(R.drawable.ic_normal_emoji_active))
 
             goToNextItem()
         }
 
-        binding.tvTotalCards.text = flashcardArgs.deck.cards.count().toString()
+        binding.tvTotalCards.text = arguments.deck.cards.count().toString()
 
         binding.mcvBad.setOnClickListener {
             numberOfCardsDifficulty++
 
-            binding.imageGood.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_happy_emoji_deactive))
-            binding.imageBad.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_bad_emoji_active))
-            binding.imageSkip.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_normal_emoji_deactive))
+            binding.imageGood.setImageDrawable(getDrawableBy(R.drawable.ic_happy_emoji_deactive))
+            binding.imageBad.setImageDrawable(getDrawableBy(R.drawable.ic_bad_emoji_active))
+            binding.imageSkip.setImageDrawable(getDrawableBy(R.drawable.ic_normal_emoji_deactive))
 
             goToNextItem()
         }
@@ -91,26 +91,28 @@ class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
             findNavController().popBackStack()
         }
 
-        val cards = flashcardArgs.deck.cards.map {
+        val cards = arguments.deck.cards.map {
             ItemViewData(FlashCardItemViewHolder.IDENTIFIER, FlashCardViewData(it.id!!, it.question, it.awnser))
         }
         flashcardListAdapter.update(cards)
     }
 
     private fun disableAllButtons() {
-        binding.imageGood.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_happy_emoji_deactive))
-        binding.imageBad.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_bad_emoji_deactive))
-        binding.imageSkip.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_normal_emoji_deactive))
+        binding.imageGood.setImageDrawable(getDrawableBy(R.drawable.ic_happy_emoji_deactive))
+        binding.imageBad.setImageDrawable(getDrawableBy(R.drawable.ic_bad_emoji_deactive))
+        binding.imageSkip.setImageDrawable(getDrawableBy(R.drawable.ic_normal_emoji_deactive))
     }
 
+    private fun getDrawableBy(id: Int) = requireActivity().getDrawable(id)
+
     private fun goToNextItem() {
-        if (currentItem < flashcardArgs.deck.cards.count() - 1) {
+        if (currentItem < arguments.deck.cards.count() - 1) {
             lifecycleScope.launch {
                 isScrollEnabled = true
                 delay(500)
                 currentItem++
 
-                val totalOfCards = flashcardArgs.deck.cards.count()
+                val totalOfCards = arguments.deck.cards.count()
                 val currentPosition = (currentItem + 1)
                 val progress = ((currentPosition * 100) / totalOfCards)
 
@@ -124,7 +126,7 @@ class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
                 isScrollEnabled = false
             }
         } else {
-            val viewData = ResultViewData(flashcardArgs.deck.name, flashcardArgs.deck.cards.count(), numberOfCardsEasy, numberOfCardsMid, numberOfCardsDifficulty)
+            val viewData = ResultViewData(arguments.deck.name, arguments.deck.cards.count(), numberOfCardsEasy, numberOfCardsMid, numberOfCardsDifficulty)
             val action = FlashCardFragmentDirections.actionFlashCardFragmentToResultFragment(viewData)
             findNavController().navigate(action)
         }

@@ -88,11 +88,17 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
 
     override suspend fun createCard(deckId: Int, newCard: Card): Boolean {
         val deckIndex = inmemoryDecks.indexOfFirst { it.id == deckId }
-        val newId = inmemoryDecks[deckIndex].cards.last().id + 1
+        val newId = inmemoryDecks[deckIndex].cards.lastOrNull()?.id?.plus(1) ?: 0
 
         val all = inmemoryDecks[deckIndex].cards + DeckListResponse.Card(newId, newCard.question, newCard.awnser)
         inmemoryDecks[deckIndex].cards = all
 
+        return true
+    }
+
+    override suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean {
+        val deckIndex = inmemoryDecks.indexOfFirst { it.id == deckId }
+        inmemoryDecks[deckIndex].isFavorited = isFavorited
         return true
     }
 }

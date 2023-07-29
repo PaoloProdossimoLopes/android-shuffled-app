@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -48,17 +49,21 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
             findNavController().popBackStack()
         }
 
-        binding.buttonFavorite.setOnClickListener {
+        binding.favoriteIndicatorImageView.setOnClickListener {
             isFavorited = !isFavorited
 
             if (isFavorited) {
-                binding.buttonFavorite.text = "DESFAVORITAR"
+                binding.favoriteIndicatorImageView.setColorFilter(requireContext().getColor(R.color.yellow_500))
             } else {
-                binding.buttonFavorite.text = "FAVORITAR"
+                binding.favoriteIndicatorImageView.setColorFilter(requireContext().getColor(R.color.gray_300))
             }
+
+            viewModel.updateFavorite(deckArgs.deckId, isFavorited)
         }
 
         binding.editDeckTitle.setText("Ingles")
+
+        updateStartButtonState()
 
         binding.imageEditFields.setOnClickListener {
             changeEditStateHandler()
@@ -66,12 +71,14 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
         binding.textAddNewCard.setOnClickListener {
             CreateEditCardBottomSheet(requireContext(), null, onDone = { card ->
-                val cards = cardPreviewAdapter.getViewData().toMutableList()
-                cards.add(card)
-                cardPreviewAdapter.update(cards.map {
-                    ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, it)
-                })
+//                val cards = cardPreviewAdapter.getViewData().toMutableList()
+//                cards.add(card)
+//                cardPreviewAdapter.update(cards.map {
+//                    ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, it)
+//                })
                 viewModel.createCard(deckArgs.deckId, Card(null, card.question, card.anwser))
+                viewModel.findDeckBy(deckArgs.deckId)
+                updateStartButtonState()
             }).show()
         }
 
@@ -97,17 +104,20 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         binding.recyclerCardsCarrousel.setNestedScrollingEnabled(false);
 
         binding.buttonStart.setOnClickListener {
-            val cards = cardPreviewAdapter.getViewData().map { Card(it.id, it.question, it.anwser) }
-            val title = binding.editDeckTitle.text.toString()
-            val description = binding.editDeckDescription.text.toString()
 
-            val deck = Deck(deckArgs.deckId, title, description, imageUri.toString(), isFavorited, cards)
             if (isEditState) {
+                val cards = cardPreviewAdapter.getViewData().map { Card(it.id, it.question, it.anwser) }
+                val title = binding.editDeckTitle.text.toString()
+                val description = binding.editDeckDescription.text.toString()
+
+                val deck = Deck(deckArgs.deckId, title, description, imageUri.toString(), isFavorited, cards)
                 changeEditStateHandler()
                 viewModel.updateDeck(deck)
                 viewModel.findDeckBy(deck.id)
+                updateStartButtonState()
             } else {
-                viewModel.deckLiveData.value?.let {
+                viewModel.deckLiveData.value?.let { deck ->
+                    val deck = Deck(deckArgs.deckId, deck.title, deck.description, deck.image.toString(), deck.isFavorite, deck.cards.map { card -> Card(card.id, card.question, card.answer) })
                     val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
                     findNavController().navigate(action)
                 }
@@ -132,10 +142,10 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
                 .centerCrop()
                 .placeholder(R.color.gray_100)
 
-            if (deckViewData.isFavorite) {
-                binding.buttonFavorite.text = "DESFAVORITAR"
+            if (isFavorited) {
+                binding.favoriteIndicatorImageView.setColorFilter(requireContext().getColor(R.color.yellow_500))
             } else {
-                binding.buttonFavorite.text = "FAVORITAR"
+                binding.favoriteIndicatorImageView.setColorFilter(requireContext().getColor(R.color.gray_300))
             }
 
             Glide.with(binding.root.context)
@@ -149,6 +159,8 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
                     PreviewViewData(it.id, it.question, it.answer)
                 )
             })
+
+            updateStartButtonState()
         }
 
         viewModel.findDeckBy(deckArgs.deckId)
@@ -167,6 +179,9 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
             binding.imageEditFields.setImageResource(R.drawable.ic_edit)
             binding.buttonStart.text = "Começar"
         }
+
+        binding.imageBackArrow.isVisible = !isEditState
+        binding.favoriteIndicatorImageView.isVisible = !isEditState
     }
 
     private val launcher = registerForActivityResult(
@@ -177,5 +192,12 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
             imageUri = galleryImageUri
             binding.deckImageView.setImageURI(galleryImageUri)
         }
+    }
+
+    private fun updateStartButtonState() {
+        val isNotEmpty = !cardPreviewAdapter.getViewData().isEmpty()
+        binding.buttonStart.isEnabled = isNotEmpty
+        binding.buttonStart.isActivated = isNotEmpty
+        binding.buttonStart.isClickable = isNotEmpty
     }
 }
