@@ -35,11 +35,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
     private var isFavorited = true
     private val viewModel: DeckViewModel by lazy {
         val client = InmemoryDeckListClient.shared
-        val findRepository = DeckRepository(client)
-        val updateRepository = DeckUpdateRepository(client)
-        val findUseCase = DeckFinderUseCase(findRepository)
-        val updateUseCase = DeckUpdate(updateRepository)
-        DeckViewModel(findUseCase, updateUseCase)
+        DeckViewModel(client, client)
     }
 
     private var isEditState = false

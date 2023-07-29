@@ -108,10 +108,4 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
         inmemoryDecks.removeAt(deckIndex)
         return true
     }
-
-    override suspend fun deleteCard(deckId: Int, cardId: Int): Boolean {
-        val deckIndex = inmemoryDecks.indexOfFirst { it.id == deckId }
-        inmemoryDecks[deckIndex].cards.removeAt(deckIndex)
-        return true
-    }
 }
