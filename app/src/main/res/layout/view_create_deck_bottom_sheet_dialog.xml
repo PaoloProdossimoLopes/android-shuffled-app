@@ -55,7 +55,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/deckImageView"
+                    android:id="@+id/deckImageViewInCreateDeckBottomSheet"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"

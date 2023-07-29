@@ -87,7 +87,7 @@ class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
             goToNextItem()
         }
 
-        binding.imageBackArrow.setOnClickListener {
+        binding.backArrowIndicatorImageViewInFlashcardFragment.setOnClickListener {
             findNavController().popBackStack()
         }
 
