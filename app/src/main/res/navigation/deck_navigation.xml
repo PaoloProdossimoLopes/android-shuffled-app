@@ -48,11 +48,11 @@
     </fragment>
     <fragment
         android:id="@+id/resultFragment"
-        android:name="com.programou.shuffled.ResultFragment"
+        android:name="com.programou.shuffled.authenticated.result.ResultFragment"
         android:label="fragment_result"
         tools:layout="@layout/fragment_result" >
         <argument
             android:name="viewData"
-            app:argType="com.programou.shuffled.ResultViewData" />
+            app:argType="com.programou.shuffled.authenticated.result.ResultViewData" />
     </fragment>
 </navigation>
