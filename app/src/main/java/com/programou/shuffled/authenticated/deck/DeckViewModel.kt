@@ -38,6 +38,10 @@ class DeckViewModel(private val findUseCase: DeckFinding, private val updateUseC
     fun updateFavorite(deckId: Int, isFavorited: Boolean) = viewModelScope.launch {
         updateUseCase.updateFavorited(deckId, isFavorited)
     }
+
+    fun deleteCard(deckId: Int, cardId: Int) = viewModelScope.launch {
+        updateUseCase.deleteCard(deckId, cardId)
+    }
 }
 
 interface DeckFinding {
@@ -48,8 +52,8 @@ interface DeckUpdating {
     suspend fun updateDeck(deck: Deck): Boolean
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
     suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
-
     suspend fun deleteDeck(id: Int): Boolean
+    suspend fun deleteCard(deckId: Int, cardId: Int): Boolean
 }
 
 class DeckFinderUseCase(private val repository: DeckRepositoring): DeckFinding {
@@ -62,6 +66,7 @@ class DeckUpdate(private val repository: DeckUpdateRepositing): DeckUpdating {
 
     override suspend fun updateFavorited(deckId: Int, isFavorited: Boolean) = repository.updateFavorited(deckId, isFavorited)
     override suspend fun deleteDeck(id: Int) = repository.deleteDeck(id)
+    override suspend fun deleteCard(deckId: Int, cardId: Int) = repository.deleteCard(deckId, cardId)
 }
 
 interface DeckUpdateRepositing {
@@ -69,6 +74,7 @@ interface DeckUpdateRepositing {
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
     suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
     suspend fun deleteDeck(id: Int): Boolean
+    suspend fun deleteCard(deckId: Int, cardId: Int): Boolean
 }
 
 interface DeckRepositoring {
@@ -76,7 +82,7 @@ interface DeckRepositoring {
 }
 
 class DeckResponse(val deck: Deck) {
-    class Deck(val id: Int, val title: String, val description: String, val thumbnailUrl: String, val isFavorited: Boolean, val cards: List<Card>)
+    class Deck(val id: Int, val title: String, val description: String, val thumbnailUrl: String, val isFavorited: Boolean, val cards: MutableList<Card>)
     class Card(val id: Int, val question: String, val answer: String)
 }
 
@@ -95,6 +101,7 @@ class DeckUpdateRepository(private val client: DeckUpdateClienting): DeckUpdateR
 
     override suspend fun updateFavorited(deckId: Int, isFavorited: Boolean) = client.updateFavorited(deckId, isFavorited)
     override suspend fun deleteDeck(id: Int) = client.deleteDeck(id)
+    override suspend fun deleteCard(deckId: Int, cardId: Int) = client.deleteCard(deckId, cardId)
 }
 
 
@@ -106,8 +113,8 @@ interface DeckUpdateClienting {
     suspend fun updateDeck(deck: Deck): Boolean
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
     suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
-
     suspend fun deleteDeck(id: Int): Boolean
+    suspend fun deleteCard(deckId: Int, cardId: Int): Boolean
 }
 
 

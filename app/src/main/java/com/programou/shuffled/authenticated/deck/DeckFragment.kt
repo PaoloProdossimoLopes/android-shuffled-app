@@ -102,6 +102,20 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
                         cardPreviewAdapter.update(cards.map {
                             ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, it)
                         })
+                    }, onDelete = { cardViewData ->
+//                        viewModel.deleteCard(deckArgs.deckId, cardViewData.id!!)
+                        val cards = cardPreviewAdapter.getViewData().toMutableList()
+                        val index = cards.indexOfFirst { it.id == cardViewData.id }
+                        cards.removeAt(index)
+
+                        if (cards.isEmpty()) {
+                            val itemViewData = ItemViewData(CardEmptyStateItemViewHolder.IDENTIFIER, PreviewViewData(null, "", ""))
+                            cardPreviewAdapter.update(listOf(itemViewData))
+                        } else {
+                            cardPreviewAdapter.update(cards.map {
+                                ItemViewData(CardPreviewItemViewHolder.IDENTIFIER, it)
+                            })
+                        }
                     }).show()
                 }
             }
@@ -115,7 +129,10 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         binding.buttonStart.setOnClickListener {
 
             if (isEditState) {
-                val cards = cardPreviewAdapter.getViewData().map { Card(it.id, it.question, it.anwser) }
+                val cards = cardPreviewAdapter
+                    .getViewData()
+                    .filter { it.id != null }
+                    .map { Card(it.id, it.question, it.anwser) }
                 val title = binding.editDeckTitle.text.toString()
                 val description = binding.editDeckDescription.text.toString()
 
@@ -192,11 +209,14 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         } else {
             binding.imageEditFields.setImageResource(R.drawable.ic_edit)
             binding.buttonStart.text = "Começar"
+            viewModel.findDeckBy(deckArgs.deckId)
         }
 
         binding.imageBackArrow.isVisible = !isEditState
         binding.favoriteIndicatorImageView.isVisible = !isEditState
         binding.removeIndicatorImageView.isVisible = isEditState
+
+        updateStartButtonState()
     }
 
     private val launcher = registerForActivityResult(
@@ -210,10 +230,10 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
     }
 
     private fun updateStartButtonState() {
-        val isNotEmpty = !cardPreviewAdapter.getViewData().isEmpty()
-        binding.buttonStart.isEnabled = isNotEmpty
-        binding.buttonStart.isActivated = isNotEmpty
-        binding.buttonStart.isClickable = isNotEmpty
+        val isNotEmpty = cardPreviewAdapter.getViewData().filter { it.id != null }.isNotEmpty()
+        binding.buttonStart.isEnabled = isNotEmpty || isEditState
+        binding.buttonStart.isActivated = isNotEmpty || isEditState
+        binding.buttonStart.isClickable = isNotEmpty || isEditState
     }
 }
 

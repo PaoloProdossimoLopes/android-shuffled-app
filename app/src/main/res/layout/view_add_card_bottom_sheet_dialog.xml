@@ -11,6 +11,40 @@
         android:paddingBottom="12dp"
         android:layout_margin="2dp">
 
+        <ImageView
+            android:id="@+id/image_close"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/ic_x"
+            android:layout_marginStart="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Edite o card"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:background="@null"
+            app:layout_constraintTop_toTopOf="@id/image_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/image_close"/>
+
+        <ImageView
+            android:id="@+id/deleteCardIndicatorImageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_trash"
+            app:tint="@color/red_300"
+            app:layout_constraintTop_toTopOf="@id/image_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/image_close"/>
+
         <LinearLayout
             android:orientation="vertical"
             android:id="@+id/ll_fields_container"
@@ -18,25 +52,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="22dp"
-            app:layout_constraintBottom_toTopOf="@id/idBtnDismiss"
+            app:layout_constraintTop_toBottomOf="@id/image_close"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
-
-            <ImageView
-                android:id="@+id/image_close"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/ic_x"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Edite o card"
-                android:layout_marginTop="8dp"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:background="@null"/>
 
             <View
                 android:layout_width="match_parent"

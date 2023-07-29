@@ -2,6 +2,7 @@ package com.programou.shuffled.authenticated.deck
 
 import android.content.Context
 import android.os.Bundle
+import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.programou.shuffled.R
 import com.programou.shuffled.databinding.ViewAddCardBottomSheetDialogBinding
@@ -10,11 +11,11 @@ import com.programou.shuffled.databinding.ViewAddCardBottomSheetDialogBinding
 class CreateEditCardBottomSheet(
     context: Context,
     private val cardViewData: PreviewViewData?,
-    private val onDone: (PreviewViewData) -> Unit
+    private val onDone: (PreviewViewData) -> Unit,
+    private val onDelete: ((PreviewViewData) -> Unit)? = null
 ): BottomSheetDialog(context) {
 
     private lateinit var binding: ViewAddCardBottomSheetDialogBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -26,6 +27,12 @@ class CreateEditCardBottomSheet(
             val answer = binding.editTextCardAnswer.text.toString()
             val card = PreviewViewData(cardViewData?.id, question, answer)
             onDone(card)
+            dismiss()
+        }
+
+        binding.deleteCardIndicatorImageView.isVisible = cardViewData?.id != null
+        binding.deleteCardIndicatorImageView.setOnClickListener {
+            onDelete?.invoke(cardViewData!!)
             dismiss()
         }
 
