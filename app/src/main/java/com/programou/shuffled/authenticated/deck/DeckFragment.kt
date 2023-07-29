@@ -128,13 +128,11 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         }
 
         binding.removeIndicatorImageViewInDeckFragment.setOnClickListener {
-            val deckId = deckArgs.deckId
-            viewModel.deleteDeck(deckId)
+            viewModel.deleteDeck()
             findNavController().popBackStack()
         }
 
         binding.favoriteIndicatorImageViewInDeckFragment.setOnClickListener {
-            //toggleFavoritedState()
             viewModel.toggleFavorite()
         }
 

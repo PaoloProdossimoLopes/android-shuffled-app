@@ -28,8 +28,8 @@ class DeckViewModel(private val deckId: Int, private val findClient: DeckClienti
         }
     }
 
-    fun deleteDeck(id: Int) = viewModelScope.launch {
-        updateClient.deleteDeck(id)
+    fun deleteDeck() = viewModelScope.launch {
+        updateClient.deleteDeck(deckId)
     }
 
     fun updateDeck(deck: Deck) = viewModelScope.launch {
