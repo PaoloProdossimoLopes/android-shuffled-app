@@ -25,6 +25,10 @@ class DeckViewModel(private val findUseCase: DeckFinding, private val updateUseC
         }
     }
 
+    fun deleteDeck(id: Int) = viewModelScope.launch {
+        updateUseCase.deleteDeck(id)
+    }
+
     fun updateDeck(deck: Deck) = viewModelScope.launch {
         updateUseCase.updateDeck(deck)
     }
@@ -44,6 +48,8 @@ interface DeckUpdating {
     suspend fun updateDeck(deck: Deck): Boolean
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
     suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
+
+    suspend fun deleteDeck(id: Int): Boolean
 }
 
 class DeckFinderUseCase(private val repository: DeckRepositoring): DeckFinding {
@@ -55,12 +61,14 @@ class DeckUpdate(private val repository: DeckUpdateRepositing): DeckUpdating {
     override suspend fun createCard(deckId: Int, newCard: Card) = repository.createCard(deckId, newCard)
 
     override suspend fun updateFavorited(deckId: Int, isFavorited: Boolean) = repository.updateFavorited(deckId, isFavorited)
+    override suspend fun deleteDeck(id: Int) = repository.deleteDeck(id)
 }
 
 interface DeckUpdateRepositing {
     suspend fun updateDeck(deck: Deck): Boolean
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
     suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
+    suspend fun deleteDeck(id: Int): Boolean
 }
 
 interface DeckRepositoring {
@@ -86,6 +94,7 @@ class DeckUpdateRepository(private val client: DeckUpdateClienting): DeckUpdateR
     override suspend fun createCard(deckId: Int, newCard: Card) = client.createCard(deckId, newCard)
 
     override suspend fun updateFavorited(deckId: Int, isFavorited: Boolean) = client.updateFavorited(deckId, isFavorited)
+    override suspend fun deleteDeck(id: Int) = client.deleteDeck(id)
 }
 
 
@@ -97,6 +106,8 @@ interface DeckUpdateClienting {
     suspend fun updateDeck(deck: Deck): Boolean
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
     suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
+
+    suspend fun deleteDeck(id: Int): Boolean
 }
 
 

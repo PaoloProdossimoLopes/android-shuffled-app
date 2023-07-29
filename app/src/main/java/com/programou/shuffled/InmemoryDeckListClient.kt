@@ -101,4 +101,10 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
         inmemoryDecks[deckIndex].isFavorited = isFavorited
         return true
     }
+
+    override suspend fun deleteDeck(id: Int): Boolean {
+        val deckIndex = inmemoryDecks.indexOfFirst { it.id == id }
+        inmemoryDecks.removeAt(deckIndex)
+        return true
+    }
 }

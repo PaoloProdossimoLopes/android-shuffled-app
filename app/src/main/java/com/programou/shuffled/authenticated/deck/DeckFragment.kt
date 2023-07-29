@@ -53,6 +53,12 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
             findNavController().popBackStack()
         }
 
+        binding.removeIndicatorImageView.setOnClickListener {
+            val deckId = deckArgs.deckId
+            viewModel.deleteDeck(deckId)
+            findNavController().popBackStack()
+        }
+
         binding.favoriteIndicatorImageView.setOnClickListener {
             isFavorited = !isFavorited
 
@@ -190,6 +196,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
         binding.imageBackArrow.isVisible = !isEditState
         binding.favoriteIndicatorImageView.isVisible = !isEditState
+        binding.removeIndicatorImageView.isVisible = isEditState
     }
 
     private val launcher = registerForActivityResult(

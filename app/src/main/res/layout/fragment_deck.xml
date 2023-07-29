@@ -54,6 +54,20 @@
                 app:tint="@color/gray_300"
                 tools:tint="@color/yellow_500"/>
 
+            <ImageView
+                android:layout_marginTop="18dp"
+                android:id="@+id/removeIndicatorImageView"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_trash"
+                android:background="@drawable/backgorund_circle"
+                android:layout_marginHorizontal="16dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:tint="@color/red_300"/>
+
             <EditText
                 android:id="@+id/edit_deck_title"
                 android:layout_width="match_parent"
