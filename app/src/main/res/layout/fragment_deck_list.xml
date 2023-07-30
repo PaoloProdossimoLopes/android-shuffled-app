@@ -16,20 +16,20 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipChildren="false">
+            android:clipChildren="false"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/text_recents_decks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Recentes"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="18dp"
+                android:text="@string/recentSectionTitleText"
                 android:textSize="28sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_decks_recents"
@@ -37,22 +37,22 @@
                 android:layout_height="180dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:paddingHorizontal="16dp"
-                android:clipToPadding="false"
                 android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingHorizontal="16dp"
                 tools:itemCount="3"
                 tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_favorite_deck_list_item"
-                tools:orientation="horizontal"/>
+                tools:orientation="horizontal" />
 
             <TextView
                 android:id="@+id/text_decks_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Baralhos"
                 android:layout_marginHorizontal="16dp"
+                android:text="@string/deckSectionTitleText"
                 android:textSize="28sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_decks"
@@ -71,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginHorizontal="16dp"
-                android:text="Criar baralho"/>
+                android:text="@string/createDeckButtonTitle" />
         </LinearLayout>
     </ScrollView>
 
@@ -80,9 +80,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminateTint="@color/turquoise_500"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

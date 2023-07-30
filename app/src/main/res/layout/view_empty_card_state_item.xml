@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:background="@drawable/background_dashed_stroke">
+    android:background="@drawable/background_dashed_stroke"
+    android:orientation="vertical">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="46dp"
-        android:src="@drawable/ic_no_layers"
         android:layout_marginVertical="20dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_no_layers"
         app:tint="@color/turquoise_500" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:layout_marginBottom="20dp"
         android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="@string/deckEmptyStateTitle"
+        android:textAlignment="center"
         android:textColor="@color/turquoise_500"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:text="Seu baralho esta vazio"/>
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:layout_marginBottom="20dp"
         android:layout_marginHorizontal="20dp"
-        android:textColor="@color/turquoise_500"
-        android:text="Para iniciar seus estudos clique no `+` e crie uma carta"/>
+        android:layout_marginBottom="20dp"
+        android:text="@string/deckEmptyStateDescription"
+        android:textAlignment="center"
+        android:textColor="@color/turquoise_500" />
 </LinearLayout>
