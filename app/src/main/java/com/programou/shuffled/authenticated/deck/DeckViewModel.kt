@@ -3,6 +3,7 @@ package com.programou.shuffled.authenticated.deck
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.programou.shuffled.authenticated.deckList.Card
@@ -20,11 +21,40 @@ class DeckViewModel(private val deckId: Int, private val findClient: DeckClienti
     private val deckIsFavoriteMutableLiveData = MutableLiveData<Boolean>()
     val deckIsFavorite: LiveData<Boolean> = deckIsFavoriteMutableLiveData
 
-    fun findDeckBy(id: Int) = viewModelScope.launch {
-        val deck = findClient.findBy(id)
+    private val onCardListEmptyStateMutableLiveData = MutableLiveData<Unit>()
+    val onCardListEmptyState: LiveData<Unit> = onCardListEmptyStateMutableLiveData
+
+    private val onCardListIsNotEmptyMutableLiveData = MutableLiveData<List<DeckViewData.Card>>()
+    val onCardListIsNotEmpty: LiveData<List<DeckViewData.Card>> = onCardListIsNotEmptyMutableLiveData
+
+    private val onEnableEditModeMutableLiveData = MutableLiveData<Unit>()
+    val onEnableEditMode: LiveData<Unit> = onEnableEditModeMutableLiveData
+
+    private val onDisableEditModeMutableLiveData = MutableLiveData<Unit>()
+    val onDisableEditMode: LiveData<Unit> = onDisableEditModeMutableLiveData
+
+    private var isEditMode = false
+        set(value) {
+            field = value
+
+            if (field) {
+                onEnableEditModeMutableLiveData.postValue(Unit)
+            } else {
+                onDisableEditModeMutableLiveData.postValue(Unit)
+            }
+        }
+
+    fun loadDeck() = viewModelScope.launch {
+        val deck = findClient.findBy(deckId)
         deck?.let {
             val deckViewData = it.toViewData()
             deckMutableLiveData.postValue(deckViewData)
+
+            if (deckViewData.cards.isEmpty()) {
+                onCardListEmptyStateMutableLiveData.postValue(Unit)
+            } else {
+                onCardListIsNotEmptyMutableLiveData.postValue(deckViewData.cards)
+            }
         }
     }
 
@@ -35,8 +65,9 @@ class DeckViewModel(private val deckId: Int, private val findClient: DeckClienti
     fun updateDeck(deck: Deck) = viewModelScope.launch {
         updateClient.updateDeck(deck)
     }
-    fun createCard(deckId: Int, newCard: Card) = viewModelScope.launch {
+    fun createCard(newCard: Card) = viewModelScope.launch {
         updateClient.createCard(deckId, newCard)
+        loadDeck()
     }
 
     fun toggleFavorite() = viewModelScope.launch {
@@ -45,6 +76,49 @@ class DeckViewModel(private val deckId: Int, private val findClient: DeckClienti
             val newFavoritedState = currentFavoritedState.not()
             updateClient.updateFavorited(deckId, newFavoritedState)
             deckIsFavoriteMutableLiveData.postValue(newFavoritedState)
+        }
+    }
+
+    fun changeEditMode() {
+        isEditMode = isEditMode.not()
+    }
+
+    fun isEditMode() = isEditMode
+
+    fun removeCard(cardId: Int) = viewModelScope.launch {
+        val deck = findClient.findBy(deckId)
+        val cardsInDeck = deck?.deck?.cards?.toMutableList()
+        val index = cardsInDeck?.indexOfFirst { it.id == cardId }
+        index?.let {
+            cardsInDeck?.removeAt(it)
+        }
+
+        if (cardsInDeck?.isEmpty() == true) {
+            onCardListEmptyStateMutableLiveData.postValue(Unit)
+            return@launch
+        }
+
+        cardsInDeck?.let {
+            val cardsViewData = it.map { card ->
+                DeckViewData.Card(card.id, card.question, card.answer)
+            }
+            onCardListIsNotEmptyMutableLiveData.postValue(cardsViewData)
+        }
+    }
+
+    fun updateCard(cardEdited: Card) = viewModelScope.launch {
+        val deck = findClient.findBy(deckId)
+        val cardsInDeck = deck?.deck?.cards?.toMutableList()
+
+        cardsInDeck?.let { allCards ->
+            val cardsViewData = allCards.map { card ->
+                if (card.id == cardEdited.id) {
+                    return@map DeckViewData.Card(card.id, cardEdited.question, cardEdited.awnser)
+                }
+
+                return@map DeckViewData.Card(card.id, card.question, card.answer)
+            }
+            onCardListIsNotEmptyMutableLiveData.postValue(cardsViewData)
         }
     }
 }
