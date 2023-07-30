@@ -18,7 +18,7 @@
         app:tint="@color/black_800" />
 
     <TextView
-        android:id="@+id/deckTitleTextView"
+        android:id="@+id/deckTitleTextViewInFlashcardFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:textStyle="bold"
@@ -34,17 +34,17 @@
         android:text="Ingles"/>
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/lp_progress"
+        android:id="@+id/studyProgressLinearProgressIndicatorInFlashcardFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:trackCornerRadius="20dp"
         tools:progress="10"
         android:layout_marginTop="16dp"
         android:layout_marginHorizontal="16dp"
-        app:layout_constraintTop_toBottomOf="@id/deckTitleTextView"/>
+        app:layout_constraintTop_toBottomOf="@id/deckTitleTextViewInFlashcardFragment"/>
 
     <TextView
-        android:id="@+id/tv_total_cards"
+        android:id="@+id/totalOfCardsTextViewInFlashcardFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="80"
@@ -52,22 +52,22 @@
         android:layout_marginTop="8dp"
         android:textSize="18dp"
         android:textColor="@color/gray_300"
-        app:layout_constraintTop_toBottomOf="@id/lp_progress"
+        app:layout_constraintTop_toBottomOf="@id/studyProgressLinearProgressIndicatorInFlashcardFragment"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
-        android:id="@+id/tv_number_separator"
+        android:id="@+id/progressNumberSeparatorTextViewInFlashcardFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="/"
         android:textSize="18dp"
         android:textColor="@color/gray_300"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/lp_progress"
-        app:layout_constraintEnd_toStartOf="@id/tv_total_cards"/>
+        app:layout_constraintTop_toBottomOf="@id/studyProgressLinearProgressIndicatorInFlashcardFragment"
+        app:layout_constraintEnd_toStartOf="@id/totalOfCardsTextViewInFlashcardFragment"/>
 
     <TextView
-        android:id="@+id/tv_current_card_number"
+        android:id="@+id/currentCardStepTextViewInFlashcardFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="1"
@@ -75,18 +75,18 @@
         android:textStyle="bold"
         android:textColor="@color/turquoise_500"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/lp_progress"
-        app:layout_constraintEnd_toStartOf="@id/tv_number_separator"/>
+        app:layout_constraintTop_toBottomOf="@id/studyProgressLinearProgressIndicatorInFlashcardFragment"
+        app:layout_constraintEnd_toStartOf="@id/progressNumberSeparatorTextViewInFlashcardFragment"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_flahscards"
+        android:id="@+id/flashcardRecyclerViewInFlashcardFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingVertical="10dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_current_card_number"
+        app:layout_constraintTop_toBottomOf="@id/currentCardStepTextViewInFlashcardFragment"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/mcv_skip"
+        app:layout_constraintBottom_toTopOf="@id/intermediateImageContainerCardViewInFlashcardFragment"
         android:paddingHorizontal="16dp"
         android:clipChildren="false"
         android:clipToPadding="false"
@@ -94,27 +94,18 @@
         tools:listitem="@layout/view_flash_card_item"
         tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
-    <View
-        android:id="@+id/recycler_interaction_blocker_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="@id/recycler_flahscards"
-        app:layout_constraintStart_toStartOf="@id/recycler_flahscards"
-        app:layout_constraintEnd_toEndOf="@id/recycler_flahscards"
-        app:layout_constraintBottom_toBottomOf="@id/recycler_flahscards"/>
-
     <androidx.cardview.widget.CardView
-        android:id="@+id/mcv_bad"
+        android:id="@+id/hardImageContainerCardViewInFlashcardFragment"
         android:layout_weight="1"
         app:cardCornerRadius="20dp"
         android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/mcv_skip"
+        app:layout_constraintEnd_toStartOf="@id/intermediateImageContainerCardViewInFlashcardFragment"
         android:layout_width="100dp"
         android:layout_height="wrap_content">
         <ImageView
-            android:id="@+id/image_bad"
+            android:id="@+id/hardImageViewInFlashcardFragment"
             android:layout_gravity="center"
             android:layout_width="70dp"
             android:layout_height="70dp"
@@ -123,17 +114,17 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/mcv_skip"
+        android:id="@+id/intermediateImageContainerCardViewInFlashcardFragment"
         android:layout_weight="1"
         app:cardCornerRadius="20dp"
         android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/mcv_bad"
-        app:layout_constraintEnd_toStartOf="@id/mcv_good"
+        app:layout_constraintStart_toEndOf="@id/hardImageContainerCardViewInFlashcardFragment"
+        app:layout_constraintEnd_toStartOf="@id/easyImageContainerCardViewInFlashcardFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageView
-            android:id="@+id/image_skip"
+            android:id="@+id/intermediateImageViewInFlashcardFragment"
             android:layout_gravity="center"
             android:layout_width="70dp"
             android:layout_height="70dp"
@@ -142,17 +133,17 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/mcv_good"
+        android:id="@+id/easyImageContainerCardViewInFlashcardFragment"
         android:layout_weight="1"
         app:cardCornerRadius="20dp"
         android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/mcv_skip"
+        app:layout_constraintStart_toEndOf="@id/intermediateImageContainerCardViewInFlashcardFragment"
         android:layout_width="100dp"
         android:layout_height="wrap_content">
         <ImageView
-            android:id="@+id/image_good"
+            android:id="@+id/easyImageViewInFlashcardFragment"
             android:layout_gravity="center"
             android:layout_width="70dp"
             android:layout_height="70dp"

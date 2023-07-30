@@ -23,11 +23,10 @@ class FavoriteDeckItemViewHolder private constructor(private val binding: ViewFa
     override fun bind(viewData: DeckListFragment.FavoriteDecksListState) {
         with(viewData.deck!!) {
             binding.textDeckTitle.text = name
-            binding.tvTotalCards.text = numberOfCards
+            binding.totalOfCardsTextViewInFavoritedDeckListItemView.text = numberOfCards
 
             val requestOptions = RequestOptions()
                 .centerCrop()
-                //.error(R.drawable.ic_no_image)
                 .placeholder(R.color.gray_100)
 
             Glide.with(binding.root.context)

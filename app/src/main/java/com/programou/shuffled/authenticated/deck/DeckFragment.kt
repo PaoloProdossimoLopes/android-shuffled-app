@@ -60,7 +60,6 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
             binding.favoriteIndicatorImageViewInDeckFragment -> viewModel.toggleFavorite()
             binding.addNewCardButtonInDeckFragment -> createCardBottomSheet()
             binding.studyButtonInDeckFragment -> studyOrSave()
-            else -> Unit
         }
     }
 
@@ -231,11 +230,12 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     private fun presentCreateEditBottomSheet(cardPreviewViewData: PreviewViewData) {
         if (!viewModel.isEditMode()) return
 
-        val bottomSheet = CreateEditCardBottomSheet(requireContext(), cardPreviewViewData, onDone = {
-            updateCard(cardPreviewViewData)
-        }, onDelete = { cardViewData ->
-            removeCard(cardViewData)
-        })
+        val bottomSheet = CreateEditCardBottomSheet(
+            requireContext(), cardPreviewViewData, onDone = { cardPreviewViewData ->
+                updateCard(cardPreviewViewData)
+            }, onDelete = { cardViewData ->
+                removeCard(cardViewData)
+            })
         bottomSheet.show()
     }
 

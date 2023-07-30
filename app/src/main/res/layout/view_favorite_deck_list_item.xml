@@ -48,7 +48,7 @@
                 app:layout_constraintTop_toBottomOf="@id/image_deck"/>
 
             <TextView
-                android:id="@+id/tv_total_cards"
+                android:id="@+id/totalOfCardsTextViewInFavoritedDeckListItemView"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:textStyle="bold"

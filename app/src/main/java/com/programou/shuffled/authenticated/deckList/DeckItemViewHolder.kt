@@ -24,7 +24,7 @@ class DeckItemViewHolder private constructor(private val binding: ViewDeckListIt
     override fun bind(viewData: DeckListFragment.AllDecksListState) {
         with(viewData.deck!!) {
             binding.textDeckTitle.text = name
-            binding.tvTotalCards.text = numberOfCards
+            binding.totalOfCardsTextViewInDeckListItemView.text = numberOfCards
 
             val requestOptions = RequestOptions()
                 .centerCrop()
