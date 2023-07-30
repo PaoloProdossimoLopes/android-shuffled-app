@@ -221,14 +221,14 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
         cardPreviewAdapter.register(CardPreviewItemViewHolder.IDENTIFIER) { parent ->
             CardPreviewItemViewHolder.instantiate(parent) { previewViewData ->
-                if (!viewModel.isEditMode()) return@instantiate
-
                 presentCreateEditBottomSheet(previewViewData)
             }
         }
     }
 
     private fun presentCreateEditBottomSheet(cardPreviewViewData: PreviewViewData) {
+        if (!viewModel.isEditMode()) return
+
         val bottomSheet = CreateEditCardBottomSheet(requireContext(), cardPreviewViewData, onDone = {
             updateCard(cardPreviewViewData)
         }, onDelete = { cardViewData ->
