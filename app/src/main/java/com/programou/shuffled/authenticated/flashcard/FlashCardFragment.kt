@@ -39,21 +39,34 @@ class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
     private var numberOfCardsMid = 0
     private var numberOfCardsEasy = 0
 
+    private fun registerFlashcardItemViewHolder() {
+        flashcardListAdapter.register(FlashCardItemViewHolder.IDENTIFIER) { parent ->
+            FlashCardItemViewHolder.instantiate(parent)
+        }
+    }
+
+    private fun setupFlashcardRecyclerView() {
+        binding.recyclerFlahscards.adapter = flashcardListAdapter
+        binding.recyclerFlahscards.layoutManager = LinearScrollLayoutHandler(requireContext(), canScroll = {
+            isScrollEnabled
+        })
+    }
+
+    private fun setupLayoutTextViews() {
+        binding.deckTitleTextView.text = arguments.deck.name
+        binding.tvTotalCards.text = arguments.deck.cards.count().toString()
+    }
+
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentFlashCardBinding.bind(view)
 
-        binding.deckTitleTextView.text = arguments.deck.name
-
-        flashcardListAdapter.register(FlashCardItemViewHolder.IDENTIFIER) { parent ->
-            FlashCardItemViewHolder.instantiate(parent)
-        }
-
-        binding.recyclerFlahscards.adapter = flashcardListAdapter
-        binding.recyclerFlahscards.layoutManager = LinearScrollLayoutHandler(requireContext(), canScroll = {
-            isScrollEnabled
-        })
+        registerFlashcardItemViewHolder()
+        setupFlashcardRecyclerView()
+        setupLayoutTextViews()
 
         binding.mcvGood.setOnClickListener {
             numberOfCardsEasy++
@@ -74,9 +87,6 @@ class FlashCardFragment : Fragment(R.layout.fragment_flash_card) {
 
             goToNextItem()
         }
-
-        binding.tvTotalCards.text = arguments.deck.cards.count().toString()
-
         binding.mcvBad.setOnClickListener {
             numberOfCardsDifficulty++
 

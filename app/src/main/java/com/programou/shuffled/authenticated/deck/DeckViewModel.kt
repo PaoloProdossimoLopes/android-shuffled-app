@@ -77,7 +77,7 @@ class DeckViewModel(
         updateClient.deleteDeck(deckId)
     }
 
-    fun updateDeck(deck: Deck) = viewModelScope.launch {
+    private fun updateDeck(deck: Deck) = viewModelScope.launch {
         updateClient.updateDeck(deck)
     }
     fun createCard(newCard: Card) = viewModelScope.launch {
