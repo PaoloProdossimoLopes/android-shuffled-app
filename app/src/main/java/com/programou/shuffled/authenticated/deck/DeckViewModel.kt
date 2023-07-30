@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
 import kotlinx.coroutines.launch
@@ -32,6 +33,15 @@ class DeckViewModel(private val deckId: Int, private val findClient: DeckClienti
 
     private val onDisableEditModeMutableLiveData = MutableLiveData<Unit>()
     val onDisableEditMode: LiveData<Unit> = onDisableEditModeMutableLiveData
+
+    private val onNavigateToFlashcardStudyMutableLiveData = MutableLiveData<Deck>()
+    val onNavigateToFlashcardStudy: LiveData<Deck> = onNavigateToFlashcardStudyMutableLiveData
+
+    private val onSaveChangeMutableLiveData = MutableLiveData<Unit>()
+    val onSaveChange: LiveData<Unit> = onSaveChangeMutableLiveData
+
+    private val onPresentGalleryPickerMutableLiveData = MutableLiveData<Unit>()
+    val onPresentGalleryPicker: LiveData<Unit> = onPresentGalleryPickerMutableLiveData
 
     private var isEditMode = false
         set(value) {
@@ -120,6 +130,47 @@ class DeckViewModel(private val deckId: Int, private val findClient: DeckClienti
             }
             onCardListIsNotEmptyMutableLiveData.postValue(cardsViewData)
         }
+    }
+
+    fun studyOrSave(deckUpdated: DeckViewData) = viewModelScope.launch {
+        if (isEditMode) {
+            updateDeck(deckUpdated)
+        } else {
+            navigateToGame()
+        }
+    }
+
+    fun selectDeckImage() {
+        if (isEditMode) {
+            onPresentGalleryPickerMutableLiveData.postValue(Unit)
+        }
+    }
+
+    private fun updateDeck(newDeck: DeckViewData) {
+        val deck = Deck(
+            deckId, newDeck.title, newDeck.description,
+            newDeck.image.toString(), newDeck.isFavorite,
+            newDeck.cards.map { Card(it.id, it.question, it.answer) }
+        )
+        updateDeck(deck)
+        loadDeck()
+        changeEditMode()
+        onSaveChangeMutableLiveData.postValue(Unit)
+    }
+
+    private suspend fun navigateToGame() {
+        val findedDeck = findClient.findBy(deckId)?.deck
+        val cards = findedDeck?.cards?.map { card ->
+            Card(card.id, card.question, card.answer)
+        } ?: listOf()
+        val deck = Deck(
+            deckId, findedDeck?.title.toString(),
+            findedDeck?.description.toString(),
+            findedDeck?.thumbnailUrl.toString(),
+            findedDeck?.isFavorited == true,
+            cards
+        )
+        onNavigateToFlashcardStudyMutableLiveData.postValue(deck)
     }
 }
 

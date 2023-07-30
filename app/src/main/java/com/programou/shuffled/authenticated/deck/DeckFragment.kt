@@ -14,8 +14,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.snackbar.Snackbar
 import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
@@ -105,6 +107,20 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
             binding.studyButtonInDeckFragment.text = "Começar"
             viewModel.loadDeck()
         }
+
+        viewModel.onNavigateToFlashcardStudy.observe(requireActivity()) { deck ->
+            val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
+            findNavController().navigate(action)
+        }
+
+        viewModel.onSaveChange.observe(requireActivity()) {
+            val message = "Suas alteraçoes foram salvas com sucesso!"
+            Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+        }
+
+        viewModel.onPresentGalleryPicker.observe(requireActivity()) {
+            presentGalleryPicker()
+        }
     }
     private fun shouldEnableToolButtonsForEditMode(isEnable: Boolean) {
         binding.backArrowIndicatorImageViewInDeckFragment.isVisible = isEnable
@@ -113,8 +129,8 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
     }
 
     private fun shouldEnableDeckEditText(isEnable: Boolean) {
-        binding.deckTitleEditTextInDeckFragment.isEnabled = false
-        binding.deckDescriptionEditTextInDeckFragment.isEnabled = false
+        binding.deckTitleEditTextInDeckFragment.isEnabled = isEnable
+        binding.deckDescriptionEditTextInDeckFragment.isEnabled = isEnable
     }
 
     private fun favoriteStateIndicatorHandler(isFavorite: Boolean) {
@@ -129,26 +145,32 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
     private fun setupRecyclerView() {
         binding.cardsRecyclerViewInDeckFragment.adapter = cardPreviewAdapter
-        binding.cardsRecyclerViewInDeckFragment.layoutManager =
-            GridLayoutManager(requireContext(), 1, GridLayoutManager.HORIZONTAL, false)
+        binding.cardsRecyclerViewInDeckFragment.layoutManager = LinearLayoutManager(
+            requireContext(), GridLayoutManager.HORIZONTAL, false
+        )
         binding.cardsRecyclerViewInDeckFragment.setNestedScrollingEnabled(false);
+    }
+
+    private fun presentGalleryPicker() {
+        val galleryIntent = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.INTERNAL_CONTENT_URI
+        )
+        launcher.launch(galleryIntent)
     }
 
     private fun setupListeners() {
         binding.deckImageViewInDeckFragment.setOnClickListener {
-            if (viewModel.isEditMode()) {
-                val galleryIntent =
-                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                this.launcher.launch(galleryIntent)
-            }
+            viewModel.selectDeckImage()
         }
+
         binding.backArrowIndicatorImageViewInDeckFragment.setOnClickListener {
-            findNavController().popBackStack()
+            closeFragment()
         }
 
         binding.removeIndicatorImageViewInDeckFragment.setOnClickListener {
             viewModel.deleteDeck()
-            findNavController().popBackStack()
+            closeFragment()
         }
 
         binding.favoriteIndicatorImageViewInDeckFragment.setOnClickListener {
@@ -167,27 +189,24 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         }
 
         binding.studyButtonInDeckFragment.setOnClickListener {
-            if (viewModel.isEditMode()) {
-                val cards = cardPreviewAdapter
-                    .getViewData()
-                    .filter { it.id != null }
-                    .map { Card(it.id, it.question, it.anwser) }
-                val title = binding.deckTitleEditTextInDeckFragment.text.toString()
-                val description = binding.deckDescriptionEditTextInDeckFragment.text.toString()
-                val isFavorited = viewModel.deckIsFavorite.value ?: false
-
-                val deck = Deck(deckArgs.deckId, title, description, imageUri.toString(), isFavorited, cards)
-                viewModel.updateDeck(deck)
-                viewModel.loadDeck()
-                viewModel.changeEditMode()
-            } else {
-                viewModel.deckLiveData.value?.let { deck ->
-                    val deck = Deck(deckArgs.deckId, deck.title, deck.description, deck.image.toString(), deck.isFavorite, deck.cards.map { card -> Card(card.id, card.question, card.answer) })
-                    val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
-                    findNavController().navigate(action)
-                }
-            }
+            studyOrSave()
         }
+    }
+
+    private fun closeFragment() {
+        findNavController().popBackStack()
+    }
+
+    private fun studyOrSave() {
+        val title = binding.deckTitleEditTextInDeckFragment.text.toString()
+        val description = binding.deckDescriptionEditTextInDeckFragment.text.toString()
+        val isFavorited = viewModel.deckIsFavorite.value == false
+        val cards = cardPreviewAdapter
+            .getViewData()
+            .filter { it.id != null }
+            .map { DeckViewData.Card(it.id!!, it.question, it.anwser) }
+        val viewData = DeckViewData(title, description, imageUri!!, isFavorited, cards)
+        viewModel.studyOrSave(viewData)
     }
 
     private fun createCard(card: Card) {
@@ -202,7 +221,8 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
 
         cardPreviewAdapter.register(CardPreviewItemViewHolder.IDENTIFIER) { parent ->
             CardPreviewItemViewHolder.instantiate(parent) { previewViewData ->
-                if (viewModel.isEditMode() == false) return
+                if (!viewModel.isEditMode()) return@instantiate
+
                 presentCreateEditBottomSheet(previewViewData)
             }
         }
