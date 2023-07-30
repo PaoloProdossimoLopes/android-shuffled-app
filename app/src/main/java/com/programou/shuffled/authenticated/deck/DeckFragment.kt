@@ -28,7 +28,7 @@ import com.programou.shuffled.authenticated.deckList.Deck
 import com.programou.shuffled.databinding.FragmentDeckBinding
 import com.programou.shuffled.databinding.ViewEmptyCardStateItemBinding
 
-class DeckFragment : Fragment(R.layout.fragment_deck) {
+class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     private lateinit var binding: FragmentDeckBinding
 
     private val cardPreviewAdapter = ListAdapter<PreviewViewData>()
@@ -49,6 +49,32 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         binding = FragmentDeckBinding.bind(view)
 
         onViewCreated()
+    }
+
+    override fun onClick(view: View) {
+        when (view) {
+            binding.deckImageViewInDeckFragment -> viewModel.selectDeckImage()
+            binding.backArrowIndicatorImageViewInDeckFragment -> closeFragment()
+            binding.removeIndicatorImageViewInDeckFragment -> removeDeck()
+            binding.editPencilIndicatorImageViewInDeckFragment -> viewModel.changeEditMode()
+            binding.favoriteIndicatorImageViewInDeckFragment -> viewModel.toggleFavorite()
+            binding.addNewCardButtonInDeckFragment -> createCardBottomSheet()
+            binding.studyButtonInDeckFragment -> studyOrSave()
+            else -> Unit
+        }
+    }
+
+    private fun createCardBottomSheet() {
+        val bottomSheet = CreateEditCardBottomSheet(requireContext(), null, onDone = { cardViewData ->
+            val card = Card(null, cardViewData.question, cardViewData.anwser)
+            createCard(card)
+        })
+        bottomSheet.show()
+    }
+
+    private fun removeDeck() {
+        viewModel.deleteDeck()
+        closeFragment()
     }
 
     private fun onViewCreated() {
@@ -160,37 +186,13 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
     }
 
     private fun setupListeners() {
-        binding.deckImageViewInDeckFragment.setOnClickListener {
-            viewModel.selectDeckImage()
-        }
-
-        binding.backArrowIndicatorImageViewInDeckFragment.setOnClickListener {
-            closeFragment()
-        }
-
-        binding.removeIndicatorImageViewInDeckFragment.setOnClickListener {
-            viewModel.deleteDeck()
-            closeFragment()
-        }
-
-        binding.favoriteIndicatorImageViewInDeckFragment.setOnClickListener {
-            viewModel.toggleFavorite()
-        }
-
-        binding.editPencilIndicatorImageViewInDeckFragment.setOnClickListener {
-            viewModel.changeEditMode()
-        }
-
-        binding.addNewCardButtonInDeckFragment.setOnClickListener {
-            CreateEditCardBottomSheet(requireContext(), null, onDone = { cardViewData ->
-                val card = Card(null, cardViewData.question, cardViewData.anwser)
-                createCard(card)
-            }).show()
-        }
-
-        binding.studyButtonInDeckFragment.setOnClickListener {
-            studyOrSave()
-        }
+        binding.deckImageViewInDeckFragment.setOnClickListener(this)
+        binding.backArrowIndicatorImageViewInDeckFragment.setOnClickListener(this)
+        binding.removeIndicatorImageViewInDeckFragment.setOnClickListener(this)
+        binding.favoriteIndicatorImageViewInDeckFragment.setOnClickListener(this)
+        binding.editPencilIndicatorImageViewInDeckFragment.setOnClickListener(this)
+        binding.addNewCardButtonInDeckFragment.setOnClickListener(this)
+        binding.studyButtonInDeckFragment.setOnClickListener(this)
     }
 
     private fun closeFragment() {
@@ -276,18 +278,4 @@ class DeckFragment : Fragment(R.layout.fragment_deck) {
         binding.studyButtonInDeckFragment.isActivated = false
         binding.studyButtonInDeckFragment.isClickable = false
     }
-}
-
-class CardEmptyStateItemViewHolder(binding: ViewEmptyCardStateItemBinding): ItemViewHolder<PreviewViewData>(binding.root) {
-
-    companion object {
-        val IDENTIFIER: Int by lazy { CardEmptyStateItemViewHolder.hashCode() }
-
-        fun instantiate(parent: ViewGroup): CardEmptyStateItemViewHolder {
-            val inflater = LayoutInflater.from(parent.context)
-            val binding = ViewEmptyCardStateItemBinding.inflate(inflater, parent, false)
-            return CardEmptyStateItemViewHolder(binding)
-        }
-    }
-    override fun bind(viewData: PreviewViewData) { }
 }

@@ -15,7 +15,12 @@ data class DeckViewData(val title: String, val description: String, val image: U
     data class Card(val id: Int, val question: String, val answer: String)
 }
 
-class DeckViewModel(private val deckId: Int, private val findClient: DeckClienting, private val updateClient: DeckUpdateClienting): ViewModel() {
+class DeckViewModel(
+    private val deckId: Int,
+    private val findClient: DeckClienting,
+    private val updateClient: DeckUpdateClienting
+): ViewModel() {
+
     private val deckMutableLiveData = MutableLiveData<DeckViewData>()
     val deckLiveData: LiveData<DeckViewData> = deckMutableLiveData
 
