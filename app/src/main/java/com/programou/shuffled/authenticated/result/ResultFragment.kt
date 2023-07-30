@@ -21,7 +21,6 @@ class ResultFragment: Fragment(R.layout.fragment_result) {
     private val viewModel: ResultViewModel by lazy {
         ResultViewModel()
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -45,7 +44,7 @@ class ResultFragment: Fragment(R.layout.fragment_result) {
 
     private fun configureFinishButtonAction() {
         binding.doneButton.setOnClickListener {
-            findNavController().popBackStack(R.id.deckFragment, false)
+            findNavController().popBackStack(R.id.decksFragment, false)
         }
     }
 

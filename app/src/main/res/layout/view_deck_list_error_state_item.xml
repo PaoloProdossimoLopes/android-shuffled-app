@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="20dp"
     android:layout_marginHorizontal="16dp"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:orientation="vertical"
+    android:paddingVertical="20dp">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:src="@drawable/ic_bad_emoji_active"/>
+        android:contentDescription="@null"
+        android:src="@drawable/ic_bad_emoji_active" />
 
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Title"
-        android:textStyle="bold"
-        android:textSize="22sp"
+        android:layout_marginTop="20dp"
         android:textAlignment="center"
-        android:layout_marginTop="20dp"/>
+        android:textSize="22sp"
+        android:textStyle="bold"
+        tools:text="Title" />
 
     <TextView
         android:id="@+id/tv_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Description"
-        android:textSize="18sp"
+        android:layout_marginTop="5dp"
         android:textAlignment="center"
-        android:layout_marginTop="5dp"/>
+        android:textSize="18sp"
+        tools:text="Description" />
 
 </LinearLayout>

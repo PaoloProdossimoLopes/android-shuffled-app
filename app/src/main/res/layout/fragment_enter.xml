@@ -16,55 +16,56 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:src="@drawable/logo_foreground"
-        android:contentDescription="@null"/>
+        android:contentDescription="@null"
+        android:src="@drawable/logo_foreground" />
 
     <EditText
         android:id="@+id/edit_email"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginTop="22dp"
+        android:autofillHints="emailAddress"
         android:hint="@string/email_placeholder"
         android:inputType="textEmailAddress"
-        tools:text="any@email.com"
 
-        android:autofillHints="emailAddress" />
+        tools:text="any@email.com" />
 
     <EditText
         android:id="@+id/edit_password"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginBottom="22dp"
+        android:autofillHints="password"
         android:hint="@string/password_placeholder"
         android:inputType="textPassword"
-        tools:text="any password here"
-        android:autofillHints="password" />
+        tools:text="any password here" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <Button
             android:id="@+id/button_enter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_button_title"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
             android:id="@+id/progress_enter_button_loader"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="8dp"
             android:indeterminateTint="@color/white"
+            android:padding="8dp"
             android:visibility="gone"
-            tools:visibility="visible"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.cardview.widget.CardView
@@ -84,17 +85,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/google_logo"
-                    android:contentDescription="@null" />
+                    android:contentDescription="@null"
+                    android:src="@drawable/google_logo" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -108,14 +110,14 @@
                 android:id="@+id/progress_google_button_loader"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:padding="8dp"
                 android:indeterminateTint="@color/turquoise_500"
+                android:padding="8dp"
                 android:visibility="gone"
-                tools:visibility="visible"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

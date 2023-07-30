@@ -1,159 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="18dp"
     tools:context=".authenticated.deck.DeckFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/studyButtonInDeckFragment"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
+
             <ImageView
-                android:id="@+id/deckImageView"
+                android:id="@+id/deckImageViewInDeckFragment"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:background="@color/gray_300"
+                android:contentDescription="@null"
                 android:scaleType="centerCrop"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:layout_marginTop="18dp"
-                android:id="@+id/image_back_arrow"
+                android:id="@+id/backArrowIndicatorImageViewInDeckFragment"
                 android:layout_width="46dp"
                 android:layout_height="46dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/backgorund_circle"
+                android:contentDescription="@null"
                 android:padding="5dp"
                 android:src="@drawable/ic_arrow_back"
-                android:background="@drawable/backgorund_circle"
-                android:layout_marginHorizontal="16dp"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/white" />
 
-            <EditText
-                android:id="@+id/edit_deck_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="28sp"
-                android:background="@null"
-                android:textColor="@color/black_800"
-                android:enabled="false"
+            <ImageView
+                android:id="@+id/favoriteIndicatorImageViewInDeckFragment"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@id/deckImageView"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/backgorund_circle"
+                android:contentDescription="@null"
+                android:padding="5dp"
+                android:src="@drawable/ic_star"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:text="Ingles"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/gray_300"
+                tools:tint="@color/yellow_500" />
 
             <ImageView
-                android:id="@+id/image_edit_fields"
-                android:layout_width="30dp"
-                android:layout_height="0dp"
-                android:src="@drawable/ic_edit"
+                android:id="@+id/removeIndicatorImageViewInDeckFragment"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
                 android:layout_marginHorizontal="16dp"
-                app:layout_constraintTop_toTopOf="@id/edit_deck_title"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/backgorund_circle"
+                android:contentDescription="@null"
+                android:padding="5dp"
+                android:src="@drawable/ic_trash"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/edit_deck_title" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/red_300" />
 
             <EditText
-                android:id="@+id/edit_deck_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:enabled="false"
-                android:textColor="@color/black_800"
-                android:layout_marginTop="16dp"
-                android:layout_marginHorizontal="16dp"
-                app:layout_constraintTop_toBottomOf="@id/edit_deck_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="@null"
-                android:text="Any description for the card to show a couple of lines in this fragment to describe item here"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_favorite"
+                android:id="@+id/deckTitleEditTextInDeckFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="8dp"
-                android:text="Favoritar"
-                android:textStyle="bold"
+                android:autofillHints="name of deck"
                 android:background="@null"
-                app:cornerRadius="10dp"
-                app:strokeColor="@color/turquoise_500"
-                app:strokeWidth="3dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:drawableTint="@color/gray_100"
+                android:enabled="false"
+                android:hint="@string/deckTitleHintEditTextInDeckFragment"
+                android:inputType="textMultiLine"
+                android:maxLines="2"
+                android:textColor="@color/black_800"
+                android:textSize="28sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_deck_description"/>
+                app:layout_constraintTop_toBottomOf="@id/deckImageViewInDeckFragment"
+                tools:text="title of deck" />
 
-            <TextView
-                android:id="@+id/text_deck_cards_preview_section_title"
+            <ImageView
+                android:id="@+id/editPencilIndicatorImageViewInDeckFragment"
+                android:layout_width="30dp"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="16dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_edit"
+                app:layout_constraintBottom_toBottomOf="@id/deckTitleEditTextInDeckFragment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/deckTitleEditTextInDeckFragment" />
+
+            <EditText
+                android:id="@+id/deckDescriptionEditTextInDeckFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:layout_marginTop="16dp"
                 android:layout_marginHorizontal="16dp"
-                app:layout_constraintTop_toBottomOf="@id/button_favorite"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="16dp"
+                android:autofillHints="description of deck"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:enabled="false"
+                android:hint="@string/deckDescriptionHintEditTextInDeckFragment"
+                android:inputType="textMultiLine"
+                android:maxLines="2"
+                android:textColor="@color/black_800"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:text="Cartas"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/deckTitleEditTextInDeckFragment"
+                tools:ignore="ContentDescription"
+                tools:text="Any description for the card to show a couple of lines in this fragment to describe item here" />
 
             <TextView
-                android:id="@+id/text_add_new_card"
-                android:layout_width="40dp"
+                android:id="@+id/cardListTitleTextViewInDeckFragment"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:textSize="28sp"
-                android:textColor="@color/turquoise_500"
-                android:layout_marginTop="16dp"
                 android:layout_marginHorizontal="16dp"
-                app:layout_constraintTop_toBottomOf="@id/button_favorite"
-                app:layout_constraintBottom_toBottomOf="@id/text_deck_cards_preview_section_title"
+                android:layout_marginTop="16dp"
+                android:text="@string/cardListTitleTextViewInDeckFragment"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:text="+"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/deckDescriptionEditTextInDeckFragment" />
+
+            <TextView
+                android:id="@+id/addNewCardButtonInDeckFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:text="@string/addNewCardButtonInDeckFragment"
+                android:textAlignment="center"
+                android:textColor="@color/turquoise_500"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/cardListTitleTextViewInDeckFragment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/cardListTitleTextViewInDeckFragment" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_cards_carrousel"
+                android:id="@+id/cardsRecyclerViewInDeckFragment"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginVertical="10dp"
-                android:paddingStart="16dp"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="20dp"
                 android:clipToPadding="false"
+                android:paddingStart="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/button_start"
-                app:layout_constraintTop_toBottomOf="@id/text_deck_cards_preview_section_title"
+                app:layout_constraintTop_toBottomOf="@id/cardListTitleTextViewInDeckFragment"
+                tools:ignore="RtlSymmetry"
                 tools:itemCount="3"
                 tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_deck_card_preview_item"
                 tools:orientation="horizontal"
                 tools:spanCount="3" />
-
-            <Button
-                android:id="@+id/button_start"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Começar"
-                android:layout_marginHorizontal="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/studyButtonInDeckFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/studyButtonTitleInDeckFragment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

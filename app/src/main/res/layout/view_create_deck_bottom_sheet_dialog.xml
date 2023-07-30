@@ -7,34 +7,36 @@
     app:cardCornerRadius="20dp">
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <ImageView
                 android:id="@+id/closeDeckCreationIndicatorImageView"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:src="@drawable/ic_x"
-                android:layout_marginTop="12dp"
                 android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="12dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_x"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/makeDeckBottomSheetTitleText"
+                android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textAlignment="center"
-                android:text="Crei seu baralho"
-                app:layout_constraintTop_toTopOf="@id/closeDeckCreationIndicatorImageView"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/closeDeckCreationIndicatorImageView"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/closeDeckCreationIndicatorImageView"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/closeDeckCreationIndicatorImageView" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -55,11 +57,12 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/deckImageView"
+                    android:id="@+id/deckImageViewInCreateDeckBottomSheet"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:background="@color/gray_100" />
+                    android:background="@color/gray_100"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop" />
 
             </androidx.cardview.widget.CardView>
 
@@ -68,7 +71,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:text="Nome do baralho"
+                android:text="@string/deckNamePlaceholderTitle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/deckImageContainerCardView"
                 app:layout_constraintTop_toTopOf="parent"
@@ -79,9 +82,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
+                android:hint="@string/deckNameHintTitle"
                 android:inputType="text"
                 android:maxLines="1"
-                android:hint="Nome do seu baralho"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/deckImageContainerCardView"
                 app:layout_constraintTop_toBottomOf="@id/deckNamePlaceholderTextView" />
@@ -92,7 +95,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:text="Nome do baralho"
+                android:text="@string/deckDescriptionPlaceholderTitle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/deckImageContainerCardView"
                 app:layout_constraintTop_toBottomOf="@id/deckNameEditText" />
@@ -102,10 +105,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:hint="Nome do seu baralho"
+                android:hint="@string/deckDescriptionHintTitle"
                 android:inputType="text|textMultiLine"
-                android:textAlignment="textStart"
                 android:maxLines="2"
+                android:textAlignment="textStart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/deckImageContainerCardView"
                 app:layout_constraintTop_toBottomOf="@id/deckDescriptionPlaceholderTextView" />
@@ -116,13 +119,13 @@
             android:id="@+id/createDeckButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ll_fields_container"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="22dp"
-            android:text="Criar"
-            android:textAllCaps="false" />
+            android:text="@string/makeButtonTitleInCreateDeckBottomSheet"
+            android:textAllCaps="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_fields_container" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.cardview.widget.CardView>

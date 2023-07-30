@@ -25,7 +25,7 @@ class RegisterFragment: Fragment(R.layout.fragment_register) {
 
         binding = FragmentRegisterBinding.bind(view)
 
-        binding.imageBackArrow.setOnClickListener { popFragment() }
+        binding.backArrowIndicatorImageViewInRegisterFragment.setOnClickListener { popFragment() }
         binding.buttonAlreadyHaveAccount.setOnClickListener { popFragment() }
         binding.root.setOnClickListener { hideKeyboard() }
         binding.buttonRegister.setOnClickListener { onEnterActionHandler() }

@@ -27,7 +27,7 @@ class CreateDeckBottomSheetView(
     var deckImageUri: Uri? = null
         set(value) {
             field = value
-            binding.deckImageView.setImageURI(field)
+            binding.deckImageViewInCreateDeckBottomSheet.setImageURI(field)
         }
 
     override fun onCreate(bundle: Bundle?) {
@@ -50,7 +50,7 @@ class CreateDeckBottomSheetView(
         }
 
         binding.deckImageContainerCardView.setOnClickListener {
-            setGalleryImage(binding.deckImageView)
+            setGalleryImage(binding.deckImageViewInCreateDeckBottomSheet)
         }
 
         binding.createDeckButton.setOnClickListener {
@@ -61,7 +61,7 @@ class CreateDeckBottomSheetView(
 
             binding.deckNameEditText.setText(String())
             binding.deckDescriptionEditText.setText(String())
-            binding.deckImageView.setImageURI(null)
+            binding.deckImageViewInCreateDeckBottomSheet.setImageURI(null)
         }
 
         binding.createDeckButton.setBackgroundColor(context.getColor(R.color.turquoise_500))
