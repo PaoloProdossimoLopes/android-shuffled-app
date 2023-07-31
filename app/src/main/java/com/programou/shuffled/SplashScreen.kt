@@ -14,7 +14,6 @@ class SplashScreen : AppCompatActivity() {
     private val authProvider: FirebaseAuthClientProviderAdapter by lazy {
         FirebaseAuthClientProviderAdapter.shared
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)

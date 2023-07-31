@@ -107,7 +107,8 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         }
 
         binding.userProfileImagaViewInDeckListFragment.setOnClickListener {
-
+            val action = DeckListFragmentDirections.actionDecksFragmentToProfileFragment()
+            findNavController().navigate(action)
         }
 
         configurebindWithViewModel()
