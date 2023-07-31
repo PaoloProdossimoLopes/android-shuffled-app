@@ -1,16 +1,20 @@
 package com.programou.shuffled.authenticated.deck
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
@@ -25,6 +29,7 @@ import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
+import com.programou.shuffled.authenticated.flashcard.FlashCardFragmentDirections
 import com.programou.shuffled.databinding.FragmentDeckBinding
 import com.programou.shuffled.databinding.ViewEmptyCardStateItemBinding
 
@@ -35,7 +40,8 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     private val deckArgs: DeckFragmentArgs by navArgs()
     private val viewModel: DeckViewModel by lazy {
         val client = InmemoryDeckListClient.shared
-        DeckViewModel(deckArgs.deckId, client, client)
+        val factory = DeckViewModel.Factory(deckArgs.deckId, client, client) // Factory
+        ViewModelProvider(this, factory).get(DeckViewModel::class.java)
     }
     private var imageUri: Uri? = null
         set(value) {
@@ -65,15 +71,22 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
 
     private fun createCardBottomSheet() {
         val bottomSheet = CreateEditCardBottomSheet(requireContext(), null, onDone = { cardViewData ->
-            val card = Card(null, cardViewData.question, cardViewData.anwser)
+            val card = Card(null, cardViewData.question, cardViewData.anwser, cardViewData.studiesLeft)
             createCard(card)
         })
         bottomSheet.show()
     }
 
     private fun removeDeck() {
-        viewModel.deleteDeck()
-        closeFragment()
+        AlertDialog.Builder(requireContext())
+            .setTitle("Tem certeza que deseja excluir o seu baralho?")
+            .setMessage("Ao excluir voce perderá todas as cartas dja criadas nele e os dados dele permanentemente")
+            .setPositiveButton("Não", null)
+            .setNegativeButton("Sim") { _, _ ->
+                viewModel.deleteDeck()
+                closeFragment()
+            }
+            .show()
     }
 
     private fun onViewCreated() {
@@ -102,7 +115,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         }
 
         viewModel.onCardListEmptyState.observe(requireActivity()) {
-            val itemViewData = ItemViewData(CardEmptyStateItemViewHolder.IDENTIFIER, PreviewViewData(null, "", ""))
+            val itemViewData = ItemViewData(CardEmptyStateItemViewHolder.IDENTIFIER, PreviewViewData(null, "", "", 0))
             cardPreviewAdapter.update(listOf(itemViewData))
             disableStudyButton()
         }
@@ -111,7 +124,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
             cardPreviewAdapter.update(cardsViewData.map {
                 ItemViewData(
                     CardPreviewItemViewHolder.IDENTIFIER,
-                    PreviewViewData(it.id, it.question, it.answer)
+                    PreviewViewData(it.id, it.question, it.answer, it.studiesLeft)
                 )
             })
             enableStudyButton()
@@ -134,8 +147,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         }
 
         viewModel.onNavigateToFlashcardStudy.observe(requireActivity()) { deck ->
-            val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
-            findNavController().navigate(action)
+            navigateToStudyFragment(deck)
         }
 
         viewModel.onSaveChange.observe(requireActivity()) {
@@ -147,6 +159,12 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
             presentGalleryPicker()
         }
     }
+
+    private fun navigateToStudyFragment(deck: Deck) {
+        val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
+        findNavController().navigate(action)
+    }
+
     private fun shouldEnableToolButtonsForEditMode(isEnable: Boolean) {
         binding.backArrowIndicatorImageViewInDeckFragment.isVisible = isEnable
         binding.favoriteIndicatorImageViewInDeckFragment.isVisible = isEnable
@@ -195,7 +213,8 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     }
 
     private fun closeFragment() {
-        findNavController().popBackStack()
+        val action = DeckFragmentDirections.actionDeckFragmentToDecksFragment()
+        findNavController().navigate(action)
     }
 
     private fun studyOrSave() {
@@ -205,7 +224,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         val cards = cardPreviewAdapter
             .getViewData()
             .filter { it.id != null }
-            .map { DeckViewData.Card(it.id!!, it.question, it.anwser) }
+            .map { DeckViewData.Card(it.id!!, it.question, it.anwser, it.studiesLeft) }
         val viewData = DeckViewData(title, description, imageUri!!, isFavorited, cards)
         viewModel.studyOrSave(viewData)
     }
@@ -240,7 +259,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     }
 
     private fun updateCard(viewData: PreviewViewData) {
-        val card = Card(viewData.id, viewData.question, viewData.anwser)
+        val card = Card(viewData.id, viewData.question, viewData.anwser, viewData.studiesLeft)
         viewModel.updateCard(card)
     }
 

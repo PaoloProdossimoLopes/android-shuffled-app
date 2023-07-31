@@ -1,6 +1,9 @@
 package com.programou.shuffled.authenticated.flashcard
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -8,11 +11,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
@@ -26,7 +31,7 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
     private lateinit var binding: FragmentFlashCardBinding
     private val arguments: FlashCardFragmentArgs by navArgs()
     private val viewModel: FlashcardViewModel by lazy {
-        FlashcardViewModel(arguments.deck)
+        FlashcardViewModel(arguments.deck, InmemoryDeckListClient.shared)
     }
 
     private val flashcardListAdapter = ListAdapter<FlashCardViewData>()
@@ -52,7 +57,7 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
 
     private fun setupObservers() {
         viewModel.onItemsChange.observe(requireActivity()) { viewDatas ->
-            onItemChangeWith(viewDatas)
+            onItemChangeWith(viewDatas.shuffled())
         }
 
         viewModel.onEasySelectChange.observe(requireActivity()) {
@@ -89,7 +94,7 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
 
     private fun onNavigateToResult(flashcardResult: FlashcardResult) {
         val viewData = ResultViewData(
-            flashcardResult.deckTitle, flashcardResult.totalOfCards,
+            arguments.deck.id, flashcardResult.deckTitle, flashcardResult.totalOfCards,
             flashcardResult.numberOfEasy, flashcardResult.numberOfMid,
             flashcardResult.numberOfHard
         )
@@ -112,7 +117,7 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
         binding.intermediateImageViewInFlashcardFragment.isClickable = false
 
         lifecycleScope.launch {
-            delay(200)
+            delay(400)
 
             disableListScrolling()
             binding.easyImageViewInFlashcardFragment.setImageDrawable(getDrawableBy(R.drawable.ic_happy_emoji_deactive))
@@ -133,8 +138,24 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
             binding.easyImageContainerCardViewInFlashcardFragment -> selectEasy()
             binding.intermediateImageContainerCardViewInFlashcardFragment -> selectIntermediate()
             binding.hardImageContainerCardViewInFlashcardFragment -> selectHard()
-            binding.backArrowIndicatorImageViewInFlashcardFragment -> findNavController().popBackStack()
+            binding.backArrowIndicatorImageViewInFlashcardFragment -> {
+                presentInteruptStudy()
+            }
         }
+    }
+
+    private fun presentInteruptStudy() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Tem certeza que deseja interromper seus estudos?")
+            .setMessage("Ao interromper seus estudo todo o progresso realizado nessa sessao sera perdido")
+            .setPositiveButton("Não", null)
+            .setNegativeButton("Sim") { _, _ ->
+                val action = FlashCardFragmentDirections.actionFlashCardFragmentToDeckFragment(
+                    arguments.deck.id
+                )
+                findNavController().navigate(action)
+            }
+            .show()
     }
 
     private fun selectEasy() {
@@ -175,7 +196,8 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
 
     private fun setupLayout() {
         binding.deckTitleTextViewInFlashcardFragment.text = arguments.deck.name
-        binding.totalOfCardsTextViewInFlashcardFragment.text = arguments.deck.cards.count().toString()
+        binding.totalOfCardsTextViewInFlashcardFragment.text = viewModel.getCards().count().toString()
+        binding.currentCardStepTextViewInFlashcardFragment.text = "1"
         binding.studyProgressLinearProgressIndicatorInFlashcardFragment.setProgress(viewModel.getProgress(), true)
     }
 

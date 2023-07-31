@@ -18,7 +18,7 @@
     <string name="deckTitleHintEditTextInDeckFragment">title of deck</string>
     <string name="deckDescriptionHintEditTextInDeckFragment">Deck description</string>
     <string name="studyButtonTitleInDeckFragment">Começar</string>
-    <string name="recentSectionTitleText">Recentes</string>
+    <string name="recentSectionTitleText">Favoritos</string>
     <string name="deckSectionTitleText">Baralhos</string>
     <string name="createDeckButtonTitle">Criar baralho</string>
     <string name="slashSeparatorText">/</string>
@@ -38,4 +38,5 @@
     <string name="makeButtonTitleInCreateDeckBottomSheet">Criar</string>
     <string name="deckEmptyStateTitle">Seu baralho esta vazio</string>
     <string name="deckEmptyStateDescription">Para iniciar seus estudos clique no `+` e crie uma carta</string>
+    <string name="appNameText">SHUFFLED</string>
 </resources>

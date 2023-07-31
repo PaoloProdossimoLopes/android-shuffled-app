@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.programou.shuffled.authenticated.deckList.Deck
+import java.util.Dictionary
 
 
-class FlashcardViewModel(private val deck: Deck): ViewModel() {
+class FlashcardViewModel(private val deck: Deck, private val client: FlashcardClient): ViewModel() {
 
     private val onItemsChangeMutableLiveData = MutableLiveData<List<FlashCardViewData>>()
     val onItemsChange: LiveData<List<FlashCardViewData>> = onItemsChangeMutableLiveData
@@ -29,56 +30,78 @@ class FlashcardViewModel(private val deck: Deck): ViewModel() {
     private val onNavigateToResultMutableLiveData = MutableLiveData<FlashcardResult>()
     val onNavigateToResult: LiveData<FlashcardResult> = onNavigateToResultMutableLiveData
 
-    private var cardMarkedAsEasyCounter = 0
-    private var cardMarkedAsIntermediateCounter = 0
-    private var cardMarkedAsHardCounter = 0
+    private var listOfIdCardsMarkedAsEasy = mutableListOf<Int>()
+    private var listOfIdCardsMarkedAsIntermediate = mutableListOf<Int>()
+    private var listOfIdCardsMarkedAsHard = mutableListOf<Int>()
     private var currentFlashCardPositionSelected = 0
 
-    fun presentCards() {
-        val cards = deck.cards.map {
-            FlashCardViewData(it.id!!, it.question, it.awnser)
-        }
+    fun getCards(): List<FlashCardViewData> {
+        val lowerCardAvailable = deck.cards.minBy { it.studiesLeft }
+        return deck.cards
+            .filter { it.studiesLeft == lowerCardAvailable.studiesLeft }
+            .map {
+                FlashCardViewData(it.id!!, it.question, it.awnser)
+            }
+    }
 
-        onItemsChangeMutableLiveData.postValue(cards)
+    fun presentCards() {
+        onItemsChangeMutableLiveData.postValue(getCards())
     }
 
     fun selectEasy() {
         onEasySelectChangeMutableLiveData.postValue(Unit)
-        cardMarkedAsEasyCounter++
+        listOfIdCardsMarkedAsEasy.add(getCurrentCardId())
         moveToNext()
         onDisableButtonsChangeMutableLiveData.postValue(Unit)
     }
 
+    private fun getCurrentCardId() = deck.cards[currentFlashCardPositionSelected].id!!
+
     fun selectIntermediate() {
         onIntermediateSelectChangeMutableLiveData.postValue(Unit)
-        cardMarkedAsIntermediateCounter++
+        listOfIdCardsMarkedAsIntermediate.add(getCurrentCardId())
         moveToNext()
         onDisableButtonsChangeMutableLiveData.postValue(Unit)
     }
 
     fun selectHard() {
         onHardSelectChangeMutableLiveData.postValue(Unit)
-        cardMarkedAsHardCounter++
+        listOfIdCardsMarkedAsHard.add(getCurrentCardId())
         moveToNext()
         onDisableButtonsChangeMutableLiveData.postValue(Unit)
     }
 
-    fun getProgress() = (((currentFlashCardPositionSelected + 1) * 100) / deck.cards.count())
+    fun getProgress() = (((currentFlashCardPositionSelected + 1) * 100) / getCards().count())
 
     private fun moveToNext() {
-        if (currentFlashCardPositionSelected + 1 < deck.cards.count()) {
+        if (currentFlashCardPositionSelected + 1 < getCards().count()) {
             currentFlashCardPositionSelected++
 
-            val currentStep = currentFlashCardPositionSelected + 1
-            val update = FlashcardStep(getProgress(), currentStep.toString(), currentFlashCardPositionSelected)
-            onUpdateStepChangeMutableLiveData.postValue(update)
+            updateStep()
         } else {
+            client.updateDecrementStudiesLeftFor(deck.id)
+
+            client.updateStudiesLeftsFor(listOfIdCardsMarkedAsEasy, deck.id, 2)
+            client.updateStudiesLeftsFor(listOfIdCardsMarkedAsIntermediate, deck.id, 1)
+            client.updateStudiesLeftsFor(listOfIdCardsMarkedAsHard, deck.id, 0)
+
             onNavigateToResultMutableLiveData.postValue(FlashcardResult(
-                deck.name, deck.cards.count(),
-                cardMarkedAsEasyCounter,
-                cardMarkedAsIntermediateCounter,
-                cardMarkedAsHardCounter,
+                deck.name, getCards().count(),
+                listOfIdCardsMarkedAsEasy.count(),
+                listOfIdCardsMarkedAsIntermediate.count(),
+                listOfIdCardsMarkedAsHard.count(),
             ))
         }
     }
+
+    private fun updateStep() {
+        val currentStep = currentFlashCardPositionSelected + 1
+        val update = FlashcardStep(getProgress(), currentStep.toString(), currentFlashCardPositionSelected)
+        onUpdateStepChangeMutableLiveData.postValue(update)
+    }
+}
+
+interface FlashcardClient {
+    fun updateStudiesLeftsFor(idCards: List<Int>, inDeckId: Int, studiesLeft: Int)
+    fun updateDecrementStudiesLeftFor(deckId: Int)
 }

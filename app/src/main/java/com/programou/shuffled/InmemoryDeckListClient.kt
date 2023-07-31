@@ -12,9 +12,10 @@ import com.programou.shuffled.authenticated.deckList.Deck
 import com.programou.shuffled.authenticated.deckList.DeckListResponse
 import com.programou.shuffled.authenticated.deckList.GetAllDecksClient
 import com.programou.shuffled.authenticated.deckList.GetFavoritedDecksClient
+import com.programou.shuffled.authenticated.flashcard.FlashcardClient
 
 class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavoritedDecksClient,
-    CreateDeckClient, DeckClienting, DeckUpdateClienting {
+    CreateDeckClient, DeckClienting, DeckUpdateClienting, FlashcardClient {
 
     companion object {
         val shared = InmemoryDeckListClient()
@@ -22,28 +23,27 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
 
     private val inmemoryDecks = mutableListOf(
         DeckListResponse.Deck(1, "Ingles", "Any description", "https://s4.static.brasilescola.uol.com.br/be/2022/05/bandeira-dos-estados-unidos.jpg", false, mutableListOf(
-            DeckListResponse.Card(0,"How old are you?", "Quantos anos voce tem?"),
-            DeckListResponse.Card(1,"What's up?", "E ai?"),
-            DeckListResponse.Card(2,"Hello", "Olá"),
-        )
-        ),
+            DeckListResponse.Card(0,"How old are you?", "Quantos anos voce tem?", 0),
+            DeckListResponse.Card(1,"What's up?", "E ai?", 0),
+            DeckListResponse.Card(2,"Hello", "Olá", 1),
+        )),
         DeckListResponse.Deck(2, "Frances", "Any description", "https://www.eurodicas.com.br/wp-content/uploads/2018/10/bandeira-da-franca-1200x900.jpg", false, mutableListOf(
-            DeckListResponse.Card(0,"Bonjour", "Olá"),
-            DeckListResponse.Card(1,"Comment le dire en français?", "Como dizer isso em francês?"),
-            DeckListResponse.Card(2,"Que préfères-tu?", "Oque voce prefere?"),
-            DeckListResponse.Card(3,"Pouvez-vous me l'épeler?", "Pode soletrar para mim?"),
-            DeckListResponse.Card(4,"Quel âge as-tu?", "Quantos anos você tem"),
+            DeckListResponse.Card(0,"Bonjour", "Olá", 1),
+            DeckListResponse.Card(1,"Comment le dire en français?", "Como dizer isso em francês?", 0),
+            DeckListResponse.Card(2,"Que préfères-tu?", "Oque voce prefere?", 2),
+            DeckListResponse.Card(3,"Pouvez-vous me l'épeler?", "Pode soletrar para mim?", 1),
+            DeckListResponse.Card(4,"Quel âge as-tu?", "Quantos anos você tem", 1),
         )),
         DeckListResponse.Deck(3, "Jappones", "Any description", "https://ichef.bbci.co.uk/news/1024/branded_portuguese/135A8/production/_110227297_gettyimages-512612394.jpg", true, mutableListOf(
-            DeckListResponse.Card(0,"よろしく", "Yoroshiku (Prazer em conhece-lo)"),
-            DeckListResponse.Card(1,"いただきます", "Itadakimasu (Eu humildemente recebo)"),
-            DeckListResponse.Card(2,"元気", "Genki (Como você está?)"),
-            DeckListResponse.Card(3,"もったいない", "Mottainai (Desperdicio)"),
-            DeckListResponse.Card(4,"すみません", "Sumimasen (Desculpe-me)"),
-            DeckListResponse.Card(5,"がんばって", "Ganbatte (faça o seu melhor)"),
-            DeckListResponse.Card(6,"しょうがない", "Shoganai (não tem jeito)"),
-            DeckListResponse.Card(7,"気をつけてね", "Kiwotsukete ne (Tome cuidado)"),
-            DeckListResponse.Card(8,"お疲れ", "Otsukare (Cansaço/ Fadiga)"),
+            DeckListResponse.Card(0,"よろしく", "Yoroshiku (Prazer em conhece-lo)", 3),
+            DeckListResponse.Card(1,"いただきます", "Itadakimasu (Eu humildemente recebo)", 3),
+            DeckListResponse.Card(2,"元気", "Genki (Como você está?)", 1),
+            DeckListResponse.Card(3,"もったいない", "Mottainai (Desperdicio)", 3),
+            DeckListResponse.Card(4,"すみません", "Sumimasen (Desculpe-me)", 2),
+            DeckListResponse.Card(5,"がんばって", "Ganbatte (faça o seu melhor)", 1),
+            DeckListResponse.Card(6,"しょうがない", "Shoganai (não tem jeito)", 1),
+            DeckListResponse.Card(7,"気をつけてね", "Kiwotsukete ne (Tome cuidado)", 1),
+            DeckListResponse.Card(8,"お疲れ", "Otsukare (Cansaço/ Fadiga)", 0),
         ))
     )
 //    private val inmemoryDecks = mutableListOf<DeckListResponse.Deck>()
@@ -52,15 +52,14 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
         callback(DeckListResponse(inmemoryDecks))
 //        throw Error()
     }
-
     override fun getFavorited(callback: (DeckListResponse) -> Unit) {
-        callback(DeckListResponse(inmemoryDecks.filter { it.isFavorited }))
-//        throw Error()
+            callback(DeckListResponse(inmemoryDecks.filter { it.isFavorited }))
+//            throw Error()
     }
 
     override fun postDeck(deck: CreateDeckModel, onComplete: CreateDeckClientCompletionBlock) {
         val id = inmemoryDecks.lastOrNull()?.id ?: 0
-        inmemoryDecks.add(DeckListResponse.Deck(id + 1, deck.title, deck.description, deck.imageUri.toString(), deck.isFavorited, deck.cards.map { DeckListResponse.Card(it.id, it.question, it.answer) }.toMutableList()))
+        inmemoryDecks.add(DeckListResponse.Deck(id + 1, deck.title, deck.description, deck.imageUri.toString(), deck.isFavorited, deck.cards.map { DeckListResponse.Card(it.id, it.question, it.answer, it.studiesLeft) }.toMutableList()))
         onComplete(CreateDeckResponse())
 
 //                throw Error()
@@ -69,7 +68,13 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
     override suspend fun findBy(id: Int): DeckResponse? {
         val inmemoryDeck = inmemoryDecks.find { it.id == id }
         inmemoryDeck?.let {
-            return DeckResponse(DeckResponse.Deck(it.id, it.title, it.description, it.thumbnailUrl, it.isFavorited, it.cards.map { DeckResponse.Card(it.id, it.question, it.answer) }.toMutableList()))
+            return DeckResponse(DeckResponse.Deck(
+                it.id, it.title,
+                it.description, it.thumbnailUrl,
+                it.isFavorited, it.cards.map {
+                    DeckResponse.Card(it.id, it.question, it.answer, it.studiesLeft)
+                }.toMutableList())
+            )
         }
 
         return null
@@ -82,7 +87,7 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
         inmemoryDecks[deckIndex].isFavorited = deck.isFavorite
         inmemoryDecks[deckIndex].description = deck.description
         inmemoryDecks[deckIndex].thumbnailUrl = deck.thumbnailUrl
-        inmemoryDecks[deckIndex].cards = deck.cards.map { DeckListResponse.Card(it.id!!, it.question, it.awnser) }.toMutableList()
+        inmemoryDecks[deckIndex].cards = deck.cards.map { DeckListResponse.Card(it.id!!, it.question, it.awnser, it.studiesLeft) }.toMutableList()
 
         return true
     }
@@ -91,7 +96,7 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
         val deckIndex = inmemoryDecks.indexOfFirst { it.id == deckId }
         val newId = inmemoryDecks[deckIndex].cards.lastOrNull()?.id?.plus(1) ?: 0
 
-        val all = inmemoryDecks[deckIndex].cards + DeckListResponse.Card(newId, newCard.question, newCard.awnser)
+        val all = inmemoryDecks[deckIndex].cards + DeckListResponse.Card(newId, newCard.question, newCard.awnser, newCard.studiesLeft)
         inmemoryDecks[deckIndex].cards = all.toMutableList()
 
         return true
@@ -107,5 +112,23 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
         val deckIndex = inmemoryDecks.indexOfFirst { it.id == id }
         inmemoryDecks.removeAt(deckIndex)
         return true
+    }
+
+    override fun updateStudiesLeftsFor(idCards: List<Int>, inDeckId: Int, studiesLeft: Int) {
+        val deckIndex = inmemoryDecks.indexOfFirst { it.id == inDeckId }
+        for (id in idCards) {
+            val cardIndex = inmemoryDecks[deckIndex].cards.indexOfFirst { it.id == id }
+            inmemoryDecks[deckIndex].cards[cardIndex].studiesLeft = studiesLeft
+        }
+    }
+
+    override fun updateDecrementStudiesLeftFor(deckId: Int) {
+        val deckIndex = inmemoryDecks.indexOfFirst { it.id == deckId }
+        for (cardIndex in 0 until inmemoryDecks[deckIndex].cards.count()) {
+            val cardStudiesLeft = inmemoryDecks[deckIndex].cards[cardIndex].studiesLeft
+            if (cardStudiesLeft > 0) {
+                inmemoryDecks[deckIndex].cards[cardIndex].studiesLeft = (cardStudiesLeft - 1)
+            }
+        }
     }
 }
