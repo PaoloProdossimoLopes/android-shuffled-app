@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
@@ -12,7 +13,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
+import com.programou.shuffled.FirebaseAuthClientProviderAdapter
 import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
@@ -63,6 +67,15 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         registerItemsInDeckList()
         registerItemsInFavoriteDeckList()
 
+        val requestOptions = RequestOptions()
+            .centerCrop()
+            .placeholder(R.color.gray_100)
+
+        Glide.with(binding.root.context)
+            .load(FirebaseAuthClientProviderAdapter.shared.getUserPhotoURI())
+            .apply(requestOptions)
+            .into(binding.userProfileImagaViewInDeckListFragment)
+
         binding.recyclerDecks.adapter = deckListAdapter
         binding.recyclerDecksRecents.adapter = recentDeckListAdapter
         binding.recyclerDecksRecents.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -91,6 +104,10 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
             } else {
                 load()
             }
+        }
+
+        binding.userProfileImagaViewInDeckListFragment.setOnClickListener {
+
         }
 
         configurebindWithViewModel()

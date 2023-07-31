@@ -28,6 +28,8 @@ class FirebaseAuthClientProviderAdapter : EnterClientProvider,
 
     fun isAuthenticated() = auth.currentUser != null
 
+    fun getUserPhotoURI() = auth.currentUser?.photoUrl
+
     override fun enter(request: EnterRequest, callback: (UserResponse) -> Unit) {
         val email = request.body["email"] ?: String()
         val password = request.body["password"] ?: String()
