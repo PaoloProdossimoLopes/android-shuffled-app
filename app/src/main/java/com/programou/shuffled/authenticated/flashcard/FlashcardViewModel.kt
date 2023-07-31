@@ -35,11 +35,14 @@ class FlashcardViewModel(private val deck: Deck, private val client: FlashcardCl
     private var listOfIdCardsMarkedAsHard = mutableListOf<Int>()
     private var currentFlashCardPositionSelected = 0
 
-    fun getCards() = deck.cards
-        .filter { it.studiesLeft == 0 }
-        .map {
-            FlashCardViewData(it.id!!, it.question, it.awnser)
-        }
+    fun getCards(): List<FlashCardViewData> {
+        val lowerCardAvailable = deck.cards.minBy { it.studiesLeft }
+        return deck.cards
+            .filter { it.studiesLeft == lowerCardAvailable.studiesLeft }
+            .map {
+                FlashCardViewData(it.id!!, it.question, it.awnser)
+            }
+    }
 
     fun presentCards() {
         onItemsChangeMutableLiveData.postValue(getCards())

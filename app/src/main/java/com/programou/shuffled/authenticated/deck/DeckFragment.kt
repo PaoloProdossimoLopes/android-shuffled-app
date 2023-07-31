@@ -1,6 +1,7 @@
 package com.programou.shuffled.authenticated.deck
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -28,6 +29,7 @@ import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
+import com.programou.shuffled.authenticated.flashcard.FlashCardFragmentDirections
 import com.programou.shuffled.databinding.FragmentDeckBinding
 import com.programou.shuffled.databinding.ViewEmptyCardStateItemBinding
 
@@ -76,8 +78,15 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     }
 
     private fun removeDeck() {
-        viewModel.deleteDeck()
-        closeFragment()
+        AlertDialog.Builder(requireContext())
+            .setTitle("Tem certeza que deseja excluir o seu baralho?")
+            .setMessage("Ao excluir voce perderá todas as cartas dja criadas nele e os dados dele permanentemente")
+            .setPositiveButton("Não", null)
+            .setNegativeButton("Sim") { _, _ ->
+                viewModel.deleteDeck()
+                closeFragment()
+            }
+            .show()
     }
 
     private fun onViewCreated() {
