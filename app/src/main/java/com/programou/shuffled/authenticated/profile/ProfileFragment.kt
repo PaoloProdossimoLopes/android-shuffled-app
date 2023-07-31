@@ -1,14 +1,15 @@
-package com.programou.shuffled
+package com.programou.shuffled.authenticated.profile
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.programou.shuffled.BuildConfig
+import com.programou.shuffled.FirebaseAuthClientProviderAdapter
+import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentProfileBinding
 import com.programou.shuffled.unauthenticated.UnauthenticatedActivity
 
@@ -23,6 +24,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         binding = FragmentProfileBinding.bind(view)
 
         binding.profileUsernameInProfileFragment.text = auth.getUsername()
+
+        val appVersion = BuildConfig.VERSION_NAME
+        binding.appVersionTextViewInProfileFragment.text = "shuffled está na versão $appVersion"
 
         val requestOptions = RequestOptions()
             .centerCrop()
