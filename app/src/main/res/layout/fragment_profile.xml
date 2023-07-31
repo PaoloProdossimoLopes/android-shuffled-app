@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".authenticated.profile.ProfileFragment">
+
+    <ImageView
+        android:id="@+id/backArrowImageIndicatorInProfileFragment"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="16dp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/profileImageCardViewInProfileFragment"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintTop_toBottomOf="@id/backArrowImageIndicatorInProfileFragment"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="1000dp"
+        app:strokeWidth="4dp"
+        app:strokeColor="@color/turquoise_500">
+        <ImageView
+            android:id="@+id/profileImageViewInProfileFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black_800"/>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/profileUsernameInProfileFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Username"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:layout_marginHorizontal="26dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profileImageCardViewInProfileFragment"/>
+
+    <TextView
+        android:id="@+id/appVersionTextViewInProfileFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="app version is 1.0.0"
+        android:layout_marginBottom="26dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/closeButtonInProfileFragment"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/logoutButtonTitle"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/red_300"
+        app:layout_constraintBottom_toTopOf="@id/appVersionTextViewInProfileFragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

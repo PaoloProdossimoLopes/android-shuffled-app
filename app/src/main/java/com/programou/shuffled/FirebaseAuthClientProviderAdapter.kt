@@ -1,5 +1,6 @@
 package com.programou.shuffled
 
+import androidx.lifecycle.Observer
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -29,6 +30,7 @@ class FirebaseAuthClientProviderAdapter : EnterClientProvider,
     fun isAuthenticated() = auth.currentUser != null
 
     fun getUserPhotoURI() = auth.currentUser?.photoUrl
+    fun getUsername() = auth.currentUser?.displayName
 
     override fun enter(request: EnterRequest, callback: (UserResponse) -> Unit) {
         val email = request.body["email"] ?: String()
