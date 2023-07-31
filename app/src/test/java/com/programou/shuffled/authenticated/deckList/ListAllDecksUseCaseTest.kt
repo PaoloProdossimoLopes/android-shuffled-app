@@ -46,9 +46,9 @@ class ListAllDecksUseCaseTest {
                 listAllDecks(onRepositoryCallback.capture())
             } doAnswer {
                 onRepositoryCallback.firstValue.invoke(listOf(
-                    Deck(0, "any name 0", 1, "https://any-url-0.com"),
-                    Deck(1, "any name 1", 31, "https://any-url-1.com"),
-                    Deck(2, "any name 2", 3, "https://any-url-2.com")
+                    Deck(0, "any name 0", "anu description 0", "https://any-url-0.com", true, listOf()),
+                    Deck(1, "any name 1", "anu description 1", "https://any-url-1.com", true, listOf()),
+                    Deck(2, "any name 2", "anu description 2", "https://any-url-2.com", true, listOf())
                 ))
             }
         }
@@ -59,9 +59,9 @@ class ListAllDecksUseCaseTest {
 
         assertEquals(listAllCallback.count(), 1)
         assertEquals(listAllCallback.firstOrNull(), DeckListViewData.decks(listOf(
-            DeckListViewData.Deck(0, "any name 0", "1", "https://any-url-0.com"),
-            DeckListViewData.Deck(1, "any name 1", "31", "https://any-url-1.com"),
-            DeckListViewData.Deck(2, "any name 2", "3", "https://any-url-2.com")
+            DeckListViewData.Deck(0, "any name 0", "0", "https://any-url-0.com"),
+            DeckListViewData.Deck(1, "any name 1", "0", "https://any-url-1.com"),
+            DeckListViewData.Deck(2, "any name 2", "0", "https://any-url-2.com")
         )))
     }
 

@@ -41,8 +41,8 @@ class ListAllDeckRepositoryTest {
     fun `on listAllDecks when client complete with non empty list delievers an non empty too`() {
         val clientCallback = argumentCaptor<((DeckListResponse) -> Unit)>()
         val decksResponse = DeckListResponse(listOf(
-            DeckListResponse.Deck(0, "title 0", 0, "any url 0", true),
-            DeckListResponse.Deck(1, "title other 1", 23, "any url other 1", true),
+            DeckListResponse.Deck(0, "title 0", "description 0", "any url 0", true, mutableListOf()),
+            DeckListResponse.Deck(1, "title other 1", "description 1", "any url other 1", true, mutableListOf()),
         ))
         val client = mock<GetAllDecksClient>() {
             on { getAllDecks(clientCallback.capture()) } doAnswer { clientCallback.firstValue.invoke(decksResponse) }
@@ -53,8 +53,8 @@ class ListAllDeckRepositoryTest {
         sut.listAllDecks { decksReceived.add(it) }
 
         assertEquals(decksReceived.toList(), listOf(listOf(
-            Deck(0, "title 0", 0, "any url 0"),
-            Deck(1, "title other 1", 23, "any url other 1")
+            Deck(0, "title 0", "description 0", "any url 0", true,  listOf()),
+            Deck(1, "title other 1", "description 1", "any url other 1", true, listOf())
         )))
     }
 }
