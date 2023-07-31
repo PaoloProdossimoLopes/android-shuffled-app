@@ -17,7 +17,7 @@ import com.programou.shuffled.authenticated.deckList.Deck
 import kotlinx.coroutines.launch
 
 data class DeckViewData(val title: String, val description: String, val image: Uri, val isFavorite: Boolean, val cards: List<Card>) {
-    data class Card(val id: Int, val question: String, val answer: String)
+    data class Card(val id: Int, val question: String, val answer: String, val studiesLeft: Int)
 }
 
 class DeckViewModel(
@@ -130,7 +130,7 @@ class DeckViewModel(
 
         cardsInDeck?.let {
             val cardsViewData = it.map { card ->
-                DeckViewData.Card(card.id, card.question, card.answer)
+                DeckViewData.Card(card.id, card.question, card.answer, card.studiesLeft)
             }
             onCardListIsNotEmptyMutableLiveData.postValue(cardsViewData)
         }
@@ -143,10 +143,10 @@ class DeckViewModel(
         cardsInDeck?.let { allCards ->
             val cardsViewData = allCards.map { card ->
                 if (card.id == cardEdited.id) {
-                    return@map DeckViewData.Card(card.id, cardEdited.question, cardEdited.awnser)
+                    return@map DeckViewData.Card(card.id, cardEdited.question, cardEdited.awnser, cardEdited.studiesLeft)
                 }
 
-                return@map DeckViewData.Card(card.id, card.question, card.answer)
+                return@map DeckViewData.Card(card.id, card.question, card.answer, card.studiesLeft)
             }
             onCardListIsNotEmptyMutableLiveData.postValue(cardsViewData)
         }
@@ -170,7 +170,7 @@ class DeckViewModel(
         val deck = Deck(
             deckId, newDeck.title, newDeck.description,
             newDeck.image.toString(), newDeck.isFavorite,
-            newDeck.cards.map { Card(it.id, it.question, it.answer) }
+            newDeck.cards.map { Card(it.id, it.question, it.answer, it.studiesLeft) }
         )
         updateDeck(deck)
         loadDeck()
@@ -195,7 +195,7 @@ class DeckViewModel(
 }
 
 fun DeckResponse.toViewData(): DeckViewData {
-    val cards = deck.cards.map { card -> DeckViewData.Card(card.id, card.question, card.answer) }
+    val cards = deck.cards.map { card -> DeckViewData.Card(card.id, card.question, card.answer, card.studiesLeft) }
     return DeckViewData(
         deck.title,
         deck.description,

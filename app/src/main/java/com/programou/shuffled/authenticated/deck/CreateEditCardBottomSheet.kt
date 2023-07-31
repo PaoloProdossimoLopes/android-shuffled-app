@@ -25,7 +25,7 @@ class CreateEditCardBottomSheet(
         binding.idBtnDismiss.setOnClickListener {
             val question = binding.editTextCardQuestion.text.toString()
             val answer = binding.editTextCardAnswer.text.toString()
-            val card = PreviewViewData(cardViewData?.id, question, answer)
+            val card = PreviewViewData(cardViewData?.id, question, answer, cardViewData?.studiesLeft ?: 0)
             onDone(card)
             dismiss()
         }

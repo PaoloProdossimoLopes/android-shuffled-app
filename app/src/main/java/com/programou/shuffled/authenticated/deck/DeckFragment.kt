@@ -71,7 +71,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
 
     private fun createCardBottomSheet() {
         val bottomSheet = CreateEditCardBottomSheet(requireContext(), null, onDone = { cardViewData ->
-            val card = Card(null, cardViewData.question, cardViewData.anwser)
+            val card = Card(null, cardViewData.question, cardViewData.anwser, cardViewData.studiesLeft)
             createCard(card)
         })
         bottomSheet.show()
@@ -115,7 +115,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         }
 
         viewModel.onCardListEmptyState.observe(requireActivity()) {
-            val itemViewData = ItemViewData(CardEmptyStateItemViewHolder.IDENTIFIER, PreviewViewData(null, "", ""))
+            val itemViewData = ItemViewData(CardEmptyStateItemViewHolder.IDENTIFIER, PreviewViewData(null, "", "", 0))
             cardPreviewAdapter.update(listOf(itemViewData))
             disableStudyButton()
         }
@@ -124,7 +124,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
             cardPreviewAdapter.update(cardsViewData.map {
                 ItemViewData(
                     CardPreviewItemViewHolder.IDENTIFIER,
-                    PreviewViewData(it.id, it.question, it.answer)
+                    PreviewViewData(it.id, it.question, it.answer, it.studiesLeft)
                 )
             })
             enableStudyButton()
@@ -224,7 +224,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         val cards = cardPreviewAdapter
             .getViewData()
             .filter { it.id != null }
-            .map { DeckViewData.Card(it.id!!, it.question, it.anwser) }
+            .map { DeckViewData.Card(it.id!!, it.question, it.anwser, it.studiesLeft) }
         val viewData = DeckViewData(title, description, imageUri!!, isFavorited, cards)
         viewModel.studyOrSave(viewData)
     }
@@ -259,7 +259,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     }
 
     private fun updateCard(viewData: PreviewViewData) {
-        val card = Card(viewData.id, viewData.question, viewData.anwser)
+        val card = Card(viewData.id, viewData.question, viewData.anwser, viewData.studiesLeft)
         viewModel.updateCard(card)
     }
 
