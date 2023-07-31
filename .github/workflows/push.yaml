@@ -32,6 +32,10 @@ jobs:
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '17'
+      - name: Update Username from Secrets
+        env:
+          FIREBASE_CLIENT_ID: ${{ secrets.FIREBASE_CLIENT_ID }}
+        run: echo FIREBASE_CLIENT_ID="$FIREBASE_CLIENT_ID" > ./local.properties
 
       - name: Run tests
         run: ./gradlew test
