@@ -57,7 +57,7 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
 
     private fun setupObservers() {
         viewModel.onItemsChange.observe(requireActivity()) { viewDatas ->
-            onItemChangeWith(viewDatas)
+            onItemChangeWith(viewDatas.shuffled())
         }
 
         viewModel.onEasySelectChange.observe(requireActivity()) {
