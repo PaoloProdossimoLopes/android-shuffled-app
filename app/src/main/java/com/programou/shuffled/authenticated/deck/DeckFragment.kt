@@ -204,7 +204,8 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     }
 
     private fun closeFragment() {
-        findNavController().popBackStack()
+        val action = DeckFragmentDirections.actionDeckFragmentToDecksFragment()
+        findNavController().navigate(action)
     }
 
     private fun studyOrSave() {

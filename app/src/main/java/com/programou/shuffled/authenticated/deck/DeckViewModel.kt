@@ -181,7 +181,7 @@ class DeckViewModel(
     private suspend fun navigateToGame() {
         val findedDeck = findClient.findBy(deckId)?.deck
         val cards = findedDeck?.cards?.map { card ->
-            Card(card.id, card.question, card.answer)
+            Card(card.id, card.question, card.answer, card.studiesLeft)
         } ?: listOf()
         val deck = Deck(
             deckId, findedDeck?.title.toString(),
@@ -217,7 +217,7 @@ interface DeckUpdateClienting {
 
 class DeckResponse(val deck: Deck) {
     class Deck(val id: Int, val title: String, val description: String, val thumbnailUrl: String, val isFavorited: Boolean, val cards: MutableList<Card>)
-    class Card(val id: Int, val question: String, val answer: String)
+    class Card(val id: Int, val question: String, val answer: String, val studiesLeft: Int)
 }
 
 

@@ -12,9 +12,10 @@ import com.programou.shuffled.authenticated.deckList.Deck
 import com.programou.shuffled.authenticated.deckList.DeckListResponse
 import com.programou.shuffled.authenticated.deckList.GetAllDecksClient
 import com.programou.shuffled.authenticated.deckList.GetFavoritedDecksClient
+import com.programou.shuffled.authenticated.flashcard.FlashcardClient
 
 class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavoritedDecksClient,
-    CreateDeckClient, DeckClienting, DeckUpdateClienting {
+    CreateDeckClient, DeckClienting, DeckUpdateClienting, FlashcardClient {
 
     companion object {
         val shared = InmemoryDeckListClient()
@@ -67,7 +68,13 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
     override suspend fun findBy(id: Int): DeckResponse? {
         val inmemoryDeck = inmemoryDecks.find { it.id == id }
         inmemoryDeck?.let {
-            return DeckResponse(DeckResponse.Deck(it.id, it.title, it.description, it.thumbnailUrl, it.isFavorited, it.cards.map { DeckResponse.Card(it.id, it.question, it.answer) }.toMutableList()))
+            return DeckResponse(DeckResponse.Deck(
+                it.id, it.title,
+                it.description, it.thumbnailUrl,
+                it.isFavorited, it.cards.map {
+                    DeckResponse.Card(it.id, it.question, it.answer, it.studiesLeft)
+                }.toMutableList())
+            )
         }
 
         return null
@@ -105,5 +112,23 @@ class InmemoryDeckListClient private constructor(): GetAllDecksClient, GetFavori
         val deckIndex = inmemoryDecks.indexOfFirst { it.id == id }
         inmemoryDecks.removeAt(deckIndex)
         return true
+    }
+
+    override fun updateStudiesLeftsFor(idCards: List<Int>, inDeckId: Int, studiesLeft: Int) {
+        val deckIndex = inmemoryDecks.indexOfFirst { it.id == inDeckId }
+        for (id in idCards) {
+            val cardIndex = inmemoryDecks[deckIndex].cards.indexOfFirst { it.id == id }
+            inmemoryDecks[deckIndex].cards[cardIndex].studiesLeft = studiesLeft
+        }
+    }
+
+    override fun updateDecrementStudiesLeftFor(deckId: Int) {
+        val deckIndex = inmemoryDecks.indexOfFirst { it.id == deckId }
+        for (cardIndex in 0 until inmemoryDecks[deckIndex].cards.count()) {
+            val cardStudiesLeft = inmemoryDecks[deckIndex].cards[cardIndex].studiesLeft
+            if (cardStudiesLeft > 0) {
+                inmemoryDecks[deckIndex].cards[cardIndex].studiesLeft = (cardStudiesLeft - 1)
+            }
+        }
     }
 }

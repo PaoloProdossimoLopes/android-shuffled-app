@@ -19,7 +19,7 @@ data class Card(
     val id: Int?,
     val question: String,
     val awnser: String,
-    val studiesLeft: Int = 0
+    var studiesLeft: Int = 0
 ): Serializable
 
 

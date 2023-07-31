@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.programou.shuffled.authenticated.deckList.Deck
+import java.util.Dictionary
 
 
-class FlashcardViewModel(private val deck: Deck): ViewModel() {
+class FlashcardViewModel(private val deck: Deck, private val client: FlashcardClient): ViewModel() {
 
     private val onItemsChangeMutableLiveData = MutableLiveData<List<FlashCardViewData>>()
     val onItemsChange: LiveData<List<FlashCardViewData>> = onItemsChangeMutableLiveData
@@ -29,53 +30,61 @@ class FlashcardViewModel(private val deck: Deck): ViewModel() {
     private val onNavigateToResultMutableLiveData = MutableLiveData<FlashcardResult>()
     val onNavigateToResult: LiveData<FlashcardResult> = onNavigateToResultMutableLiveData
 
-    private var cardMarkedAsEasyCounter = 0
-    private var cardMarkedAsIntermediateCounter = 0
-    private var cardMarkedAsHardCounter = 0
+    private var cardMarkedAsEasyCounter = mutableListOf<Int>()
+    private var cardMarkedAsIntermediateCounter = mutableListOf<Int>()
+    private var cardMarkedAsHardCounter = mutableListOf<Int>()
     private var currentFlashCardPositionSelected = 0
 
-    fun presentCards() {
-        val cards = deck.cards.map {
+    fun getCards() = deck.cards
+        .filter { it.studiesLeft == 0 }
+        .map {
             FlashCardViewData(it.id!!, it.question, it.awnser)
         }
 
-        onItemsChangeMutableLiveData.postValue(cards)
+    fun presentCards() {
+        onItemsChangeMutableLiveData.postValue(getCards())
     }
 
     fun selectEasy() {
         onEasySelectChangeMutableLiveData.postValue(Unit)
-        cardMarkedAsEasyCounter++
+        cardMarkedAsEasyCounter.add(getCurrentCardId())
         moveToNext()
         onDisableButtonsChangeMutableLiveData.postValue(Unit)
     }
 
+    private fun getCurrentCardId() = deck.cards[currentFlashCardPositionSelected].id!!
+
     fun selectIntermediate() {
         onIntermediateSelectChangeMutableLiveData.postValue(Unit)
-        cardMarkedAsIntermediateCounter++
+        cardMarkedAsIntermediateCounter.add(getCurrentCardId())
         moveToNext()
         onDisableButtonsChangeMutableLiveData.postValue(Unit)
     }
 
     fun selectHard() {
         onHardSelectChangeMutableLiveData.postValue(Unit)
-        cardMarkedAsHardCounter++
+        cardMarkedAsHardCounter.add(getCurrentCardId())
         moveToNext()
         onDisableButtonsChangeMutableLiveData.postValue(Unit)
     }
 
-    fun getProgress() = (((currentFlashCardPositionSelected + 1) * 100) / deck.cards.count())
+    fun getProgress() = (((currentFlashCardPositionSelected + 1) * 100) / getCards().count())
 
     private fun moveToNext() {
-        if (currentFlashCardPositionSelected + 1 < deck.cards.count()) {
+        if (currentFlashCardPositionSelected + 1 < getCards().count()) {
             currentFlashCardPositionSelected++
 
             updateStep()
         } else {
+            client.updateDecrementStudiesLeftFor(deck.id)
+            client.updateStudiesLeftsFor(cardMarkedAsEasyCounter, deck.id, 2)
+            client.updateStudiesLeftsFor(cardMarkedAsIntermediateCounter, deck.id, 1)
+            client.updateStudiesLeftsFor(cardMarkedAsHardCounter, deck.id, 0)
             onNavigateToResultMutableLiveData.postValue(FlashcardResult(
-                deck.name, deck.cards.count(),
-                cardMarkedAsEasyCounter,
-                cardMarkedAsIntermediateCounter,
-                cardMarkedAsHardCounter,
+                deck.name, getCards().count(),
+                cardMarkedAsEasyCounter.count(),
+                cardMarkedAsIntermediateCounter.count(),
+                cardMarkedAsHardCounter.count(),
             ))
         }
     }
@@ -85,4 +94,9 @@ class FlashcardViewModel(private val deck: Deck): ViewModel() {
         val update = FlashcardStep(getProgress(), currentStep.toString(), currentFlashCardPositionSelected)
         onUpdateStepChangeMutableLiveData.postValue(update)
     }
+}
+
+interface FlashcardClient {
+    fun updateStudiesLeftsFor(idCards: List<Int>, inDeckId: Int, studiesLeft: Int)
+    fun updateDecrementStudiesLeftFor(deckId: Int)
 }

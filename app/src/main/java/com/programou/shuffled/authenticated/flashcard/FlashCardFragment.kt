@@ -17,6 +17,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
@@ -30,7 +31,7 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
     private lateinit var binding: FragmentFlashCardBinding
     private val arguments: FlashCardFragmentArgs by navArgs()
     private val viewModel: FlashcardViewModel by lazy {
-        FlashcardViewModel(arguments.deck)
+        FlashcardViewModel(arguments.deck, InmemoryDeckListClient.shared)
     }
 
     private val flashcardListAdapter = ListAdapter<FlashCardViewData>()
@@ -195,7 +196,7 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
 
     private fun setupLayout() {
         binding.deckTitleTextViewInFlashcardFragment.text = arguments.deck.name
-        binding.totalOfCardsTextViewInFlashcardFragment.text = arguments.deck.cards.count().toString()
+        binding.totalOfCardsTextViewInFlashcardFragment.text = viewModel.getCards().count().toString()
         binding.currentCardStepTextViewInFlashcardFragment.text = "1"
         binding.studyProgressLinearProgressIndicatorInFlashcardFragment.setProgress(viewModel.getProgress(), true)
     }

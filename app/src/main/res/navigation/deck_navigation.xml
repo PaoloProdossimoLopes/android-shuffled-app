@@ -33,6 +33,9 @@
         <argument
             android:name="deckId"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_deckFragment_to_decksFragment"
+            app:destination="@id/decksFragment" />
     </fragment>
     <fragment
         android:id="@+id/flashCardFragment"
