@@ -20,19 +20,19 @@ class CreateDeckViewModelTest {
     @Test
     fun `test on 'create' not complete 'onComplete' observer until use case complets`() {
         val onCompleteObserver: Observer<Boolean> = mock()
-        val deck = CreateDeckViewDataRequest("any title", "any description", "any image uri")
+        val deckViewData = CreateDeckViewDataRequest("any title", "any description", "any image uri", false, listOf())
         val sut = CreateDeckViewModel(mock())
         sut.onComplete.observeForever(onCompleteObserver)
 
-        sut.create(deck)
+        sut.create(deckViewData)
 
         verify(onCompleteObserver, times(0)).onChanged(any())
     }
 
     @Test
     fun `test on 'create' calls use case method with correct params`() {
-        val deckViewData = CreateDeckViewDataRequest("any title", "any description", "any image uri")
-        val deckModel = CreateDeckModel(deckViewData.title, deckViewData.description, deckViewData.imageUri)
+        val deckViewData = CreateDeckViewDataRequest("any title", "any description", "any image uri", false, listOf())
+        val deckModel = CreateDeckModel(deckViewData.title, deckViewData.description, deckViewData.imageUri, deckViewData.isFavorited, deckViewData.cards.map { CreateDeckModel.Card(it.id, it.question, it.awnser, it.studiesLeft) })
         val createDeckUseCaseArgument = argumentCaptor<(Boolean) -> Unit>()
         val useCase = mock<CreateDeck> {
             on { createDeck(eq(deckModel), createDeckUseCaseArgument.capture()) } doAnswer {
@@ -49,8 +49,8 @@ class CreateDeckViewModelTest {
     @Test
     fun `test on 'create' triggers 'onComplete' observer with FALSE after use case response with FALSE`() {
         val onCompleteObserver: Observer<Boolean> = mock()
-        val deckViewData = CreateDeckViewDataRequest("any title", "any description", "any image uri")
-        val deckModel = CreateDeckModel(deckViewData.title, deckViewData.description, deckViewData.imageUri)
+        val deckViewData = CreateDeckViewDataRequest("any title", "any description", "any image uri", false, listOf())
+        val deckModel = CreateDeckModel(deckViewData.title, deckViewData.description, deckViewData.imageUri, deckViewData.isFavorited, deckViewData.cards.map { CreateDeckModel.Card(it.id, it.question, it.awnser, it.studiesLeft) })
         val createDeckUseCaseArgument = argumentCaptor<(Boolean) -> Unit>()
         val createDeckUseCaseArguemntResponse = false
         val useCase = mock<CreateDeck> {
@@ -69,8 +69,8 @@ class CreateDeckViewModelTest {
     @Test
     fun `test on 'create' triggers 'onComplete' observer with TRUE after use case response TRUE`() {
         val onCompleteObserver: Observer<Boolean> = mock()
-        val deckViewData = CreateDeckViewDataRequest("any title", "any description", "any image uri")
-        val deckModel = CreateDeckModel(deckViewData.title, deckViewData.description, deckViewData.imageUri)
+        val deckViewData = CreateDeckViewDataRequest("any title", "any description", "any image uri", false, listOf())
+        val deckModel = CreateDeckModel(deckViewData.title, deckViewData.description, deckViewData.imageUri, deckViewData.isFavorited, deckViewData.cards.map { CreateDeckModel.Card(it.id, it.question, it.awnser, it.studiesLeft) })
         val createDeckUseCaseArgument = argumentCaptor<(Boolean) -> Unit>()
         val createDeckUseCaseArguemntResponse = true
         val useCase = mock<CreateDeck> {

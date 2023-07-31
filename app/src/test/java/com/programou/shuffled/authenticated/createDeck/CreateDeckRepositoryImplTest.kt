@@ -14,7 +14,7 @@ import org.mockito.kotlin.verify
 class CreateDeckRepositoryImplTest {
     @Test
     fun `test on 'saveDeck' no completes without until client responds`() {
-        val deck = CreateDeckModel("any title", "any description", "")
+        val deck = CreateDeckModel("any title", "any description", "", false, listOf())
         val sut = CreateDeckRepositoryImpl(mock())
 
         val saveDecksReceived = mutableListOf<Boolean>()
@@ -25,7 +25,7 @@ class CreateDeckRepositoryImplTest {
 
     @Test
     fun `test on 'saveDeck' calls client method correct`() {
-        val deck = CreateDeckModel("any title", "any description", "")
+        val deck = CreateDeckModel("any title", "any description", "", false, listOf())
         val deckResponse = CreateDeckResponse()
         val postClientCallbackArgument = argumentCaptor<CreateDeckClientCompletionBlock>()
         val client: CreateDeckClient = mock() {
@@ -42,7 +42,7 @@ class CreateDeckRepositoryImplTest {
 
     @Test
     fun `test on 'saveDeck' completes with false when client deleivers a NULL`() {
-        val deck = CreateDeckModel("any title", "any description", "")
+        val deck = CreateDeckModel("any title", "any description", "", false, listOf())
         val postClientCallbackArgument = argumentCaptor<CreateDeckClientCompletionBlock>()
         val client: CreateDeckClient = mock() {
             on { postDeck(eq(deck), postClientCallbackArgument.capture()) } doAnswer {
@@ -59,7 +59,7 @@ class CreateDeckRepositoryImplTest {
 
     @Test
     fun `test on 'saveDeck' deelivers TRUE when a client deleives a object`() {
-        val deck = CreateDeckModel("any title", "any description", "")
+        val deck = CreateDeckModel("any title", "any description", "", false, listOf())
         val postClientCallbackArgument = argumentCaptor<CreateDeckClientCompletionBlock>()
         val client: CreateDeckClient = mock() {
             on { postDeck(eq(deck), postClientCallbackArgument.capture()) } doAnswer {
@@ -76,7 +76,7 @@ class CreateDeckRepositoryImplTest {
 
     @Test
     fun `test on 'saveDeck' completes with failure if the client throws`() {
-        val deck = CreateDeckModel("any title", "any description", "")
+        val deck = CreateDeckModel("any title", "any description", "", false, listOf())
         val client: CreateDeckClient = mock() {
             on { postDeck(any(), any()) } doAnswer { throw ClientDeleiversAnException() }
         }

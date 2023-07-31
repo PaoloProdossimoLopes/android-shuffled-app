@@ -14,7 +14,7 @@ import org.mockito.kotlin.verify
 class CreateDeckUseCaseTest {
     @Test
     fun `test on 'createDeck' no completes without repository deleivers an response`() {
-        val deck = CreateDeckModel("any title", "any description", "any image uri")
+        val deck = CreateDeckModel("any title", "any description", "any image uri", false, listOf())
         val sut = CreateDeckUseCase(mock())
 
         val createDeckReceive = mutableListOf<Boolean>()
@@ -25,7 +25,7 @@ class CreateDeckUseCaseTest {
 
     @Test
     fun `test on 'createDeck' calls repository 'saveDeck' method correct`() {
-        val deck = CreateDeckModel("any title", "any description", "any image uri")
+        val deck = CreateDeckModel("any title", "any description", "any image uri", false, listOf())
         val repositorySaveDeckArgument = argumentCaptor<(Boolean) -> Unit>()
         val repository: CreateDeckRepository = mock() {
             on { saveDeck(eq(deck), repositorySaveDeckArgument.capture()) } doAnswer {
@@ -42,7 +42,7 @@ class CreateDeckUseCaseTest {
 
     @Test
     fun `test on 'createDeck' when repository deleivers FALSE repass`() {
-        val deck = CreateDeckModel("any title", "any description", "any image uri")
+        val deck = CreateDeckModel("any title", "any description", "any image uri", false, listOf())
         val repositorySaveDeckArgument = argumentCaptor<(Boolean) -> Unit>()
         val repositorySaveDeckResponse = false
         val repository: CreateDeckRepository = mock() {
@@ -60,7 +60,7 @@ class CreateDeckUseCaseTest {
 
     @Test
     fun `test on 'createDeck' when repository deleivers TRUE repass`() {
-        val deck = CreateDeckModel("any title", "any description", "any image uri")
+        val deck = CreateDeckModel("any title", "any description", "any image uri", false, listOf())
         val repositorySaveDeckArgument = argumentCaptor<(Boolean) -> Unit>()
         val repositorySaveDeckResponse = true
         val repository: CreateDeckRepository = mock() {
@@ -78,7 +78,7 @@ class CreateDeckUseCaseTest {
 
     @Test
     fun `test on 'createDeck' when repository throws complete with FALSE`() {
-        val deck = CreateDeckModel("any title", "any description", "any image uri")
+        val deck = CreateDeckModel("any title", "any description", "any image uri", false, listOf())
         val repository: CreateDeckRepository = mock() {
             on { saveDeck(eq(deck), any()) } doThrow(Error("any exception error"))
         }
