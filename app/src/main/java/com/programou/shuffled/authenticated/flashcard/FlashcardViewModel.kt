@@ -30,9 +30,9 @@ class FlashcardViewModel(private val deck: Deck, private val client: FlashcardCl
     private val onNavigateToResultMutableLiveData = MutableLiveData<FlashcardResult>()
     val onNavigateToResult: LiveData<FlashcardResult> = onNavigateToResultMutableLiveData
 
-    private var cardMarkedAsEasyCounter = mutableListOf<Int>()
-    private var cardMarkedAsIntermediateCounter = mutableListOf<Int>()
-    private var cardMarkedAsHardCounter = mutableListOf<Int>()
+    private var listOfIdCardsMarkedAsEasy = mutableListOf<Int>()
+    private var listOfIdCardsMarkedAsIntermediate = mutableListOf<Int>()
+    private var listOfIdCardsMarkedAsHard = mutableListOf<Int>()
     private var currentFlashCardPositionSelected = 0
 
     fun getCards() = deck.cards
@@ -47,7 +47,7 @@ class FlashcardViewModel(private val deck: Deck, private val client: FlashcardCl
 
     fun selectEasy() {
         onEasySelectChangeMutableLiveData.postValue(Unit)
-        cardMarkedAsEasyCounter.add(getCurrentCardId())
+        listOfIdCardsMarkedAsEasy.add(getCurrentCardId())
         moveToNext()
         onDisableButtonsChangeMutableLiveData.postValue(Unit)
     }
@@ -56,14 +56,14 @@ class FlashcardViewModel(private val deck: Deck, private val client: FlashcardCl
 
     fun selectIntermediate() {
         onIntermediateSelectChangeMutableLiveData.postValue(Unit)
-        cardMarkedAsIntermediateCounter.add(getCurrentCardId())
+        listOfIdCardsMarkedAsIntermediate.add(getCurrentCardId())
         moveToNext()
         onDisableButtonsChangeMutableLiveData.postValue(Unit)
     }
 
     fun selectHard() {
         onHardSelectChangeMutableLiveData.postValue(Unit)
-        cardMarkedAsHardCounter.add(getCurrentCardId())
+        listOfIdCardsMarkedAsHard.add(getCurrentCardId())
         moveToNext()
         onDisableButtonsChangeMutableLiveData.postValue(Unit)
     }
@@ -77,14 +77,16 @@ class FlashcardViewModel(private val deck: Deck, private val client: FlashcardCl
             updateStep()
         } else {
             client.updateDecrementStudiesLeftFor(deck.id)
-            client.updateStudiesLeftsFor(cardMarkedAsEasyCounter, deck.id, 2)
-            client.updateStudiesLeftsFor(cardMarkedAsIntermediateCounter, deck.id, 1)
-            client.updateStudiesLeftsFor(cardMarkedAsHardCounter, deck.id, 0)
+
+            client.updateStudiesLeftsFor(listOfIdCardsMarkedAsEasy, deck.id, 2)
+            client.updateStudiesLeftsFor(listOfIdCardsMarkedAsIntermediate, deck.id, 1)
+            client.updateStudiesLeftsFor(listOfIdCardsMarkedAsHard, deck.id, 0)
+
             onNavigateToResultMutableLiveData.postValue(FlashcardResult(
                 deck.name, getCards().count(),
-                cardMarkedAsEasyCounter.count(),
-                cardMarkedAsIntermediateCounter.count(),
-                cardMarkedAsHardCounter.count(),
+                listOfIdCardsMarkedAsEasy.count(),
+                listOfIdCardsMarkedAsIntermediate.count(),
+                listOfIdCardsMarkedAsHard.count(),
             ))
         }
     }
