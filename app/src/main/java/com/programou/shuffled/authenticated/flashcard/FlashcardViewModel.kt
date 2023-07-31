@@ -69,9 +69,7 @@ class FlashcardViewModel(private val deck: Deck): ViewModel() {
         if (currentFlashCardPositionSelected + 1 < deck.cards.count()) {
             currentFlashCardPositionSelected++
 
-            val currentStep = currentFlashCardPositionSelected + 1
-            val update = FlashcardStep(getProgress(), currentStep.toString(), currentFlashCardPositionSelected)
-            onUpdateStepChangeMutableLiveData.postValue(update)
+            updateStep()
         } else {
             onNavigateToResultMutableLiveData.postValue(FlashcardResult(
                 deck.name, deck.cards.count(),
@@ -80,5 +78,11 @@ class FlashcardViewModel(private val deck: Deck): ViewModel() {
                 cardMarkedAsHardCounter,
             ))
         }
+    }
+
+    private fun updateStep() {
+        val currentStep = currentFlashCardPositionSelected + 1
+        val update = FlashcardStep(getProgress(), currentStep.toString(), currentFlashCardPositionSelected)
+        onUpdateStepChangeMutableLiveData.postValue(update)
     }
 }

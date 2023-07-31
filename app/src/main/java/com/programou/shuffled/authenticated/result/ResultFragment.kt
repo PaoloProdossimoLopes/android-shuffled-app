@@ -44,7 +44,8 @@ class ResultFragment: Fragment(R.layout.fragment_result) {
 
     private fun configureFinishButtonAction() {
         binding.doneButton.setOnClickListener {
-            findNavController().popBackStack(R.id.decksFragment, false)
+            val action = ResultFragmentDirections.actionResultFragmentToDeckFragment(arguments.viewData.deckId)
+            findNavController().navigate(action)
         }
     }
 

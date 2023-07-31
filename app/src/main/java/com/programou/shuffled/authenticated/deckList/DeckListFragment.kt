@@ -20,6 +20,7 @@ import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.authenticated.createDeck.CreateDeckBottomSheetView
 import com.programou.shuffled.databinding.FragmentDeckListBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -83,6 +84,7 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
                         .make(binding.root, failureMesage, Snackbar.LENGTH_LONG)
                         .setBackgroundTint(requireContext().getColor(R.color.red_500))
                         .show()
+
                     load()
                 })
                 createDeckDialog?.show()
@@ -92,6 +94,11 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         }
 
         configurebindWithViewModel()
+        changeStateIsLoading(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         load()
     }
@@ -106,9 +113,15 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     }
 
     private fun load() {
+        changeStateIsLoading(true)
+
         lifecycleScope.launch {
-            changeStateIsLoading(true)
-            updateMock()
+            delay(1000)
+
+            allDecksViewModel.loadAllDecks()
+            favoriteDecksListViewModel.loadAllDecks()
+
+            changeStateIsLoading(false)
         }
     }
 
@@ -138,17 +151,23 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         }
 
         favoriteDecksListViewModel.favoriteDecksViewData.observe(requireActivity()) { viewData ->
-            viewData.decks.value?.let {
-                val viewDatas = it.map { ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, FavoriteDecksListState(it)) }
-                recentDeckListAdapter.update(viewDatas)
+            viewData.error.value?.let {
+                binding.recyclerDecksRecents.visibility = View.GONE
+                binding.textRecentsDecks.visibility = View.GONE
                 return@observe
             }
             viewData.empty.value?.let {
-                binding.recyclerDecksRecents.isVisible = false
+                binding.recyclerDecksRecents.visibility = View.GONE
+                binding.textRecentsDecks.visibility = View.GONE
                 return@observe
             }
-            viewData.error.value?.let {
-                binding.recyclerDecksRecents.isVisible = false
+            viewData.decks.value?.let {
+                binding.recyclerDecksRecents.visibility = View.VISIBLE
+                binding.textRecentsDecks.visibility = View.VISIBLE
+                val viewDatas = it.map {
+                    ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, FavoriteDecksListState(it))
+                }
+                recentDeckListAdapter.update(viewDatas)
                 return@observe
             }
         }
@@ -179,19 +198,6 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         }
         deckListAdapter.register(DeckListErrorStateItemViewHolder.IDENTIFIER) { parent ->
             DeckListErrorStateItemViewHolder.instantiate(parent)
-        }
-    }
-
-    private suspend fun updateMock() {
-        withContext(Dispatchers.IO) {
-            allDecksViewModel.loadAllDecks()
-            favoriteDecksListViewModel.loadAllDecks()
-
-            delay(2000)
-
-            withContext(Dispatchers.Main) {
-                changeStateIsLoading(false)
-            }
         }
     }
 

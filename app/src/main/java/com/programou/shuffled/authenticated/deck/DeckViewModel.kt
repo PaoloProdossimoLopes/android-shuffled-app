@@ -5,7 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.fragment.findNavController
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
@@ -20,6 +25,16 @@ class DeckViewModel(
     private val findClient: DeckClienting,
     private val updateClient: DeckUpdateClienting
 ): ViewModel() {
+
+    class Factory(
+        private val deckId: Int,
+        private val findClient: DeckClienting,
+        private val updateClient: DeckUpdateClienting
+    ): ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return DeckViewModel(deckId, findClient, updateClient) as T
+        }
+    }
 
     private val deckMutableLiveData = MutableLiveData<DeckViewData>()
     val deckLiveData: LiveData<DeckViewData> = deckMutableLiveData

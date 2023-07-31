@@ -5,12 +5,15 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
@@ -35,7 +38,8 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     private val deckArgs: DeckFragmentArgs by navArgs()
     private val viewModel: DeckViewModel by lazy {
         val client = InmemoryDeckListClient.shared
-        DeckViewModel(deckArgs.deckId, client, client)
+        val factory = DeckViewModel.Factory(deckArgs.deckId, client, client) // Factory
+        ViewModelProvider(this, factory).get(DeckViewModel::class.java)
     }
     private var imageUri: Uri? = null
         set(value) {
@@ -134,8 +138,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         }
 
         viewModel.onNavigateToFlashcardStudy.observe(requireActivity()) { deck ->
-            val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
-            findNavController().navigate(action)
+            navigateToStudyFragment(deck)
         }
 
         viewModel.onSaveChange.observe(requireActivity()) {
@@ -147,6 +150,12 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
             presentGalleryPicker()
         }
     }
+
+    private fun navigateToStudyFragment(deck: Deck) {
+        val action = DeckFragmentDirections.actionDeckFragmentToFlashCardFragment(deck)
+        findNavController().navigate(action)
+    }
+
     private fun shouldEnableToolButtonsForEditMode(isEnable: Boolean) {
         binding.backArrowIndicatorImageViewInDeckFragment.isVisible = isEnable
         binding.favoriteIndicatorImageViewInDeckFragment.isVisible = isEnable
