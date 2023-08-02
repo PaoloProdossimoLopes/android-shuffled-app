@@ -10,6 +10,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -30,11 +31,10 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
 
     private val cardPreviewAdapter = ListAdapter<PreviewViewData>()
     private val deckArgs: DeckFragmentArgs by navArgs()
-    private val viewModel: DeckViewModel by lazy {
+    private val viewModel: DeckViewModel by viewModels {
         val findDeckRepository = LocalFindDeckByIdRepository(requireContext())
         val updateDeckRepository = LocalUpdateDeckRepository(requireContext())
-        val factory = DeckViewModel.Factory(deckArgs.deckId, findDeckRepository, updateDeckRepository) // Factory
-        ViewModelProvider(this, factory).get(DeckViewModel::class.java)
+        DeckViewModel.Factory(deckArgs.deckId, findDeckRepository, updateDeckRepository)
     }
     private var imageUri: Uri? = null
         set(value) {

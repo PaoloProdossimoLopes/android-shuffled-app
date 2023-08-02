@@ -3,10 +3,17 @@ package com.programou.shuffled.authenticated.flashcard
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.programou.shuffled.authenticated.deckList.Deck
 
 
 class FlashcardViewModel(private val deck: Deck, private val client: FlashcardClient): ViewModel() {
+
+    class Facotry(private val deck: Deck, private val client: FlashcardClient): ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return FlashcardViewModel(deck, client) as T
+        }
+    }
 
     private val onItemsChangeMutableLiveData = MutableLiveData<List<FlashCardViewData>>()
     val onItemsChange: LiveData<List<FlashCardViewData>> = onItemsChangeMutableLiveData

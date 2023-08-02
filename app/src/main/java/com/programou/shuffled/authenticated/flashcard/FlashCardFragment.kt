@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -22,8 +23,8 @@ import kotlinx.coroutines.launch
 class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickListener {
     private lateinit var binding: FragmentFlashCardBinding
     private val arguments: FlashCardFragmentArgs by navArgs()
-    private val viewModel: FlashcardViewModel by lazy {
-        FlashcardViewModel(arguments.deck, LocalFlashcardRepository(requireContext()))
+    private val viewModel: FlashcardViewModel by viewModels {
+        FlashcardViewModel.Facotry(arguments.deck, LocalFlashcardRepository(requireContext()))
     }
 
     private val flashcardListAdapter = ListAdapter<FlashCardViewData>()

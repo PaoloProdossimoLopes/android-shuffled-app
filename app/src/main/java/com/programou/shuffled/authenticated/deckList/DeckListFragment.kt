@@ -9,6 +9,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -27,25 +28,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-class ListFavoriteDeckRespotoryAdapter(private val context: Context): ListFavoriteDecksRepository {
-    private val db: ShuffledDatabase by lazy {
-        ShuffledDatabase.getDatabase(context)
-    }
-
-    override fun listFavoritedDecks(onComplete: Bind<List<Deck>>) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val favoriteDecks = db.deckDao().getFavoriteDecks()
-
-            onComplete(favoriteDecks.map {
-                Deck(it.deckId.toInt(), it.title, it.description, it.imageUri, it.isFavorite, it.cardIds.map { cardId ->
-                    val deckEntity = db.cardDao().findCardById(cardId)
-                    Card(deckEntity.cardId.toInt(), deckEntity.question, deckEntity.answer, deckEntity.studiesLeft)
-                })
-            })
-        }
-    }
-}
 
 class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
@@ -66,17 +48,18 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     private val deckListAdapter = ListAdapter<AllDecksListState>()
     private val recentDeckListAdapter = ListAdapter<FavoriteDecksListState>()
 
-    private val favoriteDecksListViewModel: FavoriteDecksListViewModel by lazy {
-        val repository = ListFavoriteDeckRespotoryAdapter(requireContext())
+    private val favoriteDecksListViewModel: FavoriteDecksListViewModel by viewModels {
+        val repository = LocalListFavoriteDeckRespotory(requireContext())
         val useCase = ListFavoriteDecksUseCase(repository)
-        FavoriteDecksListViewModel(useCase)
+        FavoriteDecksListViewModel.Factory(useCase)
     }
 
-    private val allDecksViewModel: DeckListViewModel by lazy {
+    private val allDecksViewModel: DeckListViewModel by viewModels {
         val listAllDecksRepository = LocalListDeckRepository(requireContext())
         val listAllUseCase = ListAllDecksUseCase(listAllDecksRepository)
-        DeckListViewModel(listAllUseCase)
+        DeckListViewModel.Factory(listAllUseCase)
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

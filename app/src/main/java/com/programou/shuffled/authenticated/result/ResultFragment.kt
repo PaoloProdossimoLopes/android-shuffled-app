@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -18,9 +19,8 @@ class ResultFragment: Fragment(R.layout.fragment_result) {
     private lateinit var binding: FragmentResultBinding
 
     private val arguments: ResultFragmentArgs by navArgs()
-    private val viewModel: ResultViewModel by lazy {
-        ResultViewModel()
-    }
+    private val viewModel: ResultViewModel by viewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
