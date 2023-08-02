@@ -41,4 +41,10 @@
     <string name="appNameText">SHUFFLED</string>
     <string name="logoutButtonTitle">Sair</string>
     <string name="appVersionPrefixLiteralText">shuffled está na versão </string>
+
+    <string name="textAreYouSureInteruptStudyInFlashFragment">Tem certeza que deseja interromper seus estudos?</string>
+    <string name="textYourProgressWillBeLostInFlashFragment">Tem certeza que deseja interromper seus estudos?</string>
+
+    <string name="textYes">Sim</string>
+    <string name="textNo">Não</string>
 </resources>
