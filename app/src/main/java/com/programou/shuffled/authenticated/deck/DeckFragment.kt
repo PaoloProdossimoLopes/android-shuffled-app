@@ -2,19 +2,16 @@ package com.programou.shuffled.authenticated.deck
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,16 +19,76 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
-import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
-import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
-import com.programou.shuffled.authenticated.flashcard.FlashCardFragmentDirections
+import com.programou.shuffled.database.CardEntity
+import com.programou.shuffled.database.DeckEntity
+import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.databinding.FragmentDeckBinding
-import com.programou.shuffled.databinding.ViewEmptyCardStateItemBinding
+
+class FindDeckByIdRepository(private val context: Context): DeckClienting {
+    private val db: ShuffledDatabase by lazy {
+        ShuffledDatabase.getDatabase(context)
+    }
+
+    override suspend fun findBy(id: Int): DeckResponse? {
+        val deck = db.deckDao().findDeckBy(id.toLong())
+
+        val cardResponse = deck.cardIds.map {
+            val card = db.cardDao().findCardById(it)
+            DeckResponse.Card(card.cardId.toInt(), card.question, card.answer, card.studiesLeft)
+        }.toMutableList()
+        val deckResponse = DeckResponse.Deck(deck.deckId.toInt(), deck.title, deck.description, deck.imageUri, deck.isFavorite, cardResponse)
+        return DeckResponse(deckResponse)
+    }
+}
+
+class UpdateDeckRepository(private val context: Context): DeckUpdateClienting {
+    private val db: ShuffledDatabase by lazy {
+        ShuffledDatabase.getDatabase(context)
+    }
+
+    override suspend fun updateDeck(deck: Deck): Boolean {
+        val entity = DeckEntity(deck.name, deck.description, deck.isFavorite, deck.thumbnailUrl, deck.cards.map {
+            val id = it.id!!.toLong()
+            val card = CardEntity(it.question, it.awnser, it.studiesLeft)
+            card.cardId = id
+            db.cardDao().updateCard(card)
+
+            id
+        })
+        entity.deckId = deck.id.toLong()
+        db.deckDao().updateDeck(entity)
+        return true
+    }
+
+    override suspend fun createCard(deckId: Int, newCard: Card): Boolean {
+        val cardEntity = CardEntity(newCard.question, newCard.awnser, newCard.studiesLeft)
+        val newCardId = db.cardDao().insertCard(cardEntity)
+        val deck = db.deckDao().findDeckBy(deckId.toLong())
+
+        db.deckDao().updateCardId(deckId.toLong(), deck.cardIds + newCardId)
+        return true
+    }
+
+    override suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean {
+        db.deckDao().updateFavorite(deckId.toLong(), isFavorited)
+        return true
+    }
+
+    override suspend fun deleteDeck(id: Int): Boolean {
+        val deck = db.deckDao().findDeckBy(id.toLong())
+        db.deckDao().deleteDeck(deck)
+        return true
+    }
+
+    override suspend fun deleteCards(ids: List<Long>) {
+        db.cardDao().deleteCardWith(ids)
+    }
+}
 
 class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     private lateinit var binding: FragmentDeckBinding
@@ -39,8 +96,9 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     private val cardPreviewAdapter = ListAdapter<PreviewViewData>()
     private val deckArgs: DeckFragmentArgs by navArgs()
     private val viewModel: DeckViewModel by lazy {
-        val client = InmemoryDeckListClient.shared
-        val factory = DeckViewModel.Factory(deckArgs.deckId, client, client) // Factory
+        val findDeckRepository = FindDeckByIdRepository(requireContext())
+        val updateDeckRepository = UpdateDeckRepository(requireContext())
+        val factory = DeckViewModel.Factory(deckArgs.deckId, findDeckRepository, updateDeckRepository) // Factory
         ViewModelProvider(this, factory).get(DeckViewModel::class.java)
     }
     private var imageUri: Uri? = null
@@ -153,6 +211,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         viewModel.onSaveChange.observe(requireActivity()) {
             val message = "Suas alteraçoes foram salvas com sucesso!"
             Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+            viewModel.loadDeck()
         }
 
         viewModel.onPresentGalleryPicker.observe(requireActivity()) {
@@ -196,7 +255,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
 
     private fun presentGalleryPicker() {
         val galleryIntent = Intent(
-            Intent.ACTION_PICK,
+            Intent.ACTION_OPEN_DOCUMENT,
             MediaStore.Images.Media.INTERNAL_CONTENT_URI
         )
         launcher.launch(galleryIntent)

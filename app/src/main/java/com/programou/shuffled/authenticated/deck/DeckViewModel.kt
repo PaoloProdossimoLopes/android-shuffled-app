@@ -3,15 +3,9 @@ package com.programou.shuffled.authenticated.deck
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.navigation.fragment.findNavController
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
 import kotlinx.coroutines.launch
@@ -89,12 +83,11 @@ class DeckViewModel(
     }
 
     fun deleteDeck() = viewModelScope.launch {
+        val deck = findClient.findBy(deckId)
+        updateClient.deleteCards(deck?.deck?.cards?.map { it.id.toLong() } ?: listOf())
         updateClient.deleteDeck(deckId)
     }
 
-    private fun updateDeck(deck: Deck) = viewModelScope.launch {
-        updateClient.updateDeck(deck)
-    }
     fun createCard(newCard: Card) = viewModelScope.launch {
         updateClient.createCard(deckId, newCard)
         loadDeck()
@@ -167,15 +160,27 @@ class DeckViewModel(
     }
 
     private fun updateDeck(newDeck: DeckViewData) {
-        val deck = Deck(
-            deckId, newDeck.title, newDeck.description,
-            newDeck.image.toString(), newDeck.isFavorite,
-            newDeck.cards.map { Card(it.id, it.question, it.answer, it.studiesLeft) }
-        )
-        updateDeck(deck)
-        loadDeck()
-        changeEditMode()
-        onSaveChangeMutableLiveData.postValue(Unit)
+        viewModelScope.launch {
+            val oldDeck = findClient.findBy(deckId)
+            val deck = Deck(
+                deckId, newDeck.title, newDeck.description,
+                newDeck.image.toString(), newDeck.isFavorite,
+                newDeck.cards.map { Card(it.id, it.question, it.answer, it.studiesLeft) }
+            )
+            val newIds = deck.cards.map { it.id }
+            val diffCardIds = mutableListOf<Long>()
+            for (card in oldDeck?.deck?.cards ?: listOf()) {
+                if (!newIds.contains(card.id)) {
+                    diffCardIds.add(card.id.toLong())
+                }
+            }
+
+            updateClient.deleteCards(diffCardIds)
+            updateClient.updateDeck(deck)
+            loadDeck()
+            changeEditMode()
+            onSaveChangeMutableLiveData.postValue(Unit)
+        }
     }
 
     private suspend fun navigateToGame() {
@@ -213,6 +218,7 @@ interface DeckUpdateClienting {
     suspend fun createCard(deckId: Int, newCard: Card): Boolean
     suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
     suspend fun deleteDeck(id: Int): Boolean
+    suspend fun deleteCards(ids: List<Long>)
 }
 
 class DeckResponse(val deck: Deck) {

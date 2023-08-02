@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.programou.shuffled.authenticated.deckList.Deck
-import java.util.Dictionary
 
 
 class FlashcardViewModel(private val deck: Deck, private val client: FlashcardClient): ViewModel() {
@@ -79,11 +78,31 @@ class FlashcardViewModel(private val deck: Deck, private val client: FlashcardCl
 
             updateStep()
         } else {
-            client.updateDecrementStudiesLeftFor(deck.id)
+            val cards = mutableListOf<CardStudieUpdate>()
+            for (card in deck.cards) {
+                if (listOfIdCardsMarkedAsEasy.contains(card.id)) {
+                    cards.add(CardStudieUpdate(card.id!!.toLong(), 2))
+                    continue
+                }
 
-            client.updateStudiesLeftsFor(listOfIdCardsMarkedAsEasy, deck.id, 2)
-            client.updateStudiesLeftsFor(listOfIdCardsMarkedAsIntermediate, deck.id, 1)
-            client.updateStudiesLeftsFor(listOfIdCardsMarkedAsHard, deck.id, 0)
+                if (listOfIdCardsMarkedAsIntermediate.contains(card.id)) {
+                    cards.add(CardStudieUpdate(card.id!!.toLong(), 1))
+                    continue
+                }
+
+                if (listOfIdCardsMarkedAsIntermediate.contains(card.id)) {
+                    cards.add(CardStudieUpdate(card.id!!.toLong(), 0))
+                    continue
+                }
+
+                if (card.studiesLeft < 0) {
+                    cards.add(CardStudieUpdate(card.id!!.toLong(), 0))
+                    continue
+                }
+
+                cards.add(CardStudieUpdate(card.id!!.toLong(), card.studiesLeft - 1))
+            }
+            client.updateStudiesLeftsFor(cards)
 
             onNavigateToResultMutableLiveData.postValue(FlashcardResult(
                 deck.name, getCards().count(),
@@ -102,6 +121,10 @@ class FlashcardViewModel(private val deck: Deck, private val client: FlashcardCl
 }
 
 interface FlashcardClient {
-    fun updateStudiesLeftsFor(idCards: List<Int>, inDeckId: Int, studiesLeft: Int)
-    fun updateDecrementStudiesLeftFor(deckId: Int)
+    fun updateStudiesLeftsFor(cards: List<CardStudieUpdate>)
 }
+
+data class CardStudieUpdate(
+    val cardId: Long,
+    val studiesLeft: Int
+)

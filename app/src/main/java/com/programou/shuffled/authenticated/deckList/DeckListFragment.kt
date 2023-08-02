@@ -1,10 +1,10 @@
 package com.programou.shuffled.authenticated.deckList
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
@@ -17,17 +17,55 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 import com.programou.shuffled.FirebaseAuthClientProviderAdapter
-import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.authenticated.createDeck.CreateDeckBottomSheetView
+import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.databinding.FragmentDeckListBinding
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
+
+class ListDeckRespotoryAdapter(private val context: Context): ListAllDecksRepository{
+    private val db: ShuffledDatabase by lazy {
+        ShuffledDatabase.getDatabase(context)
+    }
+
+    override fun listAllDecks(onComplete: Bind<List<Deck>>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val decks = db.deckDao().getAllDecks()
+
+            onComplete(decks.map {
+                Deck(it.deckId.toInt(), it.title, it.description, it.imageUri, it.isFavorite, it.cardIds.map { cardId ->
+                    val deckEntity = db.cardDao().findCardById(cardId)
+                    Card(deckEntity.cardId.toInt(), deckEntity.question, deckEntity.answer, deckEntity.studiesLeft)
+                })
+            })
+        }
+    }
+}
+
+class ListFavoriteDeckRespotoryAdapter(private val context: Context): ListFavoriteDecksRepository {
+    private val db: ShuffledDatabase by lazy {
+        ShuffledDatabase.getDatabase(context)
+    }
+
+    override fun listFavoritedDecks(onComplete: Bind<List<Deck>>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val favoriteDecks = db.deckDao().getFavoriteDecks()
+
+            onComplete(favoriteDecks.map {
+                Deck(it.deckId.toInt(), it.title, it.description, it.imageUri, it.isFavorite, it.cardIds.map { cardId ->
+                    val deckEntity = db.cardDao().findCardById(cardId)
+                    Card(deckEntity.cardId.toInt(), deckEntity.question, deckEntity.answer, deckEntity.studiesLeft)
+                })
+            })
+        }
+    }
+}
 
 class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
@@ -49,13 +87,13 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     private val recentDeckListAdapter = ListAdapter<FavoriteDecksListState>()
 
     private val favoriteDecksListViewModel: FavoriteDecksListViewModel by lazy {
-        val repository = RemoteListFavoritedDecksRepository(InmemoryDeckListClient.shared)
+        val repository = ListFavoriteDeckRespotoryAdapter(requireContext())
         val useCase = ListFavoriteDecksUseCase(repository)
         FavoriteDecksListViewModel(useCase)
     }
 
     private val allDecksViewModel: DeckListViewModel by lazy {
-        val listAllDecksRepository = RemoteListAllDeckRepository(InmemoryDeckListClient.shared)
+        val listAllDecksRepository = ListDeckRespotoryAdapter(requireContext())
         val listAllUseCase = ListAllDecksUseCase(listAllDecksRepository)
         DeckListViewModel(listAllUseCase)
     }

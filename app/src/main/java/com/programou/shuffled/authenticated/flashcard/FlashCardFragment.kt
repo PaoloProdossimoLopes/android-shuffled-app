@@ -1,37 +1,46 @@
 package com.programou.shuffled.authenticated.flashcard
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
-import com.programou.shuffled.authenticated.deckList.Deck
 import com.programou.shuffled.authenticated.result.ResultViewData
+import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.databinding.FragmentFlashCardBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+class FlashcardRepository(private val context: Context): FlashcardClient {
+    private val db: ShuffledDatabase by lazy {
+        ShuffledDatabase.getDatabase(context)
+    }
+
+    override fun updateStudiesLeftsFor(cards: List<CardStudieUpdate>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            for (card in cards) {
+                db.cardDao().updateStudiesLeft(card.cardId, card.studiesLeft)
+            }
+        }
+    }
+}
 
 class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickListener {
     private lateinit var binding: FragmentFlashCardBinding
     private val arguments: FlashCardFragmentArgs by navArgs()
     private val viewModel: FlashcardViewModel by lazy {
-        FlashcardViewModel(arguments.deck, InmemoryDeckListClient.shared)
+        FlashcardViewModel(arguments.deck, FlashcardRepository(requireContext()))
     }
 
     private val flashcardListAdapter = ListAdapter<FlashCardViewData>()
