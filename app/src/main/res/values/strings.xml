@@ -40,4 +40,5 @@
     <string name="deckEmptyStateDescription">Para iniciar seus estudos clique no `+` e crie uma carta</string>
     <string name="appNameText">SHUFFLED</string>
     <string name="logoutButtonTitle">Sair</string>
+    <string name="appVersionPrefixLiteralText">shuffled está na versão </string>
 </resources>

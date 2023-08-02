@@ -13,7 +13,7 @@ import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentProfileBinding
 import com.programou.shuffled.unauthenticated.UnauthenticatedActivity
 
-class ProfileFragment : Fragment(R.layout.fragment_profile) {
+class ProfileFragment: Fragment(R.layout.fragment_profile), View.OnClickListener {
 
     private val auth = FirebaseAuthClientProviderAdapter.shared
     private lateinit var binding: FragmentProfileBinding
@@ -23,11 +23,27 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         binding = FragmentProfileBinding.bind(view)
 
-        binding.profileUsernameInProfileFragment.text = auth.getUsername()
+        setupLayout()
+        setupProfileImage()
+        setupClickListener()
+    }
 
-        val appVersion = BuildConfig.VERSION_NAME
-        binding.appVersionTextViewInProfileFragment.text = "shuffled está na versão $appVersion"
+    override fun onClick(view: View) {
+        when (view) {
+            binding.backArrowImageIndicatorInProfileFragment -> findNavController().popBackStack()
+            binding.closeButtonInProfileFragment -> closeProfileScreen()
+        }
+    }
 
+    private fun closeProfileScreen() {
+        auth.logout()
+
+        val intent = Intent(requireContext(), UnauthenticatedActivity::class.java)
+        startActivity(intent)
+        requireActivity().finish()
+    }
+
+    private fun setupProfileImage() {
         val requestOptions = RequestOptions()
             .centerCrop()
             .placeholder(R.color.gray_100)
@@ -36,16 +52,18 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             .load(auth.getUserPhotoURI())
             .apply(requestOptions)
             .into(binding.profileImageViewInProfileFragment)
+    }
 
-        binding.backArrowImageIndicatorInProfileFragment.setOnClickListener {
-            findNavController().popBackStack()
-        }
-        binding.closeButtonInProfileFragment.setOnClickListener {
-            auth.logout()
+    private fun setupClickListener() {
+        binding.backArrowImageIndicatorInProfileFragment.setOnClickListener(this)
+        binding.closeButtonInProfileFragment.setOnClickListener(this)
+    }
 
-            val intent = Intent(requireContext(), UnauthenticatedActivity::class.java)
-            startActivity(intent)
-            requireActivity().finish()
-        }
+    private fun setupLayout() {
+        binding.profileUsernameInProfileFragment.text = auth.getUsername()
+
+        val appVersion = BuildConfig.VERSION_NAME
+        val versionLiteral = getString(R.string.appVersionPrefixLiteralText) + appVersion
+        binding.appVersionTextViewInProfileFragment.text = versionLiteral
     }
 }
