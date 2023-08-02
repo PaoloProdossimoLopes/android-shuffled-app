@@ -28,26 +28,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
-class ListDeckRespotoryAdapter(private val context: Context): ListAllDecksRepository{
-    private val db: ShuffledDatabase by lazy {
-        ShuffledDatabase.getDatabase(context)
-    }
-
-    override fun listAllDecks(onComplete: Bind<List<Deck>>) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val decks = db.deckDao().getAllDecks()
-
-            onComplete(decks.map {
-                Deck(it.deckId.toInt(), it.title, it.description, it.imageUri, it.isFavorite, it.cardIds.map { cardId ->
-                    val deckEntity = db.cardDao().findCardById(cardId)
-                    Card(deckEntity.cardId.toInt(), deckEntity.question, deckEntity.answer, deckEntity.studiesLeft)
-                })
-            })
-        }
-    }
-}
-
 class ListFavoriteDeckRespotoryAdapter(private val context: Context): ListFavoriteDecksRepository {
     private val db: ShuffledDatabase by lazy {
         ShuffledDatabase.getDatabase(context)
@@ -93,7 +73,7 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     }
 
     private val allDecksViewModel: DeckListViewModel by lazy {
-        val listAllDecksRepository = ListDeckRespotoryAdapter(requireContext())
+        val listAllDecksRepository = LocalListDeckRepository(requireContext())
         val listAllUseCase = ListAllDecksUseCase(listAllDecksRepository)
         DeckListViewModel(listAllUseCase)
     }

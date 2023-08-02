@@ -15,32 +15,15 @@ import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.authenticated.result.ResultViewData
-import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.databinding.FragmentFlashCardBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-class FlashcardRepository(private val context: Context): FlashcardClient {
-    private val db: ShuffledDatabase by lazy {
-        ShuffledDatabase.getDatabase(context)
-    }
-
-    override fun updateStudiesLeftsFor(cards: List<CardStudieUpdate>) {
-        CoroutineScope(Dispatchers.IO).launch {
-            for (card in cards) {
-                db.cardDao().updateStudiesLeft(card.cardId, card.studiesLeft)
-            }
-        }
-    }
-}
 
 class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickListener {
     private lateinit var binding: FragmentFlashCardBinding
     private val arguments: FlashCardFragmentArgs by navArgs()
     private val viewModel: FlashcardViewModel by lazy {
-        FlashcardViewModel(arguments.deck, FlashcardRepository(requireContext()))
+        FlashcardViewModel(arguments.deck, LocalFlashcardRepository(requireContext()))
     }
 
     private val flashcardListAdapter = ListAdapter<FlashCardViewData>()
