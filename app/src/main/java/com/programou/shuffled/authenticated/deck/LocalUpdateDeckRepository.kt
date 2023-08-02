@@ -1,7 +1,6 @@
 package com.programou.shuffled.authenticated.deck
 
 import android.content.Context
-import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
 import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.database.entities.CardEntity
@@ -27,14 +26,14 @@ class LocalUpdateDeckRepository(private val context: Context): DeckUpdateClienti
         return true
     }
 
-    override suspend fun createCard(deckId: Int, newCard: Card): Boolean {
-        val cardEntity = CardEntity(newCard.question, newCard.awnser, newCard.studiesLeft)
-        val newCardId = db.cardDao().insertCard(cardEntity)
-        val deck = db.deckDao().findDeckBy(deckId.toLong())
-
-        db.deckDao().updateCardId(deckId.toLong(), deck.cardIds + newCardId)
-        return true
-    }
+//    override suspend fun createCard(deckId: Int, newCard: Card): Boolean {
+//        val cardEntity = CardEntity(newCard.question, newCard.awnser, newCard.studiesLeft)
+//        val newCardId = db.cardDao().insertCard(cardEntity)
+//        val deck = db.deckDao().findDeckBy(deckId.toLong())
+//
+//        db.deckDao().updateCardId(deckId.toLong(), deck.cardIds + newCardId)
+//        return true
+//    }
 
     override suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean {
         db.deckDao().updateFavorite(deckId.toLong(), isFavorited)

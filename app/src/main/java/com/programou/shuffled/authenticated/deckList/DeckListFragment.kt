@@ -1,7 +1,6 @@
 package com.programou.shuffled.authenticated.deckList
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
@@ -22,10 +21,7 @@ import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.authenticated.createDeck.CreateDeckBottomSheetView
-import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.databinding.FragmentDeckListBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

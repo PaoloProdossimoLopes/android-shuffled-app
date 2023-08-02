@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,8 +21,25 @@ import com.google.android.material.snackbar.Snackbar
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
+import com.programou.shuffled.authenticated.deck.createFlashcard.data.LocalCreateFlashcardRepository
+import com.programou.shuffled.authenticated.deck.createFlashcard.domain.CreateFlashcard
+import com.programou.shuffled.authenticated.deck.createFlashcard.infrastructure.CreateFlashcardStoreGateway
+import com.programou.shuffled.authenticated.deck.createFlashcard.main.CreateFlashcardComposer
+import com.programou.shuffled.authenticated.deck.createFlashcard.presentation.CreateFlashcardPresenter
+import com.programou.shuffled.authenticated.deck.deleteDeck.data.DeleteCardStore
+import com.programou.shuffled.authenticated.deck.deleteDeck.data.LocalDeleteCardsRepository
+import com.programou.shuffled.authenticated.deck.deleteDeck.data.LocalDeleteDeckRepository
+import com.programou.shuffled.authenticated.deck.deleteDeck.data.LocalFindDeckRepository
+import com.programou.shuffled.authenticated.deck.deleteDeck.domain.DeleteDeck
+import com.programou.shuffled.authenticated.deck.deleteDeck.domain.DeleteDeckRepository
+import com.programou.shuffled.authenticated.deck.deleteDeck.infrastructure.DeleteCardStoreAdapter
+import com.programou.shuffled.authenticated.deck.deleteDeck.infrastructure.DeleteDeckStoreAdapter
+import com.programou.shuffled.authenticated.deck.deleteDeck.infrastructure.FindDeckStoreAdapter
+import com.programou.shuffled.authenticated.deck.deleteDeck.main.DeleteDeckComposer
+import com.programou.shuffled.authenticated.deck.deleteDeck.presentation.DeleteDeckPresenter
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
+import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.databinding.FragmentDeckBinding
 
 class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
@@ -32,9 +48,14 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     private val cardPreviewAdapter = ListAdapter<PreviewViewData>()
     private val deckArgs: DeckFragmentArgs by navArgs()
     private val viewModel: DeckViewModel by viewModels {
-        val findDeckRepository = LocalFindDeckByIdRepository(requireContext())
+        val findDeckByIdRepository = LocalFindDeckByIdRepository(requireContext())
         val updateDeckRepository = LocalUpdateDeckRepository(requireContext())
-        DeckViewModel.Factory(deckArgs.deckId, findDeckRepository, updateDeckRepository)
+
+        val database = ShuffledDatabase.getDatabase(requireContext())
+        val createFlashcardPresenter = CreateFlashcardComposer.compose(database)
+        val deleteDeckPresenter = DeleteDeckComposer.compose(database)
+
+        DeckViewModel.Factory(deckArgs.deckId, findDeckByIdRepository, updateDeckRepository, createFlashcardPresenter, deleteDeckPresenter)
     }
     private var imageUri: Uri? = null
         set(value) {

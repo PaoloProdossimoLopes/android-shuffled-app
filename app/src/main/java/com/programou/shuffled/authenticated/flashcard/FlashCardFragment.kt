@@ -10,8 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter

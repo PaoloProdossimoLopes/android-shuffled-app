@@ -1,10 +1,6 @@
 package com.programou.shuffled.authenticated.result
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.programou.shuffled.authenticated.deck.DeckClienting
-import com.programou.shuffled.authenticated.deck.DeckUpdateClienting
-import com.programou.shuffled.authenticated.deck.DeckViewModel
 
 class ResultViewModel: ViewModel() {
     fun configure(request: Request): Response {

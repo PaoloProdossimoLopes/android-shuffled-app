@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.programou.shuffled.authenticated.createDeck.CreateDeck
-import com.programou.shuffled.authenticated.createDeck.CreateDeckViewModel
 
 class DeckListViewModel(private val allLister: ListAllDecks): ViewModel() {
 

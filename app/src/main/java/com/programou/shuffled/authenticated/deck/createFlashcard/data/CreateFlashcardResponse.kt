@@ -1,0 +1,3 @@
+package com.programou.shuffled.authenticated.deck.createFlashcard.data
+
+class CreateFlashcardResponse

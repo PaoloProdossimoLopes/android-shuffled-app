@@ -4,9 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.programou.shuffled.authenticated.deck.DeckClienting
-import com.programou.shuffled.authenticated.deck.DeckUpdateClienting
-import com.programou.shuffled.authenticated.deck.DeckViewModel
 
 class CreateDeckViewModel(private val createUseCase: CreateDeck): ViewModel() {
     class Factory(private val createUseCase: CreateDeck): ViewModelProvider.Factory {

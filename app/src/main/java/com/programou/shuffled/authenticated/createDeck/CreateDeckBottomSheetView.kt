@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.ImageView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.programou.shuffled.R
-import androidx.fragment.app.viewModels
 import com.programou.shuffled.databinding.ViewCreateDeckBottomSheetDialogBinding
 
 class CreateDeckBottomSheetView(

@@ -6,6 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.programou.shuffled.authenticated.deck.createFlashcard.presentation.CreateFlashcardEvent
+import com.programou.shuffled.authenticated.deck.createFlashcard.presentation.CreateFlashcardPresenting
+import com.programou.shuffled.authenticated.deck.deleteDeck.presentation.DeleteDeckEvent
+import com.programou.shuffled.authenticated.deck.deleteDeck.presentation.DeleteDeckPresenting
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
 import kotlinx.coroutines.launch
@@ -17,16 +21,23 @@ data class DeckViewData(val title: String, val description: String, val image: U
 class DeckViewModel(
     private val deckId: Int,
     private val findClient: DeckClienting,
-    private val updateClient: DeckUpdateClienting
+    private val updateClient: DeckUpdateClienting,
+    private val createFlashcard: CreateFlashcardPresenting,
+    private val deleteDeck: DeleteDeckPresenting
 ): ViewModel() {
 
     class Factory(
         private val deckId: Int,
         private val findClient: DeckClienting,
-        private val updateClient: DeckUpdateClienting
+        private val updateClient: DeckUpdateClienting,
+        private val createFlashcard: CreateFlashcardPresenting,
+        private val deleteDeck: DeleteDeckPresenting
     ): ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return DeckViewModel(deckId, findClient, updateClient) as T
+            return DeckViewModel(
+                deckId, findClient, updateClient,
+                createFlashcard, deleteDeck
+            ) as T
         }
     }
 
@@ -83,13 +94,16 @@ class DeckViewModel(
     }
 
     fun deleteDeck() = viewModelScope.launch {
-        val deck = findClient.findBy(deckId)
-        updateClient.deleteCards(deck?.deck?.cards?.map { it.id.toLong() } ?: listOf())
-        updateClient.deleteDeck(deckId)
+        val event = DeleteDeckEvent(deckId.toLong())
+        deleteDeck.deleteDeck(event)
     }
 
     fun createCard(newCard: Card) = viewModelScope.launch {
-        updateClient.createCard(deckId, newCard)
+        val event = CreateFlashcardEvent(
+            deckId.toLong(),
+            CreateFlashcardEvent.Flashcard(newCard.question, newCard.awnser)
+        )
+        val createFlashcardViewData = createFlashcard.createFlashcard(event)
         loadDeck()
     }
 
@@ -215,7 +229,7 @@ interface DeckClienting {
 
 interface DeckUpdateClienting {
     suspend fun updateDeck(deck: Deck): Boolean
-    suspend fun createCard(deckId: Int, newCard: Card): Boolean
+//    suspend fun createCard(deckId: Int, newCard: Card): Boolean
     suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
     suspend fun deleteDeck(id: Int): Boolean
     suspend fun deleteCards(ids: List<Long>)
