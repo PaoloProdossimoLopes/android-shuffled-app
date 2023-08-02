@@ -26,7 +26,7 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
     private val arguments: FlashCardFragmentArgs by navArgs()
     private val flashcardListAdapter = ListAdapter<FlashCardViewData>()
     private val viewModel: FlashcardViewModel by viewModels {
-        FlashcardViewModel.Facotry(arguments.deck, LocalFlashcardRepository(requireContext()))
+        FlashcardViewModel.Factory(arguments.deck, LocalFlashcardRepository(requireContext()))
     }
 
     private var isScrollEnabled = false
@@ -156,12 +156,16 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
             .setMessage(getString(R.string.textYourProgressWillBeLostInFlashFragment))
             .setPositiveButton(getString(R.string.textNo), null)
             .setNegativeButton(getString(R.string.textYes)) { _, _ ->
-                val action = FlashCardFragmentDirections.actionFlashCardFragmentToDeckFragment(
-                    arguments.deck.id
-                )
-                findNavController().navigate(action)
+                navigateToDeckScreen()
             }
             .show()
+    }
+
+    private fun navigateToDeckScreen() {
+        val action = FlashCardFragmentDirections.actionFlashCardFragmentToDeckFragment(
+            arguments.deck.id
+        )
+        findNavController().navigate(action)
     }
 
     private fun selectEasy() {
