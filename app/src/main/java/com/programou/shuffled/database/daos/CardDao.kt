@@ -24,9 +24,15 @@ interface CardDao {
     @Update
     suspend fun updateCard(card: CardEntity)
 
+    @Update
+    suspend fun updateCards(cards: List<CardEntity>)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCard(card: CardEntity): Long
 
     @Query("DELETE FROM ${Constant.TABLE_NAME} where ${Constant.CARD_ID} in (:ids)")
     suspend fun deleteCardWith(ids: List<Long>)
+
+    @Query("SELECT * FROM ${Constant.TABLE_NAME} where ${Constant.CARD_ID} in (:ids)")
+    suspend fun findCardsBy(ids: List<Long>): List<CardEntity>
 }

@@ -47,4 +47,6 @@
 
     <string name="textYes">Sim</string>
     <string name="textNo">Não</string>
+    <string name="testTryAgain">tentar novamente</string>
+    <string name="textCreateDeck">criar baralho</string>
 </resources>

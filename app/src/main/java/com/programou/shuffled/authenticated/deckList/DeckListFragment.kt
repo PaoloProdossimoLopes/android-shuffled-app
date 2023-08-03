@@ -13,16 +13,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 import com.programou.shuffled.FirebaseAuthClientProviderAdapter
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
 import com.programou.shuffled.authenticated.createDeck.CreateDeckBottomSheetView
+import com.programou.shuffled.authenticated.deckList.findAllDecks.main.FindAllDecksComposer
+import com.programou.shuffled.authenticated.deckList.findFavoriteDecks.main.FindFavoriteComposer
+import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.databinding.FragmentDeckListBinding
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
@@ -44,16 +45,20 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     private val deckListAdapter = ListAdapter<AllDecksListState>()
     private val recentDeckListAdapter = ListAdapter<FavoriteDecksListState>()
 
+    private val imageLoader = GlideImageLoaderAdapter()
+
     private val favoriteDecksListViewModel: FavoriteDecksListViewModel by viewModels {
-        val repository = LocalListFavoriteDeckRespotory(requireContext())
-        val useCase = ListFavoriteDecksUseCase(repository)
-        FavoriteDecksListViewModel.Factory(useCase)
+        val presenter = FindFavoriteComposer.compose(database)
+        FavoriteDecksListViewModel.Factory(presenter)
+    }
+
+    private val database: ShuffledDatabase by lazy {
+        ShuffledDatabase.getDatabase(requireContext())
     }
 
     private val allDecksViewModel: DeckListViewModel by viewModels {
-        val listAllDecksRepository = LocalListDeckRepository(requireContext())
-        val listAllUseCase = ListAllDecksUseCase(listAllDecksRepository)
-        DeckListViewModel.Factory(listAllUseCase)
+        val findAllDecksPresenter = FindAllDecksComposer.compose(database)
+        DeckListViewModel.Factory(findAllDecksPresenter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,14 +69,10 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         registerItemsInDeckList()
         registerItemsInFavoriteDeckList()
 
-        val requestOptions = RequestOptions()
-            .centerCrop()
-            .placeholder(R.color.gray_100)
-
-        Glide.with(binding.root.context)
-            .load(FirebaseAuthClientProviderAdapter.shared.getUserPhotoURI())
-            .apply(requestOptions)
-            .into(binding.userProfileImagaViewInDeckListFragment)
+        lifecycleScope.launch {
+            val userImageUri = FirebaseAuthClientProviderAdapter.shared.getUserPhotoURI()
+            imageLoader.loadFrom(userImageUri, binding.userProfileImagaViewInDeckListFragment, requireActivity())
+        }
 
         binding.recyclerDecks.adapter = deckListAdapter
         binding.recyclerDecksRecents.adapter = recentDeckListAdapter
@@ -131,10 +132,8 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         changeStateIsLoading(true)
 
         lifecycleScope.launch {
-            delay(1000)
-
-            allDecksViewModel.loadAllDecks()
             favoriteDecksListViewModel.loadAllDecks()
+            allDecksViewModel.loadAllDecks()
 
             changeStateIsLoading(false)
         }
@@ -179,8 +178,8 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
             viewData.decks.value?.let {
                 binding.recyclerDecksRecents.visibility = View.VISIBLE
                 binding.textRecentsDecks.visibility = View.VISIBLE
-                val viewDatas = it.map {
-                    ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, FavoriteDecksListState(it))
+                val viewDatas = it.map { viewData ->
+                    ItemViewData(FavoriteDeckItemViewHolder.IDENTIFIER, FavoriteDecksListState(viewData))
                 }
                 recentDeckListAdapter.update(viewDatas)
                 return@observe
@@ -190,7 +189,7 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
     private fun registerItemsInFavoriteDeckList() {
         recentDeckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
-            FavoriteDeckItemViewHolder.instantiate(parent) { deckViewData ->
+            FavoriteDeckItemViewHolder.instantiate(requireActivity(), parent, imageLoader) { deckViewData ->
                 deckViewData.deck?.id?.let { deckId ->
                     val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment(deckId)
                     findNavController().navigate(action)
@@ -201,7 +200,7 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
     private fun registerItemsInDeckList() {
         deckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
-            DeckItemViewHolder.instantiate(parent) { deckViewData ->
+            DeckItemViewHolder.instantiate(requireActivity(), parent, imageLoader) { deckViewData ->
                 deckViewData.deck?.id?.let { deckId ->
                     val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment(deckId)
                     findNavController().navigate(action)
@@ -214,10 +213,11 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         deckListAdapter.register(DeckListErrorStateItemViewHolder.IDENTIFIER) { parent ->
             DeckListErrorStateItemViewHolder.instantiate(parent)
         }
+
     }
 
     private fun updateWithDeck(decks: List<DeckListViewData.Deck>) {
-        binding.buttonCreateDeck.text = "criar baralho"
+        binding.buttonCreateDeck.text = getString(R.string.textCreateDeck)
         binding.recyclerDecks.layoutManager = GridLayoutManager(requireContext(), 2)
         val vds = decks.map { deck ->
             ItemViewData(DeckItemViewHolder.IDENTIFIER, AllDecksListState(deck = deck))
@@ -226,7 +226,7 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     }
 
     private fun updateWithEmptyState(empty: DeckListViewData.Empty) {
-        binding.buttonCreateDeck.text = "criar baralho"
+        binding.buttonCreateDeck.text = getString(R.string.textCreateDeck)
         binding.recyclerDecks.layoutManager = LinearLayoutManager(requireContext())
         val emptyViewData = ItemViewData(DeckListEmptyStateItemViewHolder.IDENTIFIER, AllDecksListState(empty = empty))
         deckListAdapter.update(listOf(emptyViewData))
@@ -234,7 +234,7 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
 
     private fun updateWithErrorState(error: DeckListViewData.Error) {
         binding.recyclerDecks.layoutManager = LinearLayoutManager(requireContext())
-        binding.buttonCreateDeck.text = "tentar novamente"
+        binding.buttonCreateDeck.text = getString(R.string.testTryAgain)
         val emptyViewData = ItemViewData(DeckListErrorStateItemViewHolder.IDENTIFIER, AllDecksListState(error = error))
         deckListAdapter.update(listOf(emptyViewData))
     }

@@ -1,6 +1,5 @@
 package com.programou.shuffled.authenticated.deck.deleteDeck.presentation
 
-import com.programou.shuffled.authenticated.deck.deleteDeck.domain.Deck
 import com.programou.shuffled.authenticated.deck.deleteDeck.domain.DeckDeletor
 import com.programou.shuffled.authenticated.deck.deleteDeck.domain.DeleteDeckData
 

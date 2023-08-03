@@ -21,22 +21,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
-import com.programou.shuffled.authenticated.deck.createFlashcard.data.LocalCreateFlashcardRepository
-import com.programou.shuffled.authenticated.deck.createFlashcard.domain.CreateFlashcard
-import com.programou.shuffled.authenticated.deck.createFlashcard.infrastructure.CreateFlashcardStoreGateway
 import com.programou.shuffled.authenticated.deck.createFlashcard.main.CreateFlashcardComposer
-import com.programou.shuffled.authenticated.deck.createFlashcard.presentation.CreateFlashcardPresenter
-import com.programou.shuffled.authenticated.deck.deleteDeck.data.DeleteCardStore
-import com.programou.shuffled.authenticated.deck.deleteDeck.data.LocalDeleteCardsRepository
-import com.programou.shuffled.authenticated.deck.deleteDeck.data.LocalDeleteDeckRepository
-import com.programou.shuffled.authenticated.deck.deleteDeck.data.LocalFindDeckRepository
-import com.programou.shuffled.authenticated.deck.deleteDeck.domain.DeleteDeck
-import com.programou.shuffled.authenticated.deck.deleteDeck.domain.DeleteDeckRepository
-import com.programou.shuffled.authenticated.deck.deleteDeck.infrastructure.DeleteCardStoreAdapter
-import com.programou.shuffled.authenticated.deck.deleteDeck.infrastructure.DeleteDeckStoreAdapter
-import com.programou.shuffled.authenticated.deck.deleteDeck.infrastructure.FindDeckStoreAdapter
 import com.programou.shuffled.authenticated.deck.deleteDeck.main.DeleteDeckComposer
-import com.programou.shuffled.authenticated.deck.deleteDeck.presentation.DeleteDeckPresenter
+import com.programou.shuffled.authenticated.deck.findCards.main.FindFlashcardsComposer
+import com.programou.shuffled.authenticated.deck.findDeck.main.FindDeckComposer
+import com.programou.shuffled.authenticated.deck.updateDeck.main.UpdateDeckComposer
+import com.programou.shuffled.authenticated.deck.updateFavorite.main.UpdateFavoriteComposer
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
 import com.programou.shuffled.database.ShuffledDatabase
@@ -48,14 +38,16 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     private val cardPreviewAdapter = ListAdapter<PreviewViewData>()
     private val deckArgs: DeckFragmentArgs by navArgs()
     private val viewModel: DeckViewModel by viewModels {
-        val findDeckByIdRepository = LocalFindDeckByIdRepository(requireContext())
-        val updateDeckRepository = LocalUpdateDeckRepository(requireContext())
-
         val database = ShuffledDatabase.getDatabase(requireContext())
+
         val createFlashcardPresenter = CreateFlashcardComposer.compose(database)
         val deleteDeckPresenter = DeleteDeckComposer.compose(database)
+        val findCardsPresenter = FindFlashcardsComposer.compose(database)
+        val findDeckPresenter = FindDeckComposer.compose(database)
+        val updateDeckPresenter = UpdateDeckComposer.compose(database)
+        val favoriteUpdatePresenter = UpdateFavoriteComposer.compose(database)
 
-        DeckViewModel.Factory(deckArgs.deckId, findDeckByIdRepository, updateDeckRepository, createFlashcardPresenter, deleteDeckPresenter)
+        DeckViewModel.Factory(deckArgs.deckId, createFlashcardPresenter, findCardsPresenter, deleteDeckPresenter, findDeckPresenter, updateDeckPresenter, favoriteUpdatePresenter)
     }
     private var imageUri: Uri? = null
         set(value) {
@@ -184,6 +176,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         binding.backArrowIndicatorImageViewInDeckFragment.isVisible = isEnable
         binding.favoriteIndicatorImageViewInDeckFragment.isVisible = isEnable
         binding.removeIndicatorImageViewInDeckFragment.isVisible = !isEnable
+        binding.addNewCardButtonInDeckFragment.isVisible = isEnable
     }
 
     private fun shouldEnableDeckEditText(isEnable: Boolean) {

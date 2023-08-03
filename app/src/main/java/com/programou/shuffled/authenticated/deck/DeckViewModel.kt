@@ -10,6 +10,16 @@ import com.programou.shuffled.authenticated.deck.createFlashcard.presentation.Cr
 import com.programou.shuffled.authenticated.deck.createFlashcard.presentation.CreateFlashcardPresenting
 import com.programou.shuffled.authenticated.deck.deleteDeck.presentation.DeleteDeckEvent
 import com.programou.shuffled.authenticated.deck.deleteDeck.presentation.DeleteDeckPresenting
+import com.programou.shuffled.authenticated.deck.findCards.presenter.FindCardsEvent
+import com.programou.shuffled.authenticated.deck.findCards.presenter.FindCardsPresenting
+import com.programou.shuffled.authenticated.deck.findCards.presenter.FindCardsViewData
+import com.programou.shuffled.authenticated.deck.findDeck.presentation.FindDeckEvent
+import com.programou.shuffled.authenticated.deck.findDeck.presentation.FindDeckPresenting
+import com.programou.shuffled.authenticated.deck.findDeck.presentation.FindDeckViewData
+import com.programou.shuffled.authenticated.deck.updateDeck.presentation.UpdateDeckEvent
+import com.programou.shuffled.authenticated.deck.updateDeck.presentation.UpdateDeckPresenting
+import com.programou.shuffled.authenticated.deck.updateFavorite.presenter.UpdateFavoriteEvent
+import com.programou.shuffled.authenticated.deck.updateFavorite.presenter.UpdateFavoritePresenting
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
 import kotlinx.coroutines.launch
@@ -20,23 +30,30 @@ data class DeckViewData(val title: String, val description: String, val image: U
 
 class DeckViewModel(
     private val deckId: Int,
-    private val findClient: DeckClienting,
-    private val updateClient: DeckUpdateClienting,
     private val createFlashcard: CreateFlashcardPresenting,
-    private val deleteDeck: DeleteDeckPresenting
+    private val findFlashcards: FindCardsPresenting,
+    private val deleteDeck: DeleteDeckPresenting,
+    private val findDeck: FindDeckPresenting,
+    private val updateDeck: UpdateDeckPresenting,
+    private val updateFavorite: UpdateFavoritePresenting
 ): ViewModel() {
 
     class Factory(
         private val deckId: Int,
-        private val findClient: DeckClienting,
-        private val updateClient: DeckUpdateClienting,
         private val createFlashcard: CreateFlashcardPresenting,
-        private val deleteDeck: DeleteDeckPresenting
+        private val findFlashcards: FindCardsPresenting,
+        private val deleteDeck: DeleteDeckPresenting,
+        private val findDeck: FindDeckPresenting,
+        private val updateDeck: UpdateDeckPresenting,
+        private val updateFavorite: UpdateFavoritePresenting
     ): ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return DeckViewModel(
-                deckId, findClient, updateClient,
-                createFlashcard, deleteDeck
+                deckId,
+                createFlashcard,
+                findFlashcards,
+                deleteDeck,
+                findDeck, updateDeck, updateFavorite
             ) as T
         }
     }
@@ -80,16 +97,18 @@ class DeckViewModel(
         }
 
     fun loadDeck() = viewModelScope.launch {
-        val deck = findClient.findBy(deckId)
-        deck?.let {
-            val deckViewData = it.toViewData()
-            deckMutableLiveData.postValue(deckViewData)
+        val findDeckEvent = FindDeckEvent(deckId.toLong())
+        val deck = findDeck.findDeck(findDeckEvent)
 
-            if (deckViewData.cards.isEmpty()) {
-                onCardListEmptyStateMutableLiveData.postValue(Unit)
-            } else {
-                onCardListIsNotEmptyMutableLiveData.postValue(deckViewData.cards)
-            }
+
+        val flashcardViewDatas = findFlashcards.findCards(FindCardsEvent(deck.deck.cardIds))
+        val deckViewData = deck.toViewData(flashcardViewDatas)
+        deckMutableLiveData.postValue(deckViewData)
+
+        if (deckViewData.cards.isEmpty()) {
+            onCardListEmptyStateMutableLiveData.postValue(Unit)
+        } else {
+            onCardListIsNotEmptyMutableLiveData.postValue(deckViewData.cards)
         }
     }
 
@@ -108,12 +127,13 @@ class DeckViewModel(
     }
 
     fun toggleFavorite() = viewModelScope.launch {
-        val deck = findClient.findBy(deckId)
-        deck?.deck?.isFavorited?.let { currentFavoritedState ->
-            val newFavoritedState = currentFavoritedState.not()
-            updateClient.updateFavorited(deckId, newFavoritedState)
-            deckIsFavoriteMutableLiveData.postValue(newFavoritedState)
-        }
+        val findDeckEvent = FindDeckEvent(deckId.toLong())
+        val deck = findDeck.findDeck(findDeckEvent)
+
+        val updateFavoriteEvent = UpdateFavoriteEvent(deck.deck.deckId, deck.deck.isFavorite.not())
+        val updatedViewData = updateFavorite.updateFavorite(updateFavoriteEvent)
+
+        deckIsFavoriteMutableLiveData.postValue(updatedViewData.isFavorite)
     }
 
     fun changeEditMode() {
@@ -123,40 +143,43 @@ class DeckViewModel(
     fun isEditMode() = isEditMode
 
     fun removeCard(cardId: Int) = viewModelScope.launch {
-        val deck = findClient.findBy(deckId)
-        val cardsInDeck = deck?.deck?.cards?.toMutableList()
-        val index = cardsInDeck?.indexOfFirst { it.id == cardId }
-        index?.let {
-            cardsInDeck?.removeAt(it)
+        val findDeckEvent = FindDeckEvent(deckId.toLong())
+        val deck = findDeck.findDeck(findDeckEvent)
+        val cardIdsInDeck = deck.deck.cardIds.toMutableList()
+        val event = FindCardsEvent(cardIdsInDeck)
+        val cards = findFlashcards.findCards(event).cards.toMutableList()
+        val index = cards.indexOfFirst { it.id == cardId.toLong() }
+        index.let {
+            cards.removeAt(it)
         }
 
-        if (cardsInDeck?.isEmpty() == true) {
+        if (cards.isEmpty()) {
             onCardListEmptyStateMutableLiveData.postValue(Unit)
             return@launch
         }
 
-        cardsInDeck?.let {
+        cards.let {
             val cardsViewData = it.map { card ->
-                DeckViewData.Card(card.id, card.question, card.answer, card.studiesLeft)
+                DeckViewData.Card(card.id.toInt(), card.question, card.answer, card.studiesLeft)
             }
             onCardListIsNotEmptyMutableLiveData.postValue(cardsViewData)
         }
     }
 
     fun updateCard(cardEdited: Card) = viewModelScope.launch {
-        val deck = findClient.findBy(deckId)
-        val cardsInDeck = deck?.deck?.cards?.toMutableList()
+        val cardId = cardEdited.id!!.toLong()
+        val event = FindCardsEvent(listOf(cardId))
+        val cardsViewData = findFlashcards.findCards(event)
+        val cardsInDeck = cardsViewData.cards.toMutableList()
 
-        cardsInDeck?.let { allCards ->
-            val cardsViewData = allCards.map { card ->
-                if (card.id == cardEdited.id) {
-                    return@map DeckViewData.Card(card.id, cardEdited.question, cardEdited.awnser, cardEdited.studiesLeft)
-                }
-
-                return@map DeckViewData.Card(card.id, card.question, card.answer, card.studiesLeft)
+        val cardsVd = cardsInDeck.map { card ->
+            if (card.id == cardId) {
+                return@map DeckViewData.Card(cardId.toInt(), cardEdited.question, cardEdited.awnser, cardEdited.studiesLeft)
             }
-            onCardListIsNotEmptyMutableLiveData.postValue(cardsViewData)
+
+            return@map DeckViewData.Card(card.id.toInt(), card.question, card.answer, card.studiesLeft)
         }
+        onCardListIsNotEmptyMutableLiveData.postValue(cardsVd)
     }
 
     fun studyOrSave(deckUpdated: DeckViewData) = viewModelScope.launch {
@@ -175,22 +198,10 @@ class DeckViewModel(
 
     private fun updateDeck(newDeck: DeckViewData) {
         viewModelScope.launch {
-            val oldDeck = findClient.findBy(deckId)
-            val deck = Deck(
-                deckId, newDeck.title, newDeck.description,
-                newDeck.image.toString(), newDeck.isFavorite,
-                newDeck.cards.map { Card(it.id, it.question, it.answer, it.studiesLeft) }
-            )
-            val newIds = deck.cards.map { it.id }
-            val diffCardIds = mutableListOf<Long>()
-            for (card in oldDeck?.deck?.cards ?: listOf()) {
-                if (!newIds.contains(card.id)) {
-                    diffCardIds.add(card.id.toLong())
-                }
-            }
+            val newCards = newDeck.cards.map { UpdateDeckEvent.Card(it.id.toLong(), it.question, it.answer, it.studiesLeft) }
+            val updateDeckEvent = UpdateDeckEvent(deckId.toLong(), newDeck.title, newDeck.description, newDeck.image.toString(), newCards)
+            updateDeck.updateDeck(updateDeckEvent)
 
-            updateClient.deleteCards(diffCardIds)
-            updateClient.updateDeck(deck)
             loadDeck()
             changeEditMode()
             onSaveChangeMutableLiveData.postValue(Unit)
@@ -198,46 +209,32 @@ class DeckViewModel(
     }
 
     private suspend fun navigateToGame() {
-        val findedDeck = findClient.findBy(deckId)?.deck
-        val cards = findedDeck?.cards?.map { card ->
-            Card(card.id, card.question, card.answer, card.studiesLeft)
-        } ?: listOf()
+        val findDeckEvent = FindDeckEvent(deckId.toLong())
+        val findedDeckViewData = findDeck.findDeck(findDeckEvent)
+
+        val findCardEvents = FindCardsEvent(findedDeckViewData.deck.cardIds)
+        val findedCardsViewData = findFlashcards.findCards(findCardEvents)
+
         val deck = Deck(
-            deckId, findedDeck?.title.toString(),
-            findedDeck?.description.toString(),
-            findedDeck?.thumbnailUrl.toString(),
-            findedDeck?.isFavorited == true,
-            cards
+            deckId, findedDeckViewData.deck.title,
+            findedDeckViewData.deck.description,
+            findedDeckViewData.deck.imageUri,
+            findedDeckViewData.deck.isFavorite,
+            findedCardsViewData.cards.map { card ->
+                Card(card.id.toInt(), card.question, card.answer, card.studiesLeft)
+            }
         )
+
         onNavigateToFlashcardStudyMutableLiveData.postValue(deck)
     }
 }
 
-fun DeckResponse.toViewData(): DeckViewData {
-    val cards = deck.cards.map { card -> DeckViewData.Card(card.id, card.question, card.answer, card.studiesLeft) }
+fun FindDeckViewData.toViewData(cards: FindCardsViewData): DeckViewData {
+    val cardViewDatas = cards.cards.map { card -> DeckViewData.Card(card.id.toInt(), card.question, card.answer, card.studiesLeft) }
     return DeckViewData(
         deck.title,
         deck.description,
-        Uri.parse(deck.thumbnailUrl)!!,
-        deck.isFavorited, cards
+        Uri.parse(deck.imageUri)!!,
+        deck.isFavorite, cardViewDatas
     )
 }
-
-interface DeckClienting {
-    suspend fun findBy(id: Int): DeckResponse?
-}
-
-interface DeckUpdateClienting {
-    suspend fun updateDeck(deck: Deck): Boolean
-//    suspend fun createCard(deckId: Int, newCard: Card): Boolean
-    suspend fun updateFavorited(deckId: Int, isFavorited: Boolean): Boolean
-    suspend fun deleteDeck(id: Int): Boolean
-    suspend fun deleteCards(ids: List<Long>)
-}
-
-class DeckResponse(val deck: Deck) {
-    class Deck(val id: Int, val title: String, val description: String, val thumbnailUrl: String, val isFavorited: Boolean, val cards: MutableList<Card>)
-    class Card(val id: Int, val question: String, val answer: String, val studiesLeft: Int)
-}
-
-

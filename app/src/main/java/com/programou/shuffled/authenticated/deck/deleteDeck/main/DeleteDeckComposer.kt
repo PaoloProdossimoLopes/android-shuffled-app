@@ -2,13 +2,13 @@ package com.programou.shuffled.authenticated.deck.deleteDeck.main
 
 import com.programou.shuffled.authenticated.deck.deleteDeck.data.LocalDeleteCardsRepository
 import com.programou.shuffled.authenticated.deck.deleteDeck.data.LocalDeleteDeckRepository
-import com.programou.shuffled.authenticated.deck.deleteDeck.data.LocalFindDeckRepository
 import com.programou.shuffled.authenticated.deck.deleteDeck.domain.DeleteDeck
 import com.programou.shuffled.authenticated.deck.deleteDeck.infrastructure.DeleteCardStoreAdapter
 import com.programou.shuffled.authenticated.deck.deleteDeck.infrastructure.DeleteDeckStoreAdapter
-import com.programou.shuffled.authenticated.deck.deleteDeck.infrastructure.FindDeckStoreAdapter
 import com.programou.shuffled.authenticated.deck.deleteDeck.presentation.DeleteDeckPresenter
 import com.programou.shuffled.authenticated.deck.deleteDeck.presentation.DeleteDeckPresenting
+import com.programou.shuffled.authenticated.deck.findDeck.data.LocalFindDeckRepository
+import com.programou.shuffled.authenticated.deck.findDeck.infrastructure.FindDeckStoreAdapter
 import com.programou.shuffled.database.ShuffledDatabase
 
 object DeleteDeckComposer {

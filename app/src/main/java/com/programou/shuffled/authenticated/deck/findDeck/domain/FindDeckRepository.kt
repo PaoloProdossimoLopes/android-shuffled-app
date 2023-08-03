@@ -1,5 +1,4 @@
-package com.programou.shuffled.authenticated.deck.deleteDeck.domain
-
+package com.programou.shuffled.authenticated.deck.findDeck.domain
 interface FindDeckRepository {
     suspend fun find(request: FindDeckRequest): Deck
 }

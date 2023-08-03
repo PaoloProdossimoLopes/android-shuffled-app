@@ -5,7 +5,6 @@ import com.programou.shuffled.authenticated.deck.createFlashcard.domain.CreateFl
 import com.programou.shuffled.authenticated.deck.createFlashcard.infrastructure.CreateFlashcardStoreGateway
 import com.programou.shuffled.authenticated.deck.createFlashcard.presentation.CreateFlashcardPresenter
 import com.programou.shuffled.authenticated.deck.createFlashcard.presentation.CreateFlashcardPresenting
-import com.programou.shuffled.authenticated.deck.deleteDeck.presentation.DeleteDeckPresenting
 import com.programou.shuffled.database.ShuffledDatabase
 
 object CreateFlashcardComposer {
