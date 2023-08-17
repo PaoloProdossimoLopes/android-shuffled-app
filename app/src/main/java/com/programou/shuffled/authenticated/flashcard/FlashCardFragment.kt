@@ -1,40 +1,32 @@
 package com.programou.shuffled.authenticated.flashcard
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView
-import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
-import com.programou.shuffled.authenticated.deckList.Deck
 import com.programou.shuffled.authenticated.result.ResultViewData
 import com.programou.shuffled.databinding.FragmentFlashCardBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickListener {
+
     private lateinit var binding: FragmentFlashCardBinding
     private val arguments: FlashCardFragmentArgs by navArgs()
-    private val viewModel: FlashcardViewModel by lazy {
-        FlashcardViewModel(arguments.deck, InmemoryDeckListClient.shared)
+    private val flashcardListAdapter = ListAdapter<FlashCardViewData>()
+    private val viewModel: FlashcardViewModel by viewModels {
+        FlashcardViewModel.Factory(arguments.deck, LocalFlashcardRepository(requireContext()))
     }
 
-    private val flashcardListAdapter = ListAdapter<FlashCardViewData>()
     private var isScrollEnabled = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,15 +53,15 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
         }
 
         viewModel.onEasySelectChange.observe(requireActivity()) {
-            binding.easyImageViewInFlashcardFragment.setImageDrawable(getDrawableBy(R.drawable.ic_happy_emoji_active))
+            setupEasyImageViewActive()
         }
 
         viewModel.onIntermediateSelect.observe(requireActivity()) {
-            binding.intermediateImageViewInFlashcardFragment.setImageDrawable(getDrawableBy(R.drawable.ic_normal_emoji_active))
+            setupIntermediateImageViewActive()
         }
 
         viewModel.onHardSelectChange.observe(requireActivity()) {
-            binding.hardImageViewInFlashcardFragment.setImageDrawable(getDrawableBy(R.drawable.ic_bad_emoji_active))
+            setupHardImageViewActive()
         }
 
         viewModel.onDisableButtonsChange.observe(requireActivity()) {
@@ -83,6 +75,18 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
         viewModel.onNavigateToResult.observe(requireActivity()) { flashcardResult ->
             onNavigateToResult(flashcardResult)
         }
+    }
+
+    private fun setupEasyImageViewActive() {
+        binding.easyImageViewInFlashcardFragment.setImageDrawable(getDrawableBy(R.drawable.ic_happy_emoji_active))
+    }
+
+    private fun setupIntermediateImageViewActive() {
+        binding.intermediateImageViewInFlashcardFragment.setImageDrawable(getDrawableBy(R.drawable.ic_normal_emoji_active))
+    }
+
+    private fun setupHardImageViewActive() {
+        binding.hardImageViewInFlashcardFragment.setImageDrawable(getDrawableBy(R.drawable.ic_bad_emoji_active))
     }
 
     private fun onItemChangeWith(viewDatas: List<FlashCardViewData>) {
@@ -146,16 +150,20 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
 
     private fun presentInteruptStudy() {
         AlertDialog.Builder(requireContext())
-            .setTitle("Tem certeza que deseja interromper seus estudos?")
-            .setMessage("Ao interromper seus estudo todo o progresso realizado nessa sessao sera perdido")
-            .setPositiveButton("Não", null)
-            .setNegativeButton("Sim") { _, _ ->
-                val action = FlashCardFragmentDirections.actionFlashCardFragmentToDeckFragment(
-                    arguments.deck.id
-                )
-                findNavController().navigate(action)
+            .setTitle(getString(R.string.textAreYouSureInteruptStudyInFlashFragment))
+            .setMessage(getString(R.string.textYourProgressWillBeLostInFlashFragment))
+            .setPositiveButton(getString(R.string.textNo), null)
+            .setNegativeButton(getString(R.string.textYes)) { _, _ ->
+                navigateToDeckScreen()
             }
             .show()
+    }
+
+    private fun navigateToDeckScreen() {
+        val action = FlashCardFragmentDirections.actionFlashCardFragmentToDeckFragment(
+            arguments.deck.id
+        )
+        findNavController().navigate(action)
     }
 
     private fun selectEasy() {
@@ -203,16 +211,7 @@ class FlashCardFragment: Fragment(R.layout.fragment_flash_card), View.OnClickLis
 
     private fun getDrawableBy(id: Int) = requireActivity().getDrawable(id)
 
-    class LinearScrollLayoutHandler(context: Context, private val canScroll: () -> Boolean): LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
+    class LinearScrollLayoutHandler(context: Context, private val canScroll: () -> Boolean): LinearLayoutManager(context, HORIZONTAL, false) {
         override fun canScrollHorizontally() = canScroll()
     }
-}
-
-fun RecyclerView.smoothSnapToPosition(position: Int, snapMode: Int = LinearSmoothScroller.SNAP_TO_START) {
-    val smoothScroller = object : LinearSmoothScroller(context) {
-        override fun getVerticalSnapPreference(): Int = snapMode
-        override fun getHorizontalSnapPreference(): Int = snapMode
-    }
-    smoothScroller.targetPosition = position
-    layoutManager?.startSmoothScroll(smoothScroller)
 }

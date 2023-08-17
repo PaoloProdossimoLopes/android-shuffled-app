@@ -2,8 +2,6 @@ package com.programou.shuffled.unauthenticated
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import com.programou.shuffled.FirebaseAuthClientProviderAdapter
 import com.programou.shuffled.R
 
 class UnauthenticatedActivity : AppCompatActivity() {

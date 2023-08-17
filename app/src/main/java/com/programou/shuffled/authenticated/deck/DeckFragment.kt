@@ -6,15 +6,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavOptions
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,26 +18,36 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
-import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
-import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.authenticated.ListAdapter
+import com.programou.shuffled.authenticated.deck.createFlashcard.main.CreateFlashcardComposer
+import com.programou.shuffled.authenticated.deck.deleteDeck.main.DeleteDeckComposer
+import com.programou.shuffled.authenticated.deck.findCards.main.FindFlashcardsComposer
+import com.programou.shuffled.authenticated.deck.findDeck.main.FindDeckComposer
+import com.programou.shuffled.authenticated.deck.updateDeck.main.UpdateDeckComposer
+import com.programou.shuffled.authenticated.deck.updateFavorite.main.UpdateFavoriteComposer
 import com.programou.shuffled.authenticated.deckList.Card
 import com.programou.shuffled.authenticated.deckList.Deck
-import com.programou.shuffled.authenticated.flashcard.FlashCardFragmentDirections
+import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.databinding.FragmentDeckBinding
-import com.programou.shuffled.databinding.ViewEmptyCardStateItemBinding
 
 class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
     private lateinit var binding: FragmentDeckBinding
 
     private val cardPreviewAdapter = ListAdapter<PreviewViewData>()
     private val deckArgs: DeckFragmentArgs by navArgs()
-    private val viewModel: DeckViewModel by lazy {
-        val client = InmemoryDeckListClient.shared
-        val factory = DeckViewModel.Factory(deckArgs.deckId, client, client) // Factory
-        ViewModelProvider(this, factory).get(DeckViewModel::class.java)
+    private val viewModel: DeckViewModel by viewModels {
+        val database = ShuffledDatabase.getDatabase(requireContext())
+
+        val createFlashcardPresenter = CreateFlashcardComposer.compose(database)
+        val deleteDeckPresenter = DeleteDeckComposer.compose(database)
+        val findCardsPresenter = FindFlashcardsComposer.compose(database)
+        val findDeckPresenter = FindDeckComposer.compose(database)
+        val updateDeckPresenter = UpdateDeckComposer.compose(database)
+        val favoriteUpdatePresenter = UpdateFavoriteComposer.compose(database)
+
+        DeckViewModel.Factory(deckArgs.deckId, createFlashcardPresenter, findCardsPresenter, deleteDeckPresenter, findDeckPresenter, updateDeckPresenter, favoriteUpdatePresenter)
     }
     private var imageUri: Uri? = null
         set(value) {
@@ -153,6 +159,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         viewModel.onSaveChange.observe(requireActivity()) {
             val message = "Suas alteraçoes foram salvas com sucesso!"
             Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+            viewModel.loadDeck()
         }
 
         viewModel.onPresentGalleryPicker.observe(requireActivity()) {
@@ -169,6 +176,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         binding.backArrowIndicatorImageViewInDeckFragment.isVisible = isEnable
         binding.favoriteIndicatorImageViewInDeckFragment.isVisible = isEnable
         binding.removeIndicatorImageViewInDeckFragment.isVisible = !isEnable
+        binding.addNewCardButtonInDeckFragment.isVisible = isEnable
     }
 
     private fun shouldEnableDeckEditText(isEnable: Boolean) {
@@ -196,7 +204,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
 
     private fun presentGalleryPicker() {
         val galleryIntent = Intent(
-            Intent.ACTION_PICK,
+            Intent.ACTION_OPEN_DOCUMENT,
             MediaStore.Images.Media.INTERNAL_CONTENT_URI
         )
         launcher.launch(galleryIntent)

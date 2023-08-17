@@ -5,13 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.programou.shuffled.InmemoryDeckListClient
 import com.programou.shuffled.R
 import com.programou.shuffled.databinding.ViewCreateDeckBottomSheetDialogBinding
 
-
 class CreateDeckBottomSheetView(
-    context: Context,
+    private val context: Context,
     private val setGalleryImage: (ImageView) -> Unit,
     private val onSucess: (String) -> Unit,
     private val onFailure: (String) -> Unit
@@ -19,7 +17,7 @@ class CreateDeckBottomSheetView(
 
     private lateinit var binding: ViewCreateDeckBottomSheetDialogBinding
     private val viewModel: CreateDeckViewModel by lazy {
-        val repository = CreateDeckRepositoryImpl(InmemoryDeckListClient.shared)
+        val repository = LocalCreateDeckRepository(context)
         val useCase = CreateDeckUseCase(repository)
         CreateDeckViewModel(useCase)
     }
