@@ -26,7 +26,8 @@
     <string name="acessYourAccountText">Acesse</string>
     <string name="usageTextLiteral">Aproveitamento</string>
     <string name="doneButtonTitleText">Feito</string>
-    <string name="editTheCardBotomSheetTitle">Edite o card</string>
+    <string name="editTheCardBotomSheetTitle">Edite o flashcard</string>
+    <string name="createTheCardBotomSheetTitle">Crie um flashcard</string>
     <string name="questionHintEditText">Pergunta</string>
     <string name="anwserHintEditText">Resposta</string>
     <string name="saveButtonTitle">Salvar</string>

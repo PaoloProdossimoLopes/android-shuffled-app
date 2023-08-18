@@ -113,9 +113,9 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         changeStateIsLoading(true)
     }
 
-    override fun onResume() {
-        super.onResume()
 
+    override fun onStart() {
+        super.onStart()
         load()
     }
 
