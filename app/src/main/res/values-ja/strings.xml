@@ -20,7 +20,7 @@
     <string name="studyButtonTitleInDeckFragment">Começar</string>
     <string name="recentSectionTitleText">Favoritos</string>
     <string name="deckSectionTitleText">Baralhos</string>
-    <string name="createDeckButtonTitle">Create deck</string>
+    <string name="createDeckButtonTitle">Criar baralho</string>
     <string name="slashSeparatorText">/</string>
     <string name="alreadyHaveAccountText">Já possui uma conta?</string>
     <string name="acessYourAccountText">Acesse</string>

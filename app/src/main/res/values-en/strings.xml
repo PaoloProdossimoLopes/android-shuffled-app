@@ -31,7 +31,7 @@
     <string name="questionHintEditText">Pergunta</string>
     <string name="anwserHintEditText">Resposta</string>
     <string name="saveButtonTitle">Salvar</string>
-    <string name="makeDeckBottomSheetTitleText">Crei seu baralho</string>
+    <string name="makeDeckBottomSheetTitleText">Create deck</string>
     <string name="deckNamePlaceholderTitle">Nome do baralho</string>
     <string name="deckDescriptionPlaceholderTitle">Descrição do baralho</string>
     <string name="deckNameHintTitle">Nome do seu baralho</string>
@@ -49,5 +49,5 @@
     <string name="textYes">Sim</string>
     <string name="textNo">Não</string>
     <string name="testTryAgain">tentar novamente</string>
-    <string name="textCreateDeck">criar baralho</string>
+    <string name="textCreateDeck">create deck</string>
 </resources>
