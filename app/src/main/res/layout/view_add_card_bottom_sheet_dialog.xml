@@ -12,6 +12,7 @@
         android:paddingBottom="12dp">
 
         <ImageView
+            style="@style/ImageSolidIconView"
             android:id="@+id/image_close"
             android:layout_width="38dp"
             android:layout_height="38dp"
@@ -23,11 +24,12 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/createEditTitleCardBottomSheetText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
             android:gravity="center"
-            android:text="@string/editTheCardBotomSheetTitle"
+            android:text="@string/createTheCardBotomSheetTitle"
             android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/image_close"
@@ -64,27 +66,48 @@
                 android:layout_marginVertical="10dp"
                 android:background="@color/gray_300" />
 
-            <EditText
-                android:id="@+id/edit_text_card_question"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:autofillHints="@null"
-                android:background="@null"
-                android:drawableStart="@drawable/ic_question"
-                android:drawablePadding="8dp"
-                android:hint="@string/questionHintEditText"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content">
+                <ImageView
+                    style="@style/ImageSolidIconView"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_question"
+                    android:importantForAccessibility="no"/>
+                <EditText
+                    android:id="@+id/edit_text_card_question"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:autofillHints="@null"
+                    android:background="@null"
+                    android:hint="@string/questionHintEditText"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/edit_text_card_answer"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:drawableStart="@drawable/ic_answer"
-                android:drawablePadding="8dp"
-                android:hint="@string/anwserHintEditText" />
+                android:paddingTop="8dp">
+                <ImageView
+                    style="@style/ImageSolidIconView"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_answer"
+                    android:importantForAccessibility="no" />
+                <EditText
+                    android:id="@+id/edit_text_card_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="@string/anwserHintEditText"
+                    android:importantForAutofill="no"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton

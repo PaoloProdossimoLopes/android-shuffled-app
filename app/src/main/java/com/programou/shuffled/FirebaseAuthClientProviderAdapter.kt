@@ -30,6 +30,7 @@ class FirebaseAuthClientProviderAdapter : EnterClientProvider,
 
     fun getUserPhotoURI() = auth.currentUser?.photoUrl
     fun getUsername() = auth.currentUser?.displayName
+    fun getEmail() = auth.currentUser?.email
 
     override fun enter(request: EnterRequest, callback: (UserResponse) -> Unit) {
         val email = request.body["email"] ?: String()

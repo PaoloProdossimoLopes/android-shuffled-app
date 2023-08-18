@@ -30,7 +30,6 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding = FragmentEnterBinding.bind(view)
 
         googleAuthentication = GoogleAuthenticatorProvider(this)
@@ -107,7 +106,7 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
 
         googleAuthentication?.presentAuthentication { credentialResult ->
             credentialResult.exceptionOrNull()?.let { e ->
-                val message = e.message ?: "Error"
+                val message = e.message ?: "Tivemos um problema para se comunicar com a google, tente novamente mais tarde"
                 val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
                 return@presentAuthentication snackbar.show()
             }
@@ -115,8 +114,7 @@ class EnterFragment : Fragment(R.layout.fragment_enter) {
             credentialResult.getOrNull()?.let { credential ->
                 firebaseProvider.auth(credential) { authenticationResult ->
                     authenticationResult.exceptionOrNull()?.let { e ->
-                        val message = e.message ?: "Error"
-                        Log.i("DEBUG ERROR:", e.message!!)
+                        val message = e.message ?: "Ocorreu um proble em autentica-lo, tente novamente mais tarde"
                         val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
                         return@auth snackbar.show()
                     }

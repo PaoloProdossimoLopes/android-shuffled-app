@@ -79,29 +79,25 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         binding.recyclerDecksRecents.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
         binding.buttonCreateDeck.setOnClickListener {
-            if (binding.buttonCreateDeck.text == "criar baralho") {
-                createDeckDialog = CreateDeckBottomSheetView(requireContext(), setGalleryImage = { deckImageView ->
-                    val pickImg = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                    this.launcher.launch(pickImg)
-                }, onSucess = { sucessMesage ->
-                    Snackbar
-                        .make(binding.root, sucessMesage, Snackbar.LENGTH_LONG)
-                        .setBackgroundTint(requireContext().getColor(R.color.green_500))
-                        .show()
+            createDeckDialog = CreateDeckBottomSheetView(requireContext(), setGalleryImage = { deckImageView ->
+                val pickImg = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+                this.launcher.launch(pickImg)
+            }, onSucess = { sucessMesage ->
+                Snackbar
+                    .make(binding.root, sucessMesage, Snackbar.LENGTH_LONG)
+                    .setBackgroundTint(requireContext().getColor(R.color.green_500))
+                    .show()
 
-                    load()
-                }, onFailure = { failureMesage ->
-                    Snackbar
-                        .make(binding.root, failureMesage, Snackbar.LENGTH_LONG)
-                        .setBackgroundTint(requireContext().getColor(R.color.red_500))
-                        .show()
-
-                    load()
-                })
-                createDeckDialog?.show()
-            } else {
                 load()
-            }
+            }, onFailure = { failureMesage ->
+                Snackbar
+                    .make(binding.root, failureMesage, Snackbar.LENGTH_LONG)
+                    .setBackgroundTint(requireContext().getColor(R.color.red_500))
+                    .show()
+
+                load()
+            })
+            createDeckDialog?.show()
         }
 
         binding.userProfileImagaViewInDeckListFragment.setOnClickListener {
@@ -113,9 +109,9 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
         changeStateIsLoading(true)
     }
 
-    override fun onResume() {
-        super.onResume()
 
+    override fun onStart() {
+        super.onStart()
         load()
     }
 

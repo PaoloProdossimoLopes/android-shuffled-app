@@ -48,6 +48,12 @@ class CreateEditCardBottomSheet(
             binding.editTextCardAnswer.setText(viewData.anwser)
         }
 
+        val isEdit = cardViewData != null
+        if (isEdit) {
+            val editTitle = context.getText(R.string.editTheCardBotomSheetTitle)
+            binding.createEditTitleCardBottomSheetText.text = editTitle
+        }
+
         setCancelable(false)
     }
 }
