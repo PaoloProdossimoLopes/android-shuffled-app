@@ -86,7 +86,6 @@
                 android:hint="@string/deckTitleHintEditTextInDeckFragment"
                 android:inputType="textMultiLine"
                 android:maxLines="2"
-                android:textColor="@color/black_800"
                 android:textSize="28sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -95,6 +94,7 @@
                 tools:text="title of deck" />
 
             <ImageView
+                style="@style/ImageSolidIconView"
                 android:id="@+id/editPencilIndicatorImageViewInDeckFragment"
                 android:layout_width="30dp"
                 android:layout_height="0dp"
@@ -118,7 +118,6 @@
                 android:hint="@string/deckDescriptionHintEditTextInDeckFragment"
                 android:inputType="textMultiLine"
                 android:maxLines="2"
-                android:textColor="@color/black_800"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

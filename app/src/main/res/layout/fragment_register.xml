@@ -9,6 +9,7 @@
     tools:context=".unauthenticated.register.RegisterFragment">
 
     <ImageView
+        style="@style/ImageSolidIconView"
         android:id="@+id/backArrowIndicatorImageViewInRegisterFragment"
         android:layout_width="32dp"
         android:layout_height="0dp"
