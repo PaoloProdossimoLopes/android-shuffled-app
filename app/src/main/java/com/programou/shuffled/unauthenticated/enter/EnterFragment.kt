@@ -2,7 +2,6 @@ package com.programou.shuffled.unauthenticated.enter
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener

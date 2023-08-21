@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import com.programou.shuffled.LoadImage
 import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.databinding.ViewFavoriteDeckListItemBinding
 import kotlinx.coroutines.async

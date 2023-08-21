@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.programou.shuffled.FirebaseAuthClientProviderAdapter
+import com.programou.shuffled.GlideImageLoaderAdapter
 import com.programou.shuffled.R
 import com.programou.shuffled.authenticated.ItemViewData
 import com.programou.shuffled.authenticated.ListAdapter
@@ -23,7 +24,6 @@ import com.programou.shuffled.authenticated.deckList.findAllDecks.main.FindAllDe
 import com.programou.shuffled.authenticated.deckList.findFavoriteDecks.main.FindFavoriteComposer
 import com.programou.shuffled.database.ShuffledDatabase
 import com.programou.shuffled.databinding.FragmentDeckListBinding
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
@@ -45,7 +45,7 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     private val deckListAdapter = ListAdapter<AllDecksListState>()
     private val recentDeckListAdapter = ListAdapter<FavoriteDecksListState>()
 
-    private val imageLoader = GlideImageLoaderAdapter()
+    private val imageLoader = GlideImageLoaderAdapter.shared
 
     private val favoriteDecksListViewModel: FavoriteDecksListViewModel by viewModels {
         val presenter = FindFavoriteComposer.compose(database)
@@ -195,14 +195,14 @@ class DeckListFragment : Fragment(R.layout.fragment_deck_list) {
     }
 
     private fun registerItemsInDeckList() {
-        deckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
-            DeckItemViewHolder.instantiate(requireActivity(), parent, imageLoader) { deckViewData ->
-                deckViewData.deck?.id?.let { deckId ->
-                    val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment(deckId)
-                    findNavController().navigate(action)
-                }
-            }
-        }
+//        deckListAdapter.register(DeckItemViewHolder.IDENTIFIER) { parent ->
+////            DeckItemViewHolder.instantiate(requireActivity(), parent, imageLoader) { deckViewData ->
+////                deckViewData.deck?.id?.let { deckId ->
+////                    val action = DeckListFragmentDirections.actionDecksFragmentToDeckFragment(deckId)
+////                    findNavController().navigate(action)
+////                }
+////            }
+//        }
         deckListAdapter.register(DeckListEmptyStateItemViewHolder.IDENTIFIER) { parent ->
             DeckListEmptyStateItemViewHolder.instantiate(parent)
         }

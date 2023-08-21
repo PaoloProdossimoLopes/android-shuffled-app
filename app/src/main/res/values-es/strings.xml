@@ -1,3 +1,11 @@
 <resources>
+    <!-- HOME -->
+    <string name="homeScreenTitleText">Mazos</string>
+
+    <string name="homeEmptyStateTitleText">No hay mazos para mostrar</string>
+    <string name="homeEmptyStateMessageText">puedes crear y comenzar a estudiar</string>
+
+    <string name="homeErrorStateTitleText">¡Ups, algo salió mal!</string>
+    <string name="homeErrorStateMessageText">inténtalo nuevamente más tarde</string>
 
 </resources>

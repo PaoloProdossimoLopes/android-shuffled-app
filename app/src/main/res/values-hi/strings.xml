@@ -1,3 +1,11 @@
 <resources>
+    <!-- HOME -->
+    <string name="homeScreenTitleText">डेक्स</string>
+
+    <string name="homeEmptyStateTitleText">कोई डेक्स दिखाने के लिए नहीं है</string>
+    <string name="homeEmptyStateMessageText">आप बना सकते हैं और पढ़ाई शुरू कर सकते हैं</string>
+
+    <string name="homeErrorStateTitleText">अरे, कुछ गड़बड़ हो गई!</string>
+    <string name="homeErrorStateMessageText">बाद में पुनः प्रयास करें</string>
 
 </resources>

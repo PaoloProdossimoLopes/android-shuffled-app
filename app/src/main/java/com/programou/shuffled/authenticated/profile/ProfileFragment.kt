@@ -1,8 +1,6 @@
 package com.programou.shuffled.authenticated.profile
 
 import android.app.AlertDialog
-import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -12,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.programou.shuffled.BuildConfig
-import com.programou.shuffled.FirebaseAuthClientProviderAdapter
 import com.programou.shuffled.R
 import com.programou.shuffled.databinding.FragmentProfileBinding
 import com.programou.shuffled.unauthenticated.UnauthenticatedActivity

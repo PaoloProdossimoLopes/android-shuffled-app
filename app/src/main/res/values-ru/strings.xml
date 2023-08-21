@@ -1,3 +1,11 @@
 <resources>
+    <!-- HOME -->
+    <string name="homeScreenTitleText">Колоды</string>
+
+    <string name="homeEmptyStateTitleText">Нет колод для отображения</string>
+    <string name="homeEmptyStateMessageText">вы можете создать и начать изучение</string>
+
+    <string name="homeErrorStateTitleText">Упс, что-то пошло не так!</string>
+    <string name="homeErrorStateMessageText">попробуйте еще раз позже</string>
 
 </resources>

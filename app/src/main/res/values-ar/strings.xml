@@ -1,3 +1,11 @@
 <resources>
+    <!-- HOME -->
+    <string name="homeScreenTitleText">الأدراج</string>
+
+    <string name="homeEmptyStateTitleText">لا توجد أدراج لعرضها</string>
+    <string name="homeEmptyStateMessageText">يمكنك إنشاء وبدء الدراسة</string>
+
+    <string name="homeErrorStateTitleText">عفوًا، حدث خطأ ما!</string>
+    <string name="homeErrorStateMessageText">حاول مرة أخرى في وقت لاحق</string>
 
 </resources>

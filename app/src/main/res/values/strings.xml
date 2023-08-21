@@ -50,4 +50,16 @@
     <string name="textNo">No</string>
     <string name="testTryAgain">try again</string>
     <string name="textCreateDeck">create deck</string>
+
+    <!--  NEW GUIDE  -->
+    <!-- HOME -->
+    <string name="homeScreenTitleText">Decks</string>
+
+    <string name="homeEmptyStateTitleText">There are no decks to show</string>
+    <string name="homeEmptyStateMessageText">you can create and start study</string>
+
+    <string name="homeErrorStateTitleText">Ops, something wrong occurs!</string>
+    <string name="homeErrorStateMessageText">try again later</string>
+
+    <string name="homeErrorStateRetryButtonTitleText">retry</string>
 </resources>

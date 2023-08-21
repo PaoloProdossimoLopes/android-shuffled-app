@@ -1,3 +1,11 @@
 <resources>
+    <!-- HOME -->
+    <string name="homeScreenTitleText">Baralhos</string>
+
+    <string name="homeEmptyStateTitleText">Não há baralhos para exibir</string>
+    <string name="homeEmptyStateMessageText">você pode criar e começar a estudar</string>
+
+    <string name="homeErrorStateTitleText">Ops, algo deu errado!</string>
+    <string name="homeErrorStateMessageText">tente novamente mais tarde</string>
 
 </resources>

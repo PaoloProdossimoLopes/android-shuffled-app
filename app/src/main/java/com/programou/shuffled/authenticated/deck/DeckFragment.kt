@@ -47,7 +47,7 @@ class DeckFragment : Fragment(R.layout.fragment_deck), View.OnClickListener {
         val updateDeckPresenter = UpdateDeckComposer.compose(database)
         val favoriteUpdatePresenter = UpdateFavoriteComposer.compose(database)
 
-        DeckViewModel.Factory(deckArgs.deckId, createFlashcardPresenter, findCardsPresenter, deleteDeckPresenter, findDeckPresenter, updateDeckPresenter, favoriteUpdatePresenter)
+        DeckViewModel.Factory(deckArgs.deckId.toInt(), createFlashcardPresenter, findCardsPresenter, deleteDeckPresenter, findDeckPresenter, updateDeckPresenter, favoriteUpdatePresenter)
     }
     private var imageUri: Uri? = null
         set(value) {

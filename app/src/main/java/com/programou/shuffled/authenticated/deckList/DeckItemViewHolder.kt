@@ -1,17 +1,11 @@
 package com.programou.shuffled.authenticated.deckList
 
-import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestOptions
-import com.programou.shuffled.R
+import com.programou.shuffled.LoadImage
 import com.programou.shuffled.authenticated.ItemViewHolder
 import com.programou.shuffled.databinding.ViewDeckListItemBinding
 import kotlinx.coroutines.async
@@ -22,7 +16,7 @@ class DeckItemViewHolder private constructor(
     private val binding: ViewDeckListItemBinding,
     private val imageLoader: LoadImage,
     private val onClick: Bind<DeckListFragment.AllDecksListState>?
-): ItemViewHolder<DeckListFragment.AllDecksListState>(binding.root) {
+): ItemViewHolder<DeckItemViewHolder.ViewData>(binding.root) {
     companion object {
         val IDENTIFIER: Int by lazy { DeckItemViewHolder.hashCode() }
 
@@ -34,36 +28,19 @@ class DeckItemViewHolder private constructor(
         }
     }
 
-    override fun bind(viewData: DeckListFragment.AllDecksListState) {
-        with(viewData.deck!!) {
-            binding.textDeckTitle.text = name
-            binding.totalOfCardsTextViewInDeckListItemView.text = numberOfCards
+    override fun bind(viewData: DeckItemViewHolder.ViewData) {
+        binding.textDeckTitle.text = viewData.title
+        binding.totalOfCardsTextViewInDeckListItemView.text = viewData.numberOfFlashcards
 
-            activity.lifecycleScope.async {
-                val uri = thumbnailUrl.toUri()
-                imageLoader.loadFrom(uri, binding.imageDeck, binding.root.context)
-            }
+        activity.lifecycleScope.async {
+            val uri = viewData.imageUrl.toUri()
+            imageLoader.loadFrom(uri, binding.imageDeck, binding.root.context)
         }
 
         binding.cardContainer.setOnClickListener {
-            onClick?.let{ it(viewData) }
+            onClick?.let{  }
         }
     }
-}
-interface LoadImage {
-    suspend fun loadFrom(uri: Uri?, into: ImageView, context: Context)
-}
 
-class GlideImageLoaderAdapter: LoadImage {
-    override suspend fun loadFrom(uri: Uri?, into: ImageView, context: Context) {
-        val requestOptions = RequestOptions()
-            .centerCrop()
-            .placeholder(R.color.gray_100)
-
-        Glide.with(context)
-            .load(uri)
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .apply(requestOptions)
-            .into(into)
-    }
+    data class ViewData(val title: String, val imageUrl: String, val numberOfFlashcards: String)
 }

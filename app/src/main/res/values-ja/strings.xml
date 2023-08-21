@@ -1,3 +1,11 @@
 <resources>
+    <!-- HOME -->
+    <string name="homeScreenTitleText">デッキ</string>
+
+    <string name="homeEmptyStateTitleText">表示するデッキはありません</string>
+    <string name="homeEmptyStateMessageText">作成して学習を始めることができます</string>
+
+    <string name="homeErrorStateTitleText">おっと、何か問題が発生しました！</string>
+    <string name="homeErrorStateMessageText">後でもう一度お試しください</string>
 
 </resources>
