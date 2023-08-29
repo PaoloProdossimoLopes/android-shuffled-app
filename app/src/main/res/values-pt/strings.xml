@@ -1,5 +1,7 @@
 <resources>
-    <!-- HOME -->
+    <string name="applicationName">Shuffled</string>
+
+    <!--  HOME SCENE  -->
     <string name="homeScreenTitleText">Baralhos</string>
 
     <string name="homeEmptyStateTitleText">Não há baralhos para exibir</string>

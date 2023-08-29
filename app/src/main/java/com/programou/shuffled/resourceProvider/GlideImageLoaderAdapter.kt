@@ -1,4 +1,4 @@
-package com.programou.shuffled
+package com.programou.shuffled.resourceProvider
 
 import android.content.Context
 import android.net.Uri
@@ -6,6 +6,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.programou.shuffled.R
 
 interface LoadImage {
     fun loadFrom(uri: Uri?, into: ImageView, context: Context)

@@ -1,5 +1,7 @@
 <resources>
-    <!-- HOME -->
+    <string name="applicationName">Shuffled</string>
+
+    <!--  HOME SCENE  -->
     <string name="homeScreenTitleText">डेक्स</string>
 
     <string name="homeEmptyStateTitleText">कोई डेक्स दिखाने के लिए नहीं है</string>

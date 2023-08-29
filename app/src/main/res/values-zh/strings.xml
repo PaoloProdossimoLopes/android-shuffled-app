@@ -1,5 +1,7 @@
 <resources>
-    <!-- HOME -->
+    <string name="applicationName">Shuffled</string>
+
+    <!--  HOME SCENE  -->
     <string name="homeScreenTitleText">卡组</string>
 
     <string name="homeEmptyStateTitleText">没有要显示的卡组</string>

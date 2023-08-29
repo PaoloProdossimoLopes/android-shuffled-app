@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".authenticated.result.ResultFragment">
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -86,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:paddingBottom="8dp"
-                android:text="@string/usageTextLiteral"
+                android:text="Aproveitamento"
                 android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -265,7 +264,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:minWidth="200dp"
-                android:text="@string/doneButtonTitleText"
+                android:text="pronto"
                 app:cornerRadius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

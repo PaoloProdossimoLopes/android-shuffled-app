@@ -1,5 +1,7 @@
 <resources>
-    <!-- HOME -->
+    <string name="applicationName">Shuffled</string>
+
+    <!--  HOME SCENE  -->
     <string name="homeScreenTitleText">Mazos</string>
 
     <string name="homeEmptyStateTitleText">No hay mazos para mostrar</string>
