@@ -21,7 +21,7 @@
             android:paddingVertical="20dp">
 
             <ImageView
-                android:id="@+id/congratulationImageView"
+                android:id="@+id/resultCongratulationImageView"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
                 android:contentDescription="@null"
@@ -32,7 +32,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/congratulationTitleTextView"
+                android:id="@+id/resultCongratulationTitleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
@@ -42,11 +42,11 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/congratulationImageView"
-                tools:text="Well done" />
+                app:layout_constraintTop_toBottomOf="@id/resultCongratulationImageView"
+                android:text="@string/resultCongratulationTitleText" />
 
             <TextView
-                android:id="@+id/congratulationDescriptionTextView"
+                android:id="@+id/resultCongratulationDescriptionTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
@@ -54,11 +54,11 @@
                 android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/congratulationTitleTextView"
-                tools:text="You improve your knoledge about on:" />
+                app:layout_constraintTop_toBottomOf="@id/resultCongratulationTitleTextView"
+                android:text="@string/resultCongratulationDescriptionText" />
 
             <TextView
-                android:id="@+id/congratulationDeckNameTextView"
+                android:id="@+id/resultCongratulationDeckNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
@@ -66,40 +66,40 @@
                 android:textSize="28sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/congratulationDescriptionTextView"
+                app:layout_constraintTop_toBottomOf="@id/resultCongratulationDescriptionTextView"
                 tools:text="Name of deck" />
 
             <View
-                android:id="@+id/congratulationDividerView"
+                android:id="@+id/resultCongratulationDividerView"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/gray_300"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/congratulationDeckNameTextView" />
+                app:layout_constraintTop_toBottomOf="@id/resultCongratulationDeckNameTextView" />
 
             <TextView
-                android:id="@+id/enjoyTitleTextView"
+                android:id="@+id/resultEnjoyTitleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:paddingBottom="8dp"
-                android:text="Aproveitamento"
+                android:text="@string/resultStatsSectionTitleText"
                 android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/congratulationDividerView" />
+                app:layout_constraintTop_toBottomOf="@id/resultCongratulationDividerView" />
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/hardCircularProgressView"
+                android:id="@+id/resultHardCircularProgressView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:indicatorDirectionCircular="clockwise"
                 app:indicatorSize="80dp"
-                app:layout_constraintEnd_toStartOf="@id/intermediateCircularProgressView"
+                app:layout_constraintEnd_toStartOf="@id/resultIntermediateCircularProgressView"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/enjoyTitleTextView"
+                app:layout_constraintTop_toBottomOf="@id/resultEnjoyTitleTextView"
                 app:trackColor="@color/gray_300"
                 app:trackCornerRadius="10dp"
                 app:trackThickness="8dp"
@@ -111,43 +111,43 @@
                 android:contentDescription="@null"
                 android:padding="20dp"
                 android:src="@drawable/ic_bad_emoji_active"
-                app:layout_constraintBottom_toBottomOf="@id/hardCircularProgressView"
-                app:layout_constraintEnd_toEndOf="@id/hardCircularProgressView"
-                app:layout_constraintStart_toStartOf="@id/hardCircularProgressView"
-                app:layout_constraintTop_toTopOf="@id/hardCircularProgressView" />
+                app:layout_constraintBottom_toBottomOf="@id/resultHardCircularProgressView"
+                app:layout_constraintEnd_toEndOf="@id/resultHardCircularProgressView"
+                app:layout_constraintStart_toStartOf="@id/resultHardCircularProgressView"
+                app:layout_constraintTop_toTopOf="@id/resultHardCircularProgressView" />
 
             <TextView
-                android:id="@+id/hardPercentageTextView"
+                android:id="@+id/resultHardPercentageTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@id/hardCircularProgressView"
-                app:layout_constraintStart_toStartOf="@id/hardCircularProgressView"
-                app:layout_constraintTop_toBottomOf="@id/hardCircularProgressView"
+                app:layout_constraintEnd_toEndOf="@id/resultHardCircularProgressView"
+                app:layout_constraintStart_toStartOf="@id/resultHardCircularProgressView"
+                app:layout_constraintTop_toBottomOf="@id/resultHardCircularProgressView"
                 tools:text="20%" />
 
             <TextView
-                android:id="@+id/hardDescriptionTextView"
+                android:id="@+id/resultHardDescriptionTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@id/hardCircularProgressView"
-                app:layout_constraintStart_toStartOf="@id/hardCircularProgressView"
-                app:layout_constraintTop_toBottomOf="@id/hardPercentageTextView"
-                tools:text="Marcado como dificil" />
+                app:layout_constraintEnd_toEndOf="@id/resultHardCircularProgressView"
+                app:layout_constraintStart_toStartOf="@id/resultHardCircularProgressView"
+                app:layout_constraintTop_toBottomOf="@id/resultHardPercentageTextView"
+                android:text="@string/resultPercentageDifficultyDescriptionText" />
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/intermediateCircularProgressView"
+                android:id="@+id/resultIntermediateCircularProgressView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:indicatorDirectionCircular="clockwise"
                 app:indicatorSize="80dp"
-                app:layout_constraintEnd_toStartOf="@id/easyCircularProgressView"
-                app:layout_constraintStart_toEndOf="@id/hardCircularProgressView"
-                app:layout_constraintTop_toBottomOf="@id/enjoyTitleTextView"
+                app:layout_constraintEnd_toStartOf="@id/resultEasyCircularProgressView"
+                app:layout_constraintStart_toEndOf="@id/resultHardCircularProgressView"
+                app:layout_constraintTop_toBottomOf="@id/resultEnjoyTitleTextView"
                 app:trackColor="@color/gray_300"
                 app:trackCornerRadius="10dp"
                 app:trackThickness="8dp"
@@ -159,43 +159,43 @@
                 android:contentDescription="@null"
                 android:padding="20dp"
                 android:src="@drawable/ic_normal_emoji_active"
-                app:layout_constraintBottom_toBottomOf="@id/intermediateCircularProgressView"
-                app:layout_constraintEnd_toEndOf="@id/intermediateCircularProgressView"
-                app:layout_constraintStart_toStartOf="@id/intermediateCircularProgressView"
-                app:layout_constraintTop_toTopOf="@id/intermediateCircularProgressView" />
+                app:layout_constraintBottom_toBottomOf="@id/resultIntermediateCircularProgressView"
+                app:layout_constraintEnd_toEndOf="@id/resultIntermediateCircularProgressView"
+                app:layout_constraintStart_toStartOf="@id/resultIntermediateCircularProgressView"
+                app:layout_constraintTop_toTopOf="@id/resultIntermediateCircularProgressView" />
 
             <TextView
-                android:id="@+id/intermediatePercentageTextView"
+                android:id="@+id/resultIntermediatePercentageTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@id/intermediateCircularProgressView"
-                app:layout_constraintStart_toStartOf="@id/intermediateCircularProgressView"
-                app:layout_constraintTop_toBottomOf="@id/intermediateCircularProgressView"
+                app:layout_constraintEnd_toEndOf="@id/resultIntermediateCircularProgressView"
+                app:layout_constraintStart_toStartOf="@id/resultIntermediateCircularProgressView"
+                app:layout_constraintTop_toBottomOf="@id/resultIntermediateCircularProgressView"
                 tools:text="20%" />
 
             <TextView
-                android:id="@+id/intermediateDescriptionTextView"
+                android:id="@+id/resultIntermediateDescriptionTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@id/intermediateCircularProgressView"
-                app:layout_constraintStart_toStartOf="@id/intermediateCircularProgressView"
-                app:layout_constraintTop_toBottomOf="@id/intermediatePercentageTextView"
-                tools:text="Marcado como escapar" />
+                app:layout_constraintEnd_toEndOf="@id/resultIntermediateCircularProgressView"
+                app:layout_constraintStart_toStartOf="@id/resultIntermediateCircularProgressView"
+                app:layout_constraintTop_toBottomOf="@id/resultIntermediatePercentageTextView"
+                android:text="@string/resultPercentageIntermediaryDescriptionText" />
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/easyCircularProgressView"
+                android:id="@+id/resultEasyCircularProgressView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:indicatorDirectionCircular="clockwise"
                 app:indicatorSize="80dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/intermediateCircularProgressView"
-                app:layout_constraintTop_toBottomOf="@id/enjoyTitleTextView"
+                app:layout_constraintStart_toEndOf="@id/resultIntermediateCircularProgressView"
+                app:layout_constraintTop_toBottomOf="@id/resultEnjoyTitleTextView"
                 app:trackColor="@color/gray_300"
                 app:trackCornerRadius="10dp"
                 app:trackThickness="8dp"
@@ -207,68 +207,55 @@
                 android:contentDescription="@null"
                 android:padding="20dp"
                 android:src="@drawable/ic_happy_emoji_active"
-                app:layout_constraintBottom_toBottomOf="@id/easyCircularProgressView"
-                app:layout_constraintEnd_toEndOf="@id/easyCircularProgressView"
-                app:layout_constraintStart_toStartOf="@id/easyCircularProgressView"
-                app:layout_constraintTop_toTopOf="@id/easyCircularProgressView" />
+                app:layout_constraintBottom_toBottomOf="@id/resultEasyCircularProgressView"
+                app:layout_constraintEnd_toEndOf="@id/resultEasyCircularProgressView"
+                app:layout_constraintStart_toStartOf="@id/resultEasyCircularProgressView"
+                app:layout_constraintTop_toTopOf="@id/resultEasyCircularProgressView" />
 
             <TextView
-                android:id="@+id/easyPercentageTextView"
+                android:id="@+id/resultEasyPercentageTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@id/easyCircularProgressView"
-                app:layout_constraintStart_toStartOf="@id/easyCircularProgressView"
-                app:layout_constraintTop_toBottomOf="@id/easyCircularProgressView"
+                app:layout_constraintEnd_toEndOf="@id/resultEasyCircularProgressView"
+                app:layout_constraintStart_toStartOf="@id/resultEasyCircularProgressView"
+                app:layout_constraintTop_toBottomOf="@id/resultEasyCircularProgressView"
                 tools:text="20%" />
 
             <TextView
-                android:id="@+id/easyDescriptionTextView"
+                android:id="@+id/resultEasyDescriptionTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@id/easyCircularProgressView"
-                app:layout_constraintStart_toStartOf="@id/easyCircularProgressView"
-                app:layout_constraintTop_toBottomOf="@id/intermediatePercentageTextView"
-                tools:text="Marcado como facil" />
+                app:layout_constraintEnd_toEndOf="@id/resultEasyCircularProgressView"
+                app:layout_constraintStart_toStartOf="@id/resultEasyCircularProgressView"
+                app:layout_constraintTop_toBottomOf="@id/resultIntermediatePercentageTextView"
+                android:text="@string/resultPercentageEasyDescriptionText" />
 
             <View
-                android:id="@+id/footerDividerView"
+                android:id="@+id/resultFooterDividerView"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/gray_300"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/intermediateDescriptionTextView" />
-
-            <TextView
-                android:id="@+id/completedMessageTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
-                android:textAlignment="center"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/footerDividerView"
-                tools:text="Estudo completo" />
+                app:layout_constraintTop_toBottomOf="@id/resultIntermediateDescriptionTextView" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/doneButton"
+                android:id="@+id/resultDoneButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:minWidth="200dp"
-                android:text="pronto"
+                android:text="@string/resultDoneButtonTitleText"
                 app:cornerRadius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/completedMessageTextView" />
+                app:layout_constraintTop_toBottomOf="@id/resultFooterDividerView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

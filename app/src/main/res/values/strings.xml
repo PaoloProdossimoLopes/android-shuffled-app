@@ -9,4 +9,16 @@
 
     <string name="homeErrorStateTitleText">Ops, something wrong occurs!</string>
     <string name="homeErrorStateMessageText">try again later</string>
+
+    <!--  RESULT SCENE  -->
+    <string name="resultCongratulationTitleText">Well done</string>
+    <string name="resultCongratulationDescriptionText">You improve your knoledge about on:</string>
+
+
+    <string name="resultStatsSectionTitleText">statistics</string>
+    <string name="resultPercentageDifficultyDescriptionText">Marked as difficult</string>
+    <string name="resultPercentageIntermediaryDescriptionText">Marked as intermediary</string>
+    <string name="resultPercentageEasyDescriptionText">Marked as easy</string>
+
+    <string name="resultDoneButtonTitleText">done</string>
 </resources>
