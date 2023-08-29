@@ -9,7 +9,7 @@
     tools:ignore="RtlSymmetry">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/card_container"
+        android:id="@+id/flashcardItemContainerCardView"
         android:layout_width="350dp"
         android:layout_height="450dp"
         app:cardCornerRadius="8dp"
@@ -22,7 +22,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/tv_card_content"
+                android:id="@+id/flashcardItemContentTextView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_margin="30dp"
@@ -33,11 +33,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Pergunta" />
+                tools:text="Question" />
 
             <ImageView
+                android:id="@+id/flashcardItemFlipImageView"
                 style="@style/ImageSolidIconView"
-                android:id="@+id/img_flip_indicator"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_margin="16dp"
